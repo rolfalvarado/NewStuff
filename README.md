@@ -189,6 +189,103 @@ Los siguientes archivos/carpetas están en `.gitignore` y **no se suben** al rep
 - `deploy-package/` → Paquete de despliegue
 - `*.zip` → Archivos comprimidos de deploy
 
+## 🚢 Despliegue a producción (EC2)
+
+El servidor de producción es una instancia EC2 de AWS. El despliegue se hace desde tu PC local mediante scripts de PowerShell que:
+1. Hacen build local del proyecto
+2. Empaquetan los archivos necesarios
+3. Los suben al servidor vía SCP
+4. Reinician la aplicación con PM2
+
+### Requisitos para desplegar
+
+1. **Llave PEM** del servidor EC2: `linuxdesa02.pem`
+   - Solicítala al administrador
+   - Guárdala en `C:\llave\linuxdesa02.pem`
+   - ⚠️ **NUNCA** subas este archivo a GitHub
+
+2. **OpenSSH** instalado (viene con Windows 10/11)
+
+3. **Acceso de red** al servidor EC2
+
+### Datos del servidor
+
+| Campo | Valor |
+|-------|-------|
+| **Host** | `ec2-44-212-189-160.compute-1.amazonaws.com` |
+| **Usuario** | `ubuntu` |
+| **App path** | `/home/ubuntu/` |
+| **Puerto app** | `3000` |
+| **Puerto DB** | `8000` |
+| **Process Manager** | PM2 |
+| **URL pública** | `newstuff.unabase.com` |
+
+### Cómo desplegar
+
+Hay dos scripts disponibles. Usa el que prefieras:
+
+#### Opción A: Deploy rápido (`update-ec2.ps1`)
+
+Despliegue simple y directo. Ideal para cambios pequeños.
+
+```powershell
+# Desde la raíz del proyecto
+.\update-ec2.ps1
+```
+
+**Qué hace:**
+1. Limpia `.next/` local y ejecuta `npm run build`
+2. Empaqueta: `.next`, `public`, `scripts`, `package.json`, `next.config.js`, `pm2.config.js`
+3. Sube el ZIP al servidor vía SCP
+4. En el servidor: detiene la app → reemplaza archivos → reinicia con PM2
+
+#### Opción B: Deploy robusto (`robust-deploy.ps1`)
+
+Despliegue más seguro con staging area, instalación de dependencias y health check.
+
+```powershell
+# Desde la raíz del proyecto
+.\robust-deploy.ps1
+```
+
+**Qué hace:**
+1. Build local + empaquetado con Node.js (evita problemas de path Windows/Linux)
+2. Sube al servidor y extrae en `~/deploy-staging` (no toca la app en ejecución)
+3. Copia archivos selectivamente preservando la base de datos
+4. Ejecuta `npm ci --omit=dev` en el servidor
+5. Recarga PM2 con zero-downtime
+6. Ejecuta health checks automáticos
+
+### Flujo completo recomendado
+
+```bash
+# 1. Asegúrate de tener los últimos cambios
+git pull
+
+# 2. Desarrolla y prueba localmente
+npm run start:all
+
+# 3. Cuando estés listo, sube tus cambios a GitHub
+git add .
+git commit -m "Descripción del cambio"
+git push
+
+# 4. Despliega a producción
+.\robust-deploy.ps1
+```
+
+### ⚠️ Importante sobre el despliegue
+
+- La **base de datos de producción NO se sobrescribe** durante el deploy
+- Si necesitas agregar nuevas tablas, debes ejecutar los scripts de migración en el servidor manualmente vía SSH:
+  ```bash
+  ssh -i C:\llave\linuxdesa02.pem ubuntu@ec2-44-212-189-160.compute-1.amazonaws.com
+  # Ya en el servidor:
+  node scripts/init-tables.js
+  ```
+- Los archivos `.env` de producción están en `pm2.config.js` (no en `.env.local`)
+- Si cambias variables de entorno de producción, edita `pm2.config.js` y redespliega
+
 ## 🆘 Solución de problemas
 
 ### Error: "Failed to start DynamoDB"
@@ -201,3 +298,29 @@ Los siguientes archivos/carpetas están en `.gitignore` y **no se suben** al rep
 
 ### Error: "Missing environment variables"
 - Verifica que el archivo `.env.local` exista y tenga todos los valores
+
+### Error en deploy: "Permission denied (publickey)"
+- Verifica que la llave PEM exista en `C:\llave\linuxdesa02.pem`
+- Verifica los permisos del archivo (solo lectura para tu usuario)
+
+### Error en deploy: "Build failed"
+- Ejecuta `npm run build` localmente para ver los errores
+- Corrige los errores antes de intentar desplegar nuevamente
+
+### Verificar estado del servidor
+```bash
+# Conectarse al servidor
+ssh -i C:\llave\linuxdesa02.pem ubuntu@ec2-44-212-189-160.compute-1.amazonaws.com
+
+# Ver procesos corriendo
+pm2 list
+
+# Ver logs de la app
+pm2 logs next-app
+
+# Ver logs de DynamoDB
+pm2 logs dynamo-db
+
+# Reiniciar todo
+pm2 restart all
+```
