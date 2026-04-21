@@ -1,0 +1,11 @@
+var R=require("../../../../chunks/[turbopack]_runtime.js")("server/app/api/cron/daily-update/route.js")
+R.c("server/chunks/[root-of-the-server]__c9f665ff._.js")
+R.c("server/chunks/node_modules_4c587be4._.js")
+R.c("server/chunks/node_modules_next_dist_esm_build_templates_app-route_0408317a.js")
+R.c("server/chunks/_57dd6437._.js")
+R.c("server/chunks/[root-of-the-server]__f408c708._.js")
+R.c("server/chunks/node_modules_@smithy_dac7d27a._.js")
+R.c("server/chunks/node_modules_fd04be8c._.js")
+R.c("server/chunks/_next-internal_server_app_api_cron_daily-update_route_actions_8eea9538.js")
+R.m(79529)
+module.exports=R.m(79529).exports

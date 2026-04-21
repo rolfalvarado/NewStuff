@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard EC2 - Control de Servidores</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.1562.0/aws-sdk.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #2d3748;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .status-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .status-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .status-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .status-number {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .running { color: #48bb78; }
+        .stopped { color: #f56565; }
+        .pending { color: #ed8936; }
+        .total { color: #4299e1; }
+
+        .controls {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 140px;
+        }
+
+        .btn-primary { background: #4299e1; color: white; }
+        .btn-success { background: #48bb78; color: white; }
+        .btn-warning { background: #ed8936; color: white; }
+        .btn-danger { background: #f56565; color: white; }
+        .btn-info { background: #38b2ac; color: white; }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .server-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .server-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+
+        .server-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .server-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 15px;
+        }
+
+        .server-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2d3748;
+            flex-grow: 1;
+        }
+
+        .server-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-left: 10px;
+        }
+
+        .status-running { background: #c6f6d5; color: #2f855a; }
+        .status-stopped { background: #fed7d7; color: #c53030; }
+        .status-pending { background: #feebc8; color: #c05621; }
+        .status-stopping { background: #fbb6ce; color: #b83280; }
+
+        .server-details {
+            margin-bottom: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .detail-label {
+            color: #718096;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            color: #2d3748;
+            font-weight: 500;
+        }
+
+        .server-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            min-width: auto;
+            flex: 1;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            color: #4299e1;
+            font-size: 1.2rem;
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success {
+            background: #c6f6d5;
+            color: #2f855a;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .config-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #4299e1;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .server-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .control-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🖥️ Dashboard EC2 - Control de Servidores</h1>
+            <p style="text-align: center; color: #718096; margin-top: 10px;">
+                Monitoreo y control en tiempo real de tus instancias EC2
+            </p>
+        </div>
+
+        <!-- Configuración AWS -->
+        <div class="config-section">
+            <h2 style="margin-bottom: 20px; color: #2d3748;">⚙️ Configuración AWS</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                <div class="form-group">
+                    <label for="accessKey">Access Key ID:</label>
+                    <input type="password" id="accessKey" placeholder="AKIA...">
+                </div>
+                <div class="form-group">
+                    <label for="secretKey">Secret Access Key:</label>
+                    <input type="password" id="secretKey" placeholder="Secret key...">
+                </div>
+                <div class="form-group">
+                    <label for="region">Región:</label>
+                    <select id="region">
+                        <option value="us-east-1">US East (N. Virginia)</option>
+                        <option value="us-west-2">US West (Oregon)</option>
+                        <option value="eu-west-1">Europe (Ireland)</option>
+                        <option value="ap-southeast-1">Asia Pacific (Singapore)</option>
+                    </select>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-primary" onclick="connectAWS()">🔗 Conectar a AWS</button>
+            </div>
+        </div>
+
+        <!-- Mensajes -->
+        <div id="error-message" class="error"></div>
+        <div id="success-message" class="success"></div>
+        <div id="loading" class="loading">
+            <div>🔄 Cargando información de servidores...</div>
+        </div>
+
+        <!-- Resumen de Estados -->
+        <div class="status-overview" id="status-overview" style="display: none;">
+            <div class="status-card">
+                <div class="status-number running" id="running-count">0</div>
+                <div>Ejecutándose</div>
+            </div>
+            <div class="status-card">
+                <div class="status-number stopped" id="stopped-count">0</div>
+                <div>Detenidos</div>
+            </div>
+            <div class="status-card">
+                <div class="status-number pending" id="pending-count">0</div>
+                <div>En Proceso</div>
+            </div>
+            <div class="status-card">
+                <div class="status-number total" id="total-count">0</div>
+                <div>Total</div>
+            </div>
+        </div>
+
+        <!-- Controles Globales -->
+        <div class="controls" id="controls" style="display: none;">
+            <h3 style="margin-bottom: 20px; text-align: center; color: #2d3748;">🎛️ Controles Globales</h3>
+            <div class="control-buttons">
+                <button class="btn btn-success" onclick="startAllStopped()">
+                    ▶️ Encender Todos los Detenidos
+                </button>
+                <button class="btn btn-warning" onclick="stopAllRunning()">
+                    ⏹️ Detener Todos los Activos
+                </button>
+                <button class="btn btn-info" onclick="rebootAllRunning()">
+                    🔄 Reiniciar Todos los Activos
+                </button>
+                <button class="btn btn-primary" onclick="refreshData()">
+                    🔃 Actualizar Datos
+                </button>
+            </div>
+        </div>
+
+        <!-- Grid de Servidores -->
+        <div class="server-grid" id="server-grid">
+            <!-- Los servidores se cargarán aquí dinámicamente -->
+        </div>
+    </div>
+
+    <script>
+        let ec2;
+        let instances = [];
+
+        // Configurar AWS
+        function connectAWS() {
+            const accessKey = document.getElementById('accessKey').value;
+            const secretKey = document.getElementById('secretKey').value;
+            const region = document.getElementById('region').value;
+
+            if (!accessKey || !secretKey) {
+                showError('Por favor ingresa las credenciales de AWS');
+                return;
+            }
+
+            AWS.config.update({
+                accessKeyId: accessKey,
+                secretAccessKey: secretKey,
+                region: region
+            });
+
+            ec2 = new AWS.EC2();
+            
+            showSuccess('Conectado a AWS. Cargando datos...');
+            loadInstances();
+        }
+
+        // Cargar instancias
+        async function loadInstances() {
+            showLoading(true);
+            hideMessages();
+
+            try {
+                const data = await ec2.describeInstances().promise();
+                instances = [];
+
+                data.Reservations.forEach(reservation => {
+                    reservation.Instances.forEach(instance => {
+                        instances.push(instance);
+                    });
+                });
+
+                displayInstances();
+                updateStatusCounts();
+                showControls();
+                showSuccess(`${instances.length} instancias cargadas correctamente`);
+
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Error cargando instancias: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Mostrar instancias
+        function displayInstances() {
+            const grid = document.getElementById('server-grid');
+            grid.innerHTML = '';
+
+            instances.forEach(instance => {
+                const name = getTagValue(instance.Tags, 'Name') || instance.InstanceId;
+                const environment = getTagValue(instance.Tags, 'Environment') || 'N/A';
+                const project = getTagValue(instance.Tags, 'Project') || 'N/A';
+                
+                const card = createServerCard(instance, name, environment, project);
+                grid.appendChild(card);
+            });
+        }
+
+        // Crear tarjeta de servidor
+        function createServerCard(instance, name, environment, project) {
+            const div = document.createElement('div');
+            div.className = 'server-card';
+            div.innerHTML = `
+                <div class="server-header">
+                    <div class="server-name">${name}</div>
+                    <div class="server-status status-${instance.State.Name}">
+                        ${instance.State.Name}
+                    </div>
+                </div>
+                <div class="server-details">
+                    <div class="detail-row">
+                        <span class="detail-label">ID:</span>
+                        <span class="detail-value">${instance.InstanceId}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Tipo:</span>
+                        <span class="detail-value">${instance.InstanceType}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Ambiente:</span>
+                        <span class="detail-value">${environment}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Proyecto:</span>
+                        <span class="detail-value">${project}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">IP Privada:</span>
+                        <span class="detail-value">${instance.PrivateIpAddress || 'N/A'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">IP Pública:</span>
+                        <span class="detail-value">${instance.PublicIpAddress || 'N/A'}</span>
+                    </div>
+                </div>
+                <div class="server-actions">
+                    ${instance.State.Name === 'running' ? 
+                        `<button class="btn btn-warning btn-small" onclick="stopInstance('${instance.InstanceId}')">⏹️ Detener</button>
+                         <button class="btn btn-info btn-small" onclick="rebootInstance('${instance.InstanceId}')">🔄 Reiniciar</button>` :
+                        `<button class="btn btn-success btn-small" onclick="startInstance('${instance.InstanceId}')">▶️ Iniciar</button>`
+                    }
+                </div>
+            `;
+            return div;
+        }
+
+        // Funciones de control de instancias
+        async function startInstance(instanceId) {
+            if (!confirm('¿Estás seguro de que quieres iniciar esta instancia?')) return;
+            
+            try {
+                showLoading(true);
+                await ec2.startInstances({InstanceIds: [instanceId]}).promise();
+                showSuccess('Instancia iniciándose...');
+                setTimeout(loadInstances, 2000);
+            } catch (error) {
+                showError('Error iniciando instancia: ' + error.message);
+                showLoading(false);
+            }
+        }
+
+        async function stopInstance(instanceId) {
+            if (!confirm('¿Estás seguro de que quieres detener esta instancia?')) return;
+            
+            try {
+                showLoading(true);
+                await ec2.stopInstances({InstanceIds: [instanceId]}).promise();
+                showSuccess('Instancia deteniéndose...');
+                setTimeout(loadInstances, 2000);
+            } catch (error) {
+                showError('Error deteniendo instancia: ' + error.message);
+                showLoading(false);
+            }
+        }
+
+        async function rebootInstance(instanceId) {
+            if (!confirm('¿Estás seguro de que quieres reiniciar esta instancia?')) return;
+            
+            try {
+                showLoading(true);
+                await ec2.rebootInstances({InstanceIds: [instanceId]}).promise();
+                showSuccess('Instancia reiniciándose...');
+                setTimeout(loadInstances, 3000);
+            } catch (error) {
+                showError('Error reiniciando instancia: ' + error.message);
+                showLoading(false);
+            }
+        }
+
+        // Funciones de control masivo
+        async function startAllStopped() {
+            const stoppedInstances = instances.filter(i => i.State.Name === 'stopped');
+            if (stoppedInstances.length === 0) {
+                showError('No hay instancias detenidas para iniciar');
+                return;
+            }
+            
+            if (!confirm(`¿Iniciar ${stoppedInstances.length} instancia(s)?`)) return;
+            
+            try {
+                showLoading(true);
+                const instanceIds = stoppedInstances.map(i => i.InstanceId);
+                await ec2.startInstances({InstanceIds: instanceIds}).promise();
+                showSuccess(`${instanceIds.length} instancia(s) iniciándose...`);
+                setTimeout(loadInstances, 3000);
+            } catch (error) {
+                showError('Error: ' + error.message);
+                showLoading(false);
+            }
+        }
+
+        async function stopAllRunning() {
+            const runningInstances = instances.filter(i => i.State.Name === 'running');
+            if (runningInstances.length === 0) {
+                showError('No hay instancias ejecutándose para detener');
+                return;
+            }
+            
+            if (!confirm(`¿Detener ${runningInstances.length} instancia(s)?`)) return;
+            
+            try {
+                showLoading(true);
+                const instanceIds = runningInstances.map(i => i.InstanceId);
+                await ec2.stopInstances({InstanceIds: instanceIds}).promise();
+                showSuccess(`${instanceIds.length} instancia(s) deteniéndose...`);
+                setTimeout(loadInstances, 3000);
+            } catch (error) {
+                showError('Error: ' + error.message);
+                showLoading(false);
+            }
+        }
+
+        async function rebootAllRunning() {
+            const runningInstances = instances.filter(i => i.State.Name === 'running');
+            if (runningInstances.length === 0) {
+                showError('No hay instancias ejecutándose para reiniciar');
+                return;
+            }
+            
+            if (!confirm(`¿Reiniciar ${runningInstances.length} instancia(s)?`)) return;
+            
+            try {
+                showLoading(true);
+                const instanceIds = runningInstances.map(i => i.InstanceId);
+                await ec2.rebootInstances({InstanceIds: instanceIds}).promise();
+                showSuccess(`${instanceIds.length} instancia(s) reiniciándose...`);
+                setTimeout(loadInstances, 5000);
+            } catch (error) {
+                showError('Error: ' + error.message);
+                showLoading(false);
+            }
+        }
+
+        // Funciones auxiliares
+        function getTagValue(tags, key) {
+            if (!tags) return null;
+            const tag = tags.find(t => t.Key === key);
+            return tag ? tag.Value : null;
+        }
+
+        function updateStatusCounts() {
+            const counts = {
+                running: instances.filter(i => i.State.Name === 'running').length,
+                stopped: instances.filter(i => i.State.Name === 'stopped').length,
+                pending: instances.filter(i => ['pending', 'stopping', 'starting'].includes(i.State.Name)).length
+            };
+
+            document.getElementById('running-count').textContent = counts.running;
+            document.getElementById('stopped-count').textContent = counts.stopped;
+            document.getElementById('pending-count').textContent = counts.pending;
+            document.getElementById('total-count').textContent = instances.length;
+
+            document.getElementById('status-overview').style.display = 'grid';
+        }
+
+        function showControls() {
+            document.getElementById('controls').style.display = 'block';
+        }
+
+        function refreshData() {
+            loadInstances();
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => errorDiv.style.display = 'none', 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('success-message');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => successDiv.style.display = 'none', 3000);
+        }
+
+        function hideMessages() {
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('success-message').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
