@@ -61,9 +61,10 @@ export function middleware(request: NextRequest) {
         "default-src 'self'",
         "script-src 'self' 'unsafe-eval' 'unsafe-inline'", // unsafe-eval/inline reducidos pero necesarios para Next.js
         "style-src 'self' 'unsafe-inline'",
-        "img-src 'self' blob: data: https://glovox.unabase.com", // Añadido dominio de logos
+        "img-src 'self' blob: data: https://glovox.unabase.com https://lisboa.unabase.com", // Logos + adjuntos TAREAS
+        "media-src 'self' blob: https://lisboa.unabase.com", // Videos adjuntos en TAREAS
         "font-src 'self'",
-        "connect-src 'self' https://lisboa.unabase.com", // Añadido endpoint de usuarios
+        "connect-src 'self' https://lisboa.unabase.com", // Endpoint de usuarios + adjuntos
         "object-src 'none'",
         "base-uri 'self'",
         "form-action 'self'",

@@ -14,7 +14,18 @@ const run = () => {
 
     if (os.platform() === 'win32') {
         const javaDir = path.join(rootDir, 'java_local', 'jdk-21.0.1+12', 'bin');
-        javaExe = path.join(javaDir, 'java.exe');
+        const localJavaExe = path.join(javaDir, 'java.exe');
+        const javaHomeExe = process.env.JAVA_HOME
+            ? path.join(process.env.JAVA_HOME, 'bin', 'java.exe')
+            : null;
+
+        if (fs.existsSync(localJavaExe)) {
+            javaExe = localJavaExe;
+        } else if (javaHomeExe && fs.existsSync(javaHomeExe)) {
+            javaExe = javaHomeExe;
+        } else {
+            javaExe = 'java';
+        }
     } else {
         // On Linux/EC2, use global java
         javaExe = 'java';
