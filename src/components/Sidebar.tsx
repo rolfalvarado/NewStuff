@@ -22,6 +22,7 @@ const MENU_ITEMS = [
     { name: "AWS", href: "/dashboard", icon: "/Icons/clipboard-check.svg" },
     { name: "Reportes", href: "/reportes", icon: "/Icons/stats-report.svg" },
     { name: "Tareas", href: "/tareas", icon: "/Icons/code.svg" },
+    { name: "Proyectos", href: "/proyectos", icon: "/Icons/stats-up-square.svg" },
     { name: "Herramientas", href: "/herramientas", icon: "/Icons/codewi.svg" },
     { name: "Reciclaje", href: "/reciclaje", icon: "/Icons/reciclaje.svg" },
 ];
@@ -47,7 +48,7 @@ export default function Sidebar() {
     const filteredItems = MENU_ITEMS.filter(item => {
         // Restricciones de administración
         if (user?.email === 'administracion') {
-            if (['/claves', '/dashboard', '/herramientas', '/bandeja-dtc', '/tareas'].includes(item.href)) return false;
+            if (['/claves', '/dashboard', '/herramientas', '/bandeja-dtc'].includes(item.href)) return false;
         }
 
         return true;

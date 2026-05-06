@@ -2,6 +2,7 @@ import Sidebar from "@/components/Sidebar";
 import AuthGuard from "@/components/AuthGuard";
 import StatusChecker from "@/components/StatusChecker";
 import AlarmManager from "@/components/AlarmManager";
+import TareasNotifier from "@/components/TareasNotifier";
 
 export default function MainLayout({
     children,
@@ -12,6 +13,7 @@ export default function MainLayout({
         <AuthGuard>
             <StatusChecker />
             <AlarmManager />
+            <TareasNotifier />
             <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
                 <Sidebar />
                 <main style={{

@@ -68,10 +68,34 @@
       "namedRegex": "^/api/cron/daily\\-update(?:/)?$"
     },
     {
+      "page": "/api/proyectos-proxy",
+      "regex": "^/api/proyectos\\-proxy(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/proyectos\\-proxy(?:/)?$"
+    },
+    {
+      "page": "/api/proyectos-upload",
+      "regex": "^/api/proyectos\\-upload(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/proyectos\\-upload(?:/)?$"
+    },
+    {
       "page": "/api/sii-proxy",
       "regex": "^/api/sii\\-proxy(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/api/sii\\-proxy(?:/)?$"
+    },
+    {
+      "page": "/api/tareas-proxy",
+      "regex": "^/api/tareas\\-proxy(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/tareas\\-proxy(?:/)?$"
+    },
+    {
+      "page": "/api/tareas-upload",
+      "regex": "^/api/tareas\\-upload(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/tareas\\-upload(?:/)?$"
     },
     {
       "page": "/api/tools/duplicate-permissions",
@@ -152,6 +176,12 @@
       "namedRegex": "^/login(?:/)?$"
     },
     {
+      "page": "/proyectos",
+      "regex": "^/proyectos(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/proyectos(?:/)?$"
+    },
+    {
       "page": "/reciclaje",
       "regex": "^/reciclaje(?:/)?$",
       "routeKeys": {},
@@ -174,6 +204,12 @@
       "regex": "^/stuff(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/stuff(?:/)?$"
+    },
+    {
+      "page": "/tareas",
+      "regex": "^/tareas(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/tareas(?:/)?$"
     },
     {
       "page": "/usuarios",

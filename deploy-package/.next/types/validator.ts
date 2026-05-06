@@ -101,6 +101,15 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../src/app/(main)/proyectos/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/proyectos">> = Specific
+  const handler = {} as typeof import("../../src/app/(main)/proyectos/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../src/app/(main)/reciclaje/page.tsx
 {
   type __IsExpected<Specific extends AppPageConfig<"/reciclaje">> = Specific
@@ -132,6 +141,15 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
 {
   type __IsExpected<Specific extends AppPageConfig<"/stuff">> = Specific
   const handler = {} as typeof import("../../src/app/(main)/stuff/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../src/app/(main)/tareas/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/tareas">> = Specific
+  const handler = {} as typeof import("../../src/app/(main)/tareas/page.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check
@@ -200,10 +218,46 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../src/app/api/proyectos-proxy/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/proyectos-proxy">> = Specific
+  const handler = {} as typeof import("../../src/app/api/proyectos-proxy/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../src/app/api/proyectos-upload/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/proyectos-upload">> = Specific
+  const handler = {} as typeof import("../../src/app/api/proyectos-upload/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../src/app/api/sii-proxy/route.ts
 {
   type __IsExpected<Specific extends RouteHandlerConfig<"/api/sii-proxy">> = Specific
   const handler = {} as typeof import("../../src/app/api/sii-proxy/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../src/app/api/tareas-proxy/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/tareas-proxy">> = Specific
+  const handler = {} as typeof import("../../src/app/api/tareas-proxy/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../src/app/api/tareas-upload/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/tareas-upload">> = Specific
+  const handler = {} as typeof import("../../src/app/api/tareas-upload/route.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check

@@ -3,6 +3,7 @@
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import ClientReportsModal from "@/components/ClientReportsModal";
 import { getAllSystems, System } from "@/app/actions/get-systems";
 import { getServers, ServerPublic } from "@/app/actions/get-servers";
 import { updateSystemText, updateSystemFields } from "@/app/actions/update-system";
@@ -58,6 +59,9 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
     // Hitos Section State
     const [hitosDate, setHitosDate] = useState<{ [key: string]: string }>({});
     const [hitosText, setHitosText] = useState<{ [key: string]: string }>({});
+
+    // Modal de reportes (tareas) por cliente
+    const [reportsSystem, setReportsSystem] = useState<System | null>(null);
 
     // Google Drive State
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -876,6 +880,38 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                                                 Archivos
                                             </button>
                                         </div>
+
+                                        {/* Reportes del cliente — abre modal con tareas/reportes filtrados */}
+                                        <button
+                                            onClick={() => setReportsSystem(system)}
+                                            title={`Ver reportes de ${system.nombre_empresa}`}
+                                            style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "0.4rem",
+                                                height: "32px",
+                                                padding: "0 0.7rem",
+                                                backgroundColor: "#FFFFFF",
+                                                border: "none",
+                                                borderRadius: "8px",
+                                                color: "#4B5563",
+                                                fontSize: "0.75rem",
+                                                fontWeight: "600",
+                                                cursor: "pointer",
+                                                whiteSpace: "nowrap",
+                                                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                                                fontFamily: "inherit"
+                                            }}
+                                        >
+                                            <Image
+                                                src="/Icons/stats-report.svg"
+                                                alt="Reportes"
+                                                width={16}
+                                                height={16}
+                                                style={{ opacity: 0.7 }}
+                                            />
+                                            Reportes
+                                        </button>
 
                                         {/* Options Button */}
                                         <div style={{ position: "relative" }}>
@@ -2673,6 +2709,13 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                     </div>
                 )
             }
+
+            {reportsSystem && (
+                <ClientReportsModal
+                    system={reportsSystem}
+                    onClose={() => setReportsSystem(null)}
+                />
+            )}
         </div >
     );
 }

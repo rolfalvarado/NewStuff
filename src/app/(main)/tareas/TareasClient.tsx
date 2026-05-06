@@ -19,6 +19,7 @@ import {
     type Attachment,
     type Subtask,
 } from "@/lib/tareas-api";
+import { getAllSystems, type System } from "@/app/actions/get-systems";
 
 // ---- Helpers de adjuntos ----
 function fmtBytes(b: number): string {
@@ -104,12 +105,115 @@ function fmtDate(ts?: number | null): string {
 
 function fmtMs(ms: number): string {
     const total = Math.max(0, Math.floor(Math.abs(ms) / 1000));
-    const h = Math.floor(total / 3600);
+    const days = Math.floor(total / 86400);
+    const h = Math.floor((total % 86400) / 3600);
     const m = Math.floor((total % 3600) / 60);
     const s = total % 60;
     const pad = (n: number) => String(n).padStart(2, "0");
+    // Cuando hay días, los mostramos delante para que no veamos "159:58:58"
+    if (days > 0) return `${days}d ${pad(h)}:${pad(m)}:${pad(s)}`;
     return `${pad(h)}:${pad(m)}:${pad(s)}`;
 }
+
+/** Convierte minutos asignados a un formato legible: "45 min", "1h 30m", "1d 4h", "6d 15h", "2sem 3d 4h". */
+function fmtMinutesHuman(totalMin?: number | null): string {
+    if (!totalMin || totalMin <= 0) return "0 min";
+    const min = Math.round(totalMin);
+    if (min < 60) return `${min} min`;
+    const weeks = Math.floor(min / 10080);
+    const days = Math.floor((min % 10080) / 1440);
+    const hours = Math.floor((min % 1440) / 60);
+    const mins = min % 60;
+    const parts: string[] = [];
+    if (weeks > 0) parts.push(`${weeks} sem`);
+    if (days > 0) parts.push(`${days}d`);
+    if (hours > 0) parts.push(`${hours}h`);
+    // Solo mostramos los minutos sueltos cuando la duración es corta (sin días/semanas).
+    if (mins > 0 && weeks === 0 && days === 0) parts.push(`${mins}m`);
+    return parts.join(" ");
+}
+
+// =================== Detección de reportes duplicados ===================
+// Compara contra tareas ya resueltas (status === "done") para avisar al
+// reporter (soporte/administración) si lo que está describiendo ya fue
+// solucionado. El cliente debe coincidir (URL normalizada) y los tokens del
+// título/descripción/módulos deben superar un umbral de similitud (Jaccard).
+
+const DUPLICATE_STOPWORDS = new Set([
+    "de", "del", "la", "el", "los", "las", "un", "una", "unos", "unas",
+    "y", "o", "u", "e", "que", "se", "no", "si", "al", "lo", "le", "les",
+    "con", "sin", "por", "para", "en", "a", "es", "son", "fue", "ser",
+    "pero", "como", "este", "esta", "estos", "estas", "ese", "esa", "eso",
+    "muy", "mas", "mucho", "ya", "hay", "the", "and", "for", "with",
+]);
+
+function normalizeClientUrl(raw: string): string {
+    return (raw || "")
+        .trim()
+        .toLowerCase()
+        .replace(/^https?:\/\//, "")
+        .replace(/^www\./, "")
+        .replace(/\/+$/, "");
+}
+
+function tokenizeForDuplicate(text: string): Set<string> {
+    const tokens = (text || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[̀-ͯ]/g, "")
+        .replace(/[^a-z0-9\s]/g, " ")
+        .split(/\s+/)
+        .filter((t) => t.length >= 3 && !DUPLICATE_STOPWORDS.has(t));
+    return new Set(tokens);
+}
+
+function jaccard(a: Set<string>, b: Set<string>): number {
+    if (a.size === 0 || b.size === 0) return 0;
+    let inter = 0;
+    a.forEach((t) => { if (b.has(t)) inter++; });
+    const union = a.size + b.size - inter;
+    return union === 0 ? 0 : inter / union;
+}
+
+export interface DuplicateCandidate {
+    task: Task;
+    score: number;
+}
+
+/**
+ * Devuelve hasta 3 tareas ya resueltas que se parezcan al borrador.
+ * Match obligatorio: cliente normalizado idéntico.
+ * Score: Jaccard sobre tokens de title+description+modules.
+ */
+function findDuplicateCandidates(
+    draft: { title: string; description: string; modules: string; client: string },
+    tasks: Task[],
+    minScore = 0.25,
+    limit = 3
+): DuplicateCandidate[] {
+    const client = normalizeClientUrl(draft.client);
+    if (!client) return [];
+    const draftTokens = tokenizeForDuplicate(
+        `${draft.title} ${draft.description} ${draft.modules}`
+    );
+    if (draftTokens.size < 2) return [];
+
+    const candidates: DuplicateCandidate[] = [];
+    for (const t of tasks) {
+        if (t.status !== "done") continue;
+        if (normalizeClientUrl(t.client) !== client) continue;
+        const tt = tokenizeForDuplicate(`${t.title} ${t.description} ${t.modules}`);
+        const score = jaccard(draftTokens, tt);
+        if (score >= minScore) candidates.push({ task: t, score });
+    }
+    candidates.sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return (b.task.completedAt || 0) - (a.task.completedAt || 0);
+    });
+    return candidates.slice(0, limit);
+}
+
+const DUPLICATE_BLOCK_SCORE = 0.5;
 
 const SEVERITY_LABEL: Record<Severity, string> = {
     low: "Baja",
@@ -219,7 +323,7 @@ function LiveTimer({ task, compact, tick }: { task: Task; compact?: boolean; tic
                     {fmtMs(displayMs)}
                 </div>
                 <div style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>
-                    Transcurrido {fmtMs(elapsed)} / Asignado {task.estimateMinutes} min
+                    Transcurrido {fmtMs(elapsed)} / Asignado {fmtMinutesHuman(task.estimateMinutes)}
                 </div>
             </div>
         </div>
@@ -327,6 +431,9 @@ function TaskCard({
                     <span className={styles.metaItem}>📍 <strong>{task.client}</strong></span>
                     {task.modules && <span className={styles.metaItem}>🧩 {task.modules}</span>}
                     <span className={styles.metaItem}>👤 {task.reporter}</span>
+                    <span className={styles.metaItem} title={fmtDate(task.createdAt)}>
+                        📅 {new Date(task.createdAt).toLocaleDateString("es-CL", { day: "2-digit", month: "short" })}
+                    </span>
                     {task.subtasks && task.subtasks.length > 0 && (() => {
                         const total = task.subtasks.length;
                         const done = task.subtasks.filter((s) => s.done).length;
@@ -490,9 +597,9 @@ function TaskDetailModal({
     onClose,
     tick,
     isDev,
-    identityName,
     onChangeCategory,
     onAdjustTime,
+    onChangeResponsable,
     onSaveDevNotes,
     onAddSubtask,
     onToggleSubtask,
@@ -503,9 +610,9 @@ function TaskDetailModal({
     onClose: () => void;
     tick: number;
     isDev: boolean;
-    identityName: string;
     onChangeCategory: (t: Task) => void;
     onAdjustTime: (t: Task, newMinutes: number) => void;
+    onChangeResponsable: (t: Task, newName: string) => void;
     onSaveDevNotes: (t: Task, notes: string) => void;
     onAddSubtask: (t: Task, title: string) => void;
     onToggleSubtask: (t: Task, sub: Subtask) => void;
@@ -518,7 +625,10 @@ function TaskDetailModal({
     const [newSubtask, setNewSubtask] = useState<string>("");
     const [editingSubId, setEditingSubId] = useState<string | null>(null);
     const [editingSubText, setEditingSubText] = useState<string>("");
+    const [editingResponsable, setEditingResponsable] = useState(false);
+    const [responsableDraft, setResponsableDraft] = useState("");
 
+    // Sólo sincronizamos cuando cambia LA TAREA visualizada (no cada vez que llega un update del polling).
     useEffect(() => {
         if (task) {
             setAdjustValue(task.estimateMinutes || 0);
@@ -526,7 +636,12 @@ function TaskDetailModal({
             setNewSubtask("");
             setEditingSubId(null);
         }
-    }, [task?.id, task?.estimateMinutes, task?.devNotes]);
+    }, [task?.id]);
+
+    // Cuando el padre actualiza estimateMinutes (al guardar +/-) reflejamos el nuevo valor en el input.
+    useEffect(() => {
+        if (task?.estimateMinutes != null) setAdjustValue(task.estimateMinutes);
+    }, [task?.estimateMinutes]);
 
     if (!task) return null;
     const attachments = task.attachments || [];
@@ -542,8 +657,16 @@ function TaskDetailModal({
     const showDevTools = isDev && task.status !== "done";
 
     const adjust = (deltaMin: number) => {
-        const next = Math.max(1, (task.estimateMinutes || 0) + deltaMin);
+        const current = task.estimateMinutes || 0;
+        const next = Math.max(1, current + deltaMin);
+        if (next === current) return;
         onAdjustTime(task, next);
+    };
+
+    const saveCustomTime = () => {
+        const v = Math.max(1, Math.round(adjustValue || 0));
+        if (!v || v === task.estimateMinutes) return;
+        onAdjustTime(task, v);
     };
 
     const submitNewSubtask = () => {
@@ -630,24 +753,34 @@ function TaskDetailModal({
                             {task.estimateMinutes} min
                         </strong>
                         {task.estimateMinutes && task.estimateMinutes >= 60 && (
-                            <> · {(task.estimateMinutes / 60).toFixed(task.estimateMinutes % 60 === 0 ? 0 : 1)} h</>
+                            <> · <strong style={{ color: "var(--text-main)" }}>{fmtMinutesHuman(task.estimateMinutes)}</strong></>
                         )}
                     </div>
 
                     {/* Quick deltas */}
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem", marginBottom: "0.5rem" }}>
-                        {[-60, -30, -15, +15, +30, +60, +120].map((d) => (
-                            <button
-                                key={d}
-                                type="button"
-                                className={styles.smallBtn}
-                                onClick={() => adjust(d)}
-                                disabled={d < 0 && (task.estimateMinutes || 0) + d < 1}
-                                title={d > 0 ? `Sumar ${d} min` : `Restar ${Math.abs(d)} min`}
-                            >
-                                {d > 0 ? `+${d}m` : `${d}m`}
-                            </button>
-                        ))}
+                        {[-60, -30, -15, +15, +30, +60, +120].map((d) => {
+                            const wouldBe = (task.estimateMinutes || 0) + d;
+                            const blocked = d < 0 && wouldBe < 1;
+                            return (
+                                <button
+                                    key={d}
+                                    type="button"
+                                    className={styles.smallBtn}
+                                    onClick={() => adjust(d)}
+                                    disabled={blocked}
+                                    title={
+                                        blocked
+                                            ? "No se puede dejar la tarea en menos de 1 minuto"
+                                            : d > 0
+                                                ? `Sumar ${d} min (queda en ${wouldBe} min)`
+                                                : `Restar ${Math.abs(d)} min (queda en ${wouldBe} min)`
+                                    }
+                                >
+                                    {d > 0 ? `+${d}m` : `${d}m`}
+                                </button>
+                            );
+                        })}
                     </div>
 
                     {/* Set exact */}
@@ -659,6 +792,12 @@ function TaskDetailModal({
                             step={5}
                             value={adjustValue}
                             onChange={(e) => setAdjustValue(Number(e.target.value))}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    saveCustomTime();
+                                }
+                            }}
                             className={styles.input}
                             style={{ maxWidth: "120px", fontFamily: "monospace" }}
                         />
@@ -666,8 +805,13 @@ function TaskDetailModal({
                         <button
                             type="button"
                             className={`${styles.smallBtn} ${styles.smallBtnPrimary}`}
-                            onClick={() => onAdjustTime(task, adjustValue)}
+                            onClick={saveCustomTime}
                             disabled={!adjustValue || adjustValue === task.estimateMinutes}
+                            title={
+                                adjustValue === task.estimateMinutes
+                                    ? "Ningún cambio respecto al valor actual"
+                                    : "Guardar nuevo tiempo"
+                            }
                         >
                             Guardar
                         </button>
@@ -708,20 +852,93 @@ function TaskDetailModal({
             {task.assignedToName && (
                 <div className={styles.detailField} style={{ marginTop: "0.6rem" }}>
                     <div className={styles.label}>Asignado a</div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                        <span
-                            className={styles.userInitials}
-                            style={{ background: task.assignedColor || "#1E88E5" }}
-                        >
-                            {initials(task.assignedToName)}
-                        </span>
-                        <strong>{task.assignedToName}</strong>
-                        {task.estimateMinutes && (
-                            <span style={{ marginLeft: "auto", color: "var(--text-muted)", fontFamily: "monospace" }}>
-                                {task.estimateMinutes} min asignados
+                    {editingResponsable ? (
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
+                            <span
+                                className={styles.userInitials}
+                                style={{ background: task.assignedColor || "#1E88E5" }}
+                            >
+                                {initials(responsableDraft || task.assignedToName)}
                             </span>
-                        )}
-                    </div>
+                            <input
+                                className={styles.input}
+                                value={responsableDraft}
+                                autoFocus
+                                maxLength={80}
+                                onChange={(e) => setResponsableDraft(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        e.preventDefault();
+                                        const v = responsableDraft.trim();
+                                        if (v.length >= 2 && v !== task.assignedToName) {
+                                            onChangeResponsable(task, v);
+                                        }
+                                        setEditingResponsable(false);
+                                    }
+                                    if (e.key === "Escape") {
+                                        setEditingResponsable(false);
+                                    }
+                                }}
+                                style={{ maxWidth: "240px" }}
+                            />
+                            <button
+                                type="button"
+                                className={`${styles.smallBtn} ${styles.smallBtnPrimary}`}
+                                onClick={() => {
+                                    const v = responsableDraft.trim();
+                                    if (v.length >= 2 && v !== task.assignedToName) {
+                                        onChangeResponsable(task, v);
+                                    }
+                                    setEditingResponsable(false);
+                                }}
+                                disabled={
+                                    responsableDraft.trim().length < 2 ||
+                                    responsableDraft.trim() === task.assignedToName
+                                }
+                            >
+                                Guardar
+                            </button>
+                            <button
+                                type="button"
+                                className={styles.smallBtn}
+                                onClick={() => setEditingResponsable(false)}
+                            >
+                                Cancelar
+                            </button>
+                        </div>
+                    ) : (
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                            <span
+                                className={styles.userInitials}
+                                style={{ background: task.assignedColor || "#1E88E5" }}
+                            >
+                                {initials(task.assignedToName)}
+                            </span>
+                            <strong>{task.assignedToName}</strong>
+                            {isDev && task.status !== "done" && (
+                                <button
+                                    type="button"
+                                    className={styles.smallBtn}
+                                    onClick={() => {
+                                        setResponsableDraft(task.assignedToName || "");
+                                        setEditingResponsable(true);
+                                    }}
+                                    title="Cambiar nombre del responsable"
+                                    style={{ padding: "0.25rem 0.5rem" }}
+                                >
+                                    ✎ Editar
+                                </button>
+                            )}
+                            {task.estimateMinutes && (
+                                <span style={{ marginLeft: "auto", color: "var(--text-muted)" }}>
+                                    Asignado:{" "}
+                                    <strong style={{ color: "var(--text-main)" }}>
+                                        {fmtMinutesHuman(task.estimateMinutes)}
+                                    </strong>
+                                </span>
+                            )}
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -1013,17 +1230,30 @@ function AssignTimeModal({
     task: Task | null;
     devUser: TareasIdentity | null;
     onClose: () => void;
-    onConfirm: (minutes: number, responsable: string) => void;
+    onConfirm: (
+        minutes: number,
+        responsable: string,
+        initialSubtasks: string[],
+        finalCategory: TaskCategory
+    ) => void;
 }) {
     const [custom, setCustom] = useState(60);
     const [hours, setHours] = useState(8);
     const [responsable, setResponsable] = useState("");
+    const [initialSubtasks, setInitialSubtasks] = useState<string[]>([]);
+    const [newStep, setNewStep] = useState("");
+    const [asProject, setAsProject] = useState(false);
 
     useEffect(() => {
         if (task) {
             setCustom(60);
             setHours(8);
-            setResponsable(devUser?.name || "");
+            // No pre-llenamos: queremos forzar que el dev escriba SU nombre,
+            // no el genérico de la cuenta compartida.
+            setResponsable("");
+            setInitialSubtasks([]);
+            setNewStep("");
+            setAsProject(task.category === "project");
         }
     }, [task, devUser]);
 
@@ -1050,8 +1280,24 @@ function AssignTimeModal({
     const canConfirm = responsable.trim().length >= 2;
     const tryConfirm = (mins: number) => {
         if (!canConfirm) return;
-        onConfirm(mins, responsable.trim());
+        onConfirm(
+            mins,
+            responsable.trim(),
+            initialSubtasks,
+            asProject ? "project" : "daily"
+        );
     };
+
+    const addStep = () => {
+        const t = newStep.trim();
+        if (!t) return;
+        setInitialSubtasks((prev) => [...prev, t.substring(0, 240)]);
+        setNewStep("");
+    };
+    const removeStep = (idx: number) =>
+        setInitialSubtasks((prev) => prev.filter((_, i) => i !== idx));
+    const updateStep = (idx: number, value: string) =>
+        setInitialSubtasks((prev) => prev.map((s, i) => (i === idx ? value : s)));
 
     return (
         <ModalShell open={!!task} onClose={onClose} title="Asignarme esta tarea" size="md">
@@ -1064,18 +1310,117 @@ function AssignTimeModal({
 
             {/* Responsable */}
             <div className={styles.detailField}>
-                <div className={styles.label}>Responsable</div>
+                <div className={styles.label}>Responsable *</div>
                 <input
                     type="text"
                     className={styles.input}
-                    placeholder="Nombre de quien toma esta tarea"
+                    placeholder="Tu nombre (obligatorio)"
                     value={responsable}
                     onChange={(e) => setResponsable(e.target.value)}
                     maxLength={80}
+                    autoFocus
                 />
-                {!canConfirm && responsable.length > 0 && (
-                    <div className={styles.fieldError}>Mínimo 2 caracteres.</div>
+                <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
+                    Identifica quién está tomando esta tarea (para que el equipo y soporte sepan a quién contactar).
+                </div>
+                {!canConfirm && (
+                    <div className={styles.fieldError}>
+                        Indica tu nombre para tomar la tarea (mínimo 2 caracteres).
+                    </div>
                 )}
+            </div>
+
+            {/* Tipo de tarea (Día a día vs Proyecto) */}
+            <div className={styles.detailField} style={{ marginTop: "0.6rem" }}>
+                <div className={styles.label}>Clasificación</div>
+                <div className={styles.categoryRow}>
+                    <button
+                        type="button"
+                        className={`${styles.categoryBtn} ${
+                            !asProject ? styles.categoryBtnActiveDaily : ""
+                        }`}
+                        onClick={() => setAsProject(false)}
+                    >
+                        <div className={styles.categoryTitle}>⚡ Día a día</div>
+                        <div className={styles.categoryHint}>Bug / fix de la semana</div>
+                    </button>
+                    <button
+                        type="button"
+                        className={`${styles.categoryBtn} ${
+                            asProject ? styles.categoryBtnActiveProject : ""
+                        }`}
+                        onClick={() => setAsProject(true)}
+                    >
+                        <div className={styles.categoryTitle}>🛠 Proyecto</div>
+                        <div className={styles.categoryHint}>Desarrollo a largo plazo</div>
+                    </button>
+                </div>
+                {asProject !== (task.category === "project") && (
+                    <div style={{ fontSize: "0.72rem", color: "var(--primary)", marginTop: "0.4rem" }}>
+                        Al confirmar se reclasificará la tarea como{" "}
+                        <strong>{asProject ? "Proyecto" : "Día a día"}</strong>.
+                    </div>
+                )}
+            </div>
+
+            {/* Pasos iniciales (opcional) */}
+            <div className={styles.detailField} style={{ marginTop: "0.6rem" }}>
+                <div className={styles.label}>Pasos iniciales (opcional)</div>
+                <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginBottom: "0.5rem" }}>
+                    Divide la tarea en pasos antes de empezar. Podrás añadir o ajustar más pasos después.
+                </div>
+
+                {initialSubtasks.length > 0 && (
+                    <div className={styles.subtaskList} style={{ marginBottom: "0.5rem" }}>
+                        {initialSubtasks.map((s, idx) => (
+                            <div key={idx} className={styles.subtaskItem}>
+                                <span style={{ width: 18, textAlign: "center", color: "var(--text-muted)", fontSize: "0.78rem" }}>
+                                    {idx + 1}.
+                                </span>
+                                <input
+                                    className={styles.subtaskTitle}
+                                    value={s}
+                                    onChange={(e) => updateStep(idx, e.target.value)}
+                                    placeholder="Paso…"
+                                />
+                                <button
+                                    type="button"
+                                    className={styles.iconBtn}
+                                    onClick={() => removeStep(idx)}
+                                    title="Quitar paso"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                <div className={styles.subtaskAdd}>
+                    <span style={{ color: "var(--text-muted)" }}>＋</span>
+                    <input
+                        className={styles.subtaskAddInput}
+                        placeholder="Añadir paso… (Enter)"
+                        value={newStep}
+                        onChange={(e) => setNewStep(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                e.preventDefault();
+                                addStep();
+                            }
+                        }}
+                        maxLength={240}
+                    />
+                    {newStep.trim().length > 0 && (
+                        <button
+                            type="button"
+                            className={`${styles.smallBtn} ${styles.smallBtnPrimary}`}
+                            onClick={addStep}
+                        >
+                            Añadir
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* Presets cortos */}
@@ -1233,6 +1578,8 @@ export default function TareasClient({ identity }: Props) {
     const [archiveQuery, setArchiveQuery] = useState("");
     const [archiveCategory, setArchiveCategory] = useState<"all" | "daily" | "project">("all");
     const [archiveWeek, setArchiveWeek] = useState<string>("all");
+    // "all" = sin filtro · "none" = tareas sin versión · "<vX.Y.Z>" = una versión concreta
+    const [archiveVersion, setArchiveVersion] = useState<string>("all");
     const [nextVersion, setNextVersion] = useState<string>("v1.0.0");
     const [confirmPublish, setConfirmPublish] = useState(false);
     const [toasts, setToasts] = useState<
@@ -1245,9 +1592,130 @@ export default function TareasClient({ identity }: Props) {
         steps: "",
         client: "",
         modules: "",
+        reporterName: "",
         category: "daily" as TaskCategory,
         severity: "medium" as Severity,
     });
+
+    // Pre-rellena con el último nombre tipeado (persistido en localStorage).
+    // No usamos identity.name porque la cuenta de soporte es compartida y eso
+    // hacía que el usuario enviara reportes con "Soporte" sin identificarse.
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        const saved = window.localStorage.getItem("tareas:reporterName") || "";
+        if (saved) setForm((f) => (f.reporterName ? f : { ...f, reporterName: saved }));
+    }, []);
+
+    // Permite abrir la vista Archivo pre-filtrada por cliente desde otros módulos
+    // (p.ej. desde Sistemas: /tareas?client=https://agenciaespinaca.unabase.com).
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        const params = new URLSearchParams(window.location.search);
+        const client = params.get("client");
+        if (client) {
+            setArchiveQuery(client);
+            setView("archive");
+        }
+    }, []);
+
+    // Buscador de clientes (lista de sistemas) para el campo Cliente del formulario.
+    // Se carga la primera vez que el usuario hace foco en el input.
+    const [clientList, setClientList] = useState<System[]>([]);
+    const [clientListLoading, setClientListLoading] = useState(false);
+    const [clientListLoaded, setClientListLoaded] = useState(false);
+    const [clientSearchOpen, setClientSearchOpen] = useState(false);
+    const [clientHighlightIdx, setClientHighlightIdx] = useState(0);
+    const clientSearchRef = useRef<HTMLDivElement | null>(null);
+
+    const ensureClientListLoaded = useCallback(async () => {
+        if (clientListLoaded || clientListLoading) return;
+        setClientListLoading(true);
+        try {
+            const all = await getAllSystems();
+            setClientList(all);
+            setClientListLoaded(true);
+        } catch (e) {
+            console.error("No se pudo cargar la lista de clientes", e);
+        } finally {
+            setClientListLoading(false);
+        }
+    }, [clientListLoaded, clientListLoading]);
+
+    // Cargamos la lista al montar para que la validación del campo "Cliente"
+    // (debe coincidir con un sistema existente) funcione aunque el usuario
+    // no haga foco en el input.
+    useEffect(() => {
+        if (isDev) return;
+        ensureClientListLoaded();
+    }, [isDev, ensureClientListLoaded]);
+
+    /** El cliente sólo es válido si coincide (case-insensitive) con la url_sitio
+     *  de algún sistema cargado. Mientras la lista se está cargando devolvemos
+     *  `false` para evitar enviar datos sueltos. */
+    const isClientValid = useMemo(() => {
+        const v = form.client.trim().toLowerCase();
+        if (!v) return false;
+        if (!clientListLoaded) return false;
+        return clientList.some((s) => (s.url_sitio || "").toLowerCase() === v);
+    }, [clientList, clientListLoaded, form.client]);
+
+    // Cierre por click fuera del combo de clientes.
+    useEffect(() => {
+        if (!clientSearchOpen) return;
+        const handler = (e: MouseEvent) => {
+            if (!clientSearchRef.current) return;
+            if (!clientSearchRef.current.contains(e.target as Node)) {
+                setClientSearchOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, [clientSearchOpen]);
+
+    const clientSuggestions = useMemo(() => {
+        const q = form.client.trim().toLowerCase();
+        const items = clientList.filter((s) => s.url_sitio !== "dynamodb_local_backup");
+        if (!q) return items.slice(0, 30);
+        return items
+            .filter((s) =>
+                (s.nombre_empresa && s.nombre_empresa.toLowerCase().includes(q)) ||
+                (s.url_sitio && s.url_sitio.toLowerCase().includes(q))
+            )
+            .slice(0, 30);
+    }, [clientList, form.client]);
+
+    // ===== Detección de reportes duplicados =====
+    // Borrador debounceado para no recalcular en cada tecla.
+    const [draftForDuplicate, setDraftForDuplicate] = useState({
+        title: "",
+        description: "",
+        modules: "",
+        client: "",
+    });
+    const [dismissedDuplicateIds, setDismissedDuplicateIds] = useState<Set<string>>(new Set());
+    useEffect(() => {
+        const id = setTimeout(() => {
+            setDraftForDuplicate({
+                title: form.title,
+                description: form.description,
+                modules: form.modules,
+                client: form.client,
+            });
+        }, 400);
+        return () => clearTimeout(id);
+    }, [form.title, form.description, form.modules, form.client]);
+
+    const duplicateCandidates = useMemo<DuplicateCandidate[]>(() => {
+        if (isDev) return [];
+        const list = findDuplicateCandidates(draftForDuplicate, tasks);
+        return list.filter((c) => !dismissedDuplicateIds.has(c.task.id));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [draftForDuplicate, tasks, dismissedDuplicateIds]);
+
+    const hasBlockingDuplicate = useMemo(
+        () => duplicateCandidates.some((c) => c.score >= DUPLICATE_BLOCK_SCORE),
+        [duplicateCandidates]
+    );
 
     // Adjuntos pendientes de subir (validados localmente)
     const [pendingAttachments, setPendingAttachments] = useState<PendingFile[]>([]);
@@ -1314,6 +1782,202 @@ export default function TareasClient({ identity }: Props) {
         []
     );
 
+    // ===== Notificaciones del navegador =====
+    // Solicita permiso una sola vez al montar (si no está concedido / denegado).
+    useEffect(() => {
+        if (typeof window === "undefined" || !("Notification" in window)) return;
+        if (Notification.permission === "default") {
+            Notification.requestPermission().catch(() => {});
+        }
+    }, []);
+
+    const notifyBrowser = useCallback(
+        (title: string, body: string, tag: string) => {
+            try {
+                if (
+                    typeof window !== "undefined" &&
+                    "Notification" in window &&
+                    Notification.permission === "granted" &&
+                    document.visibilityState !== "visible"
+                ) {
+                    const n = new Notification(title, {
+                        body,
+                        icon: "/logo.png",
+                        tag,
+                    });
+                    // Auto-cierre después de 8 s y al click foco la pestaña
+                    n.onclick = () => {
+                        window.focus();
+                        n.close();
+                    };
+                    setTimeout(() => n.close(), 8000);
+                }
+            } catch (e) {
+                console.warn("Notification error:", e);
+            }
+        },
+        []
+    );
+
+    // Mapa con el último estado conocido por id, para detectar cambios entre polls.
+    const prevTasksRef = useRef<Map<string, { status: string; reporterId: string }>>(new Map());
+    const primedRef = useRef(false);
+
+    useEffect(() => {
+        // Esperamos a que la carga inicial termine. Si "primamos" con el array
+        // vacío del primer render, cuando llegue la lista real cada tarea se
+        // detectaría como nueva y dispararía un toast por cada una al entrar.
+        if (loading) return;
+
+        const next = new Map(
+            tasks.map((t) => [t.id, { status: t.status, reporterId: t.reporterId }])
+        );
+
+        // Primer render con datos reales: solo guardamos snapshot, sin notificar.
+        if (!primedRef.current) {
+            primedRef.current = true;
+            prevTasksRef.current = next;
+            return;
+        }
+        const prev = prevTasksRef.current;
+
+        for (const t of tasks) {
+            const before = prev.get(t.id);
+
+            // 1) Tarea nueva (no existía en el snapshot anterior)
+            if (!before) {
+                if (isDev) {
+                    const body = `${t.title}${t.client ? ` · ${t.client}` : ""}`;
+                    pushToast({ title: "📩 Nuevo reporte", msg: body, kind: "info" });
+                    notifyBrowser("Nuevo reporte", body, `tarea-nueva-${t.id}`);
+                }
+                continue;
+            }
+
+            // 2) Pending → in_progress (alguien la tomó)
+            if (before.status === "pending" && t.status === "in_progress") {
+                const who = t.assignedToName || "Alguien";
+                const desc = t.description?.trim()
+                    ? t.description.trim().slice(0, 140)
+                    : t.title;
+                if (isDev) {
+                    pushToast({
+                        title: `🛠 ${who} tomó un reporte`,
+                        msg: `${t.title} · ${desc}`,
+                        kind: "info",
+                    });
+                    notifyBrowser(
+                        `${who} tomó un reporte`,
+                        `${t.title}\n${desc}`,
+                        `tarea-taken-dev-${t.id}`
+                    );
+                }
+                if (!isDev && t.reporterId === identity.id) {
+                    pushToast({
+                        title: `🛠 ${who} está trabajando en tu reporte`,
+                        msg: `${t.title} · ${desc}`,
+                        kind: "info",
+                    });
+                    notifyBrowser(
+                        `${who} está trabajando en tu reporte`,
+                        `${t.title}\n${desc}`,
+                        `tarea-taken-${t.id}`
+                    );
+                }
+            }
+
+            // 3) Tarea que pasó a 'done'
+            if (before.status !== "done" && t.status === "done") {
+                // 2a) Soporte/admin: aviso cuando es un reporte propio
+                if (!isDev && t.reporterId === identity.id) {
+                    const body = `${t.title}${
+                        t.assignedToName ? ` · resuelto por ${t.assignedToName}` : ""
+                    }`;
+                    pushToast({
+                        title: "✅ Tu reporte fue resuelto",
+                        msg: body,
+                        kind: "success",
+                    });
+                    notifyBrowser("Tu reporte fue resuelto", body, `tarea-done-${t.id}`);
+                }
+                // 2b) Dev: aviso al equipo cuando alguien cierra un reporte
+                if (isDev) {
+                    const who = t.assignedToName || "Alguien";
+                    const desc = t.description?.trim()
+                        ? t.description.trim().slice(0, 140)
+                        : t.title;
+                    pushToast({
+                        title: `✅ ${who} ha terminado un reporte`,
+                        msg: `${t.title} · ${desc}`,
+                        kind: "success",
+                    });
+                    notifyBrowser(
+                        `${who} ha terminado un reporte`,
+                        `${t.title}\n${desc}`,
+                        `tarea-done-dev-${t.id}`
+                    );
+                }
+            }
+        }
+
+        prevTasksRef.current = next;
+    }, [tasks, loading, isDev, identity.id, pushToast, notifyBrowser]);
+
+    // Detección de tareas que cruzan tiempo cero (estimación agotada).
+    // Solo dispara cuando una tarea pasa de remaining > 0 a <= 0 mientras
+    // está in_progress, así no spamea por tareas que ya estaban vencidas
+    // al entrar al módulo.
+    const expiredNotifiedRef = useRef<Set<string>>(new Set());
+    const prevRemainingRef = useRef<Map<string, number>>(new Map());
+
+    useEffect(() => {
+        for (const t of tasks) {
+            if (t.status !== "in_progress" || !t.estimateMinutes) {
+                expiredNotifiedRef.current.delete(t.id);
+                prevRemainingRef.current.delete(t.id);
+                continue;
+            }
+            const remaining = remainingMs(t, tick);
+            const prev = prevRemainingRef.current.get(t.id);
+            prevRemainingRef.current.set(t.id, remaining);
+
+            const crossedZero =
+                prev !== undefined && prev > 0 && remaining <= 0;
+            if (!crossedZero || expiredNotifiedRef.current.has(t.id)) continue;
+            expiredNotifiedRef.current.add(t.id);
+
+            const who = t.assignedToName || "El responsable";
+            const desc = t.description?.trim()
+                ? t.description.trim().slice(0, 140)
+                : t.title;
+
+            if (isDev) {
+                pushToast({
+                    title: `⏰ ${who} agotó el tiempo del reporte`,
+                    msg: `${t.title} · ${desc}`,
+                    kind: "info",
+                });
+                notifyBrowser(
+                    `${who} agotó el tiempo del reporte`,
+                    `${t.title}\n${desc}`,
+                    `tarea-expired-dev-${t.id}`
+                );
+            }
+            if (!isDev && t.reporterId === identity.id) {
+                pushToast({
+                    title: `⏰ ${who} terminó el tiempo asignado a tu reporte`,
+                    msg: `${t.title} · ${desc}`,
+                    kind: "info",
+                });
+                notifyBrowser(
+                    `${who} terminó el tiempo asignado a tu reporte`,
+                    `${t.title}\n${desc}`,
+                    `tarea-expired-${t.id}`
+                );
+            }
+        }
+    }, [tasks, tick, isDev, identity.id, pushToast, notifyBrowser]);
+
     // Carga tareas
     const refresh = useCallback(async () => {
         try {
@@ -1360,7 +2024,12 @@ export default function TareasClient({ identity }: Props) {
     }, [view, tasks]);
 
     // Derivados
-    const activeTasks = useMemo(() => tasks.filter((t) => t.weekKey === currentWeek), [tasks, currentWeek]);
+    // Las tareas no resueltas se mantienen visibles aunque cambie la semana;
+    // sólo las "done" se acotan a la semana actual (para la sección "Resueltas esta semana").
+    const activeTasks = useMemo(
+        () => tasks.filter((t) => t.status !== "done" || t.weekKey === currentWeek),
+        [tasks, currentWeek]
+    );
     const dailyStack = useMemo(
         () =>
             activeTasks
@@ -1438,7 +2107,8 @@ export default function TareasClient({ identity }: Props) {
         if (
             form.title.trim().length < 5 ||
             form.description.trim().length < 10 ||
-            form.client.trim().length < 2
+            !isClientValid ||
+            form.reporterName.trim().length < 2
         ) {
             return;
         }
@@ -1449,7 +2119,29 @@ export default function TareasClient({ identity }: Props) {
             alert("Hay archivos con errores. Quítalos antes de enviar.");
             return;
         }
+        // Confirmación si hay un duplicado fuerte (>= 50% similitud) ya resuelto.
+        if (hasBlockingDuplicate) {
+            const top = duplicateCandidates[0];
+            const when = fmtDate(top.task.completedAt);
+            const who = top.task.assignedToName ? ` por ${top.task.assignedToName}` : "";
+            const ver = top.task.releaseVersion ? ` (publicado en ${top.task.releaseVersion})` : "";
+            const msg =
+                `Este reporte podría estar resuelto en ${top.task.client}` +
+                ` el ${when}${who}${ver}.\n\n` +
+                `Título existente: "${top.task.title}"\n` +
+                `Similitud: ${Math.round(top.score * 100)}%\n\n` +
+                `¿Enviar igual el nuevo reporte?`;
+            const ok = typeof window !== "undefined" ? window.confirm(msg) : true;
+            if (!ok) return;
+        }
         try {
+            // El nombre tipeado en el formulario sustituye al de la sesión como
+            // "reporter" (queda visible en el reporte). El reporterId se mantiene
+            // ligado a la sesión para que filtros como "tus reportes" sigan funcionando.
+            const reporterDisplay = form.reporterName.trim();
+            if (typeof window !== "undefined") {
+                window.localStorage.setItem("tareas:reporterName", reporterDisplay);
+            }
             const created = await TareasAPI.create({
                 title: form.title.trim(),
                 description: form.description.trim(),
@@ -1458,7 +2150,7 @@ export default function TareasClient({ identity }: Props) {
                 modules: form.modules.trim(),
                 category: form.category,
                 severity: form.severity,
-                reporter: identity.name,
+                reporter: reporterDisplay,
                 reporterId: identity.id,
             });
 
@@ -1495,10 +2187,12 @@ export default function TareasClient({ identity }: Props) {
                 steps: "",
                 client: "",
                 modules: "",
+                reporterName: reporterDisplay,
                 category: "daily",
                 severity: "medium",
             });
             setTouched(false);
+            setDismissedDuplicateIds(new Set());
             clearPending();
             pushToast({ title: "Reporte enviado", msg: "Se está posicionando en la pila.", kind: "success" });
         } catch (e: any) {
@@ -1506,16 +2200,41 @@ export default function TareasClient({ identity }: Props) {
         }
     }
 
-    async function confirmAssign(minutes: number, responsable: string) {
+    async function confirmAssign(
+        minutes: number,
+        responsable: string,
+        initialSubtasks: string[] = [],
+        finalCategory: TaskCategory = "daily"
+    ) {
         if (!assigning) return;
         const name = (responsable || identity.name).trim() || identity.name;
         try {
-            const updated = await TareasAPI.assign(assigning.id, {
+            let updated = await TareasAPI.assign(assigning.id, {
                 minutes,
                 assignedToId: identity.id,
                 assignedToName: name,
                 assignedColor: identity.color,
             });
+
+            // Reclasificar si el dev cambió la categoría al tomar la tarea
+            if (finalCategory && finalCategory !== updated.category) {
+                try {
+                    updated = await TareasAPI.update(updated.id, { category: finalCategory });
+                } catch (e) {
+                    console.error("Error reclasificando categoría al asignar:", e);
+                }
+            }
+
+            // Crear los pasos iniciales (si los hay) en orden
+            const validSteps = initialSubtasks.map((s) => s.trim()).filter(Boolean);
+            for (const stepTitle of validSteps) {
+                try {
+                    updated = await TareasAPI.addSubtask(updated.id, stepTitle, name);
+                } catch (e) {
+                    console.error("Error creando paso inicial:", e);
+                }
+            }
+
             setTasks((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
             setAssigning(null);
         } catch (e: any) {
@@ -1585,6 +2304,22 @@ export default function TareasClient({ identity }: Props) {
             setDetail((cur) => (cur && cur.id === u.id ? u : cur));
         } catch (e: any) {
             alert("Error al ajustar tiempo: " + (e.message || e));
+        }
+    }
+    async function onChangeResponsable(t: Task, newName: string) {
+        const name = newName.trim();
+        if (name.length < 2 || name === t.assignedToName) return;
+        try {
+            const u = await TareasAPI.update(t.id, { assignedToName: name });
+            setTasks((prev) => prev.map((x) => (x.id === u.id ? u : x)));
+            setDetail((cur) => (cur && cur.id === u.id ? u : cur));
+            pushToast({
+                title: "Responsable actualizado",
+                msg: `Ahora a cargo: ${name}`,
+                kind: "success",
+            });
+        } catch (e: any) {
+            alert("Error al cambiar responsable: " + (e.message || e));
         }
     }
     async function onSaveDevNotes(t: Task, notes: string) {
@@ -1673,6 +2408,31 @@ export default function TareasClient({ identity }: Props) {
         return Array.from(set).sort().reverse();
     }, [tasks]);
 
+    // Versiones publicadas presentes en el archivo (orden descendente por SemVer-ish).
+    const archiveVersions = useMemo(() => {
+        const set = new Set<string>();
+        tasks.forEach((t) => {
+            if (t.releaseVersion) set.add(t.releaseVersion);
+        });
+        const arr = Array.from(set);
+        const parse = (v: string) =>
+            v
+                .replace(/^v/i, "")
+                .split(".")
+                .map((n) => Number(n) || 0);
+        arr.sort((a, b) => {
+            const pa = parse(a);
+            const pb = parse(b);
+            for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+                const da = pa[i] || 0;
+                const db = pb[i] || 0;
+                if (da !== db) return db - da;
+            }
+            return 0;
+        });
+        return arr;
+    }, [tasks]);
+
     function weekLabel(wk: string) {
         const { start, end } = weekBounds(wk);
         const fmt = (d: Date) => d.toLocaleDateString("es-CL", { day: "numeric", month: "short" });
@@ -1686,6 +2446,11 @@ export default function TareasClient({ identity }: Props) {
         return tasks
             .filter((t) => (archiveWeek === "all" ? true : t.weekKey === archiveWeek))
             .filter((t) => (archiveCategory === "all" ? true : t.category === archiveCategory))
+            .filter((t) => {
+                if (archiveVersion === "all") return true;
+                if (archiveVersion === "none") return !t.releaseVersion;
+                return t.releaseVersion === archiveVersion;
+            })
             .filter((t) => {
                 if (!text) return true;
                 const hay = [
@@ -1701,7 +2466,7 @@ export default function TareasClient({ identity }: Props) {
                 return hay.includes(text);
             })
             .sort((a, b) => b.createdAt - a.createdAt);
-    }, [tasks, archiveQuery, archiveWeek, archiveCategory]);
+    }, [tasks, archiveQuery, archiveWeek, archiveCategory, archiveVersion]);
 
     const archiveGrouped = useMemo(() => {
         const out: Record<string, Task[]> = {};
@@ -2042,6 +2807,33 @@ export default function TareasClient({ identity }: Props) {
                                 {formOpen && (
                                     <div className={styles.formBody}>
                                         <div>
+                                            <label className={styles.label}>Reportado por</label>
+                                            <input
+                                                className={styles.input}
+                                                maxLength={80}
+                                                placeholder="Tu nombre"
+                                                value={form.reporterName}
+                                                onChange={(e) =>
+                                                    setForm({ ...form, reporterName: e.target.value })
+                                                }
+                                            />
+                                            <div
+                                                style={{
+                                                    fontSize: "0.7rem",
+                                                    color: "var(--text-muted)",
+                                                    marginTop: "0.25rem",
+                                                }}
+                                            >
+                                                Identifica quién está creando este reporte (puede haber varias personas usando esta cuenta).
+                                            </div>
+                                            {touched && form.reporterName.trim().length < 2 && (
+                                                <div className={styles.fieldError}>
+                                                    Indica tu nombre (al menos 2 caracteres).
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div>
                                             <label className={styles.label}>Título breve</label>
                                             <input
                                                 className={styles.input}
@@ -2083,13 +2875,92 @@ export default function TareasClient({ identity }: Props) {
 
                                         <div className={styles.row2}>
                                             <div>
-                                                <label className={styles.label}>Cliente</label>
-                                                <input
-                                                    className={styles.input}
-                                                    placeholder="Ej: ACME Retail"
-                                                    value={form.client}
-                                                    onChange={(e) => setForm({ ...form, client: e.target.value })}
-                                                />
+                                                <label className={styles.label}>Cliente *</label>
+                                                <div
+                                                    ref={clientSearchRef}
+                                                    className={styles.clientSearchWrapper}
+                                                >
+                                                    <input
+                                                        className={styles.input}
+                                                        placeholder="Busca por empresa o URL (ej: agenciaespinaca)"
+                                                        value={form.client}
+                                                        onFocus={() => {
+                                                            ensureClientListLoaded();
+                                                            setClientSearchOpen(true);
+                                                            setClientHighlightIdx(0);
+                                                        }}
+                                                        onChange={(e) => {
+                                                            setForm({ ...form, client: e.target.value });
+                                                            setClientSearchOpen(true);
+                                                            setClientHighlightIdx(0);
+                                                        }}
+                                                        onKeyDown={(e) => {
+                                                            if (!clientSearchOpen) return;
+                                                            if (e.key === "ArrowDown") {
+                                                                e.preventDefault();
+                                                                setClientHighlightIdx((i) =>
+                                                                    Math.min(i + 1, Math.max(0, clientSuggestions.length - 1))
+                                                                );
+                                                            } else if (e.key === "ArrowUp") {
+                                                                e.preventDefault();
+                                                                setClientHighlightIdx((i) => Math.max(0, i - 1));
+                                                            } else if (e.key === "Enter") {
+                                                                const pick = clientSuggestions[clientHighlightIdx];
+                                                                if (pick) {
+                                                                    e.preventDefault();
+                                                                    setForm((f) => ({ ...f, client: pick.url_sitio }));
+                                                                    setClientSearchOpen(false);
+                                                                }
+                                                            } else if (e.key === "Escape") {
+                                                                setClientSearchOpen(false);
+                                                            }
+                                                        }}
+                                                        autoComplete="off"
+                                                    />
+                                                    {clientSearchOpen && (
+                                                        <div className={styles.clientSuggestions}>
+                                                            {clientListLoading && (
+                                                                <div className={styles.clientSuggestionEmpty}>Cargando…</div>
+                                                            )}
+                                                            {!clientListLoading && clientSuggestions.length === 0 && (
+                                                                <div className={styles.clientSuggestionEmpty}>
+                                                                    Sin coincidencias. Debes seleccionar un cliente del listado.
+                                                                </div>
+                                                            )}
+                                                            {!clientListLoading && clientSuggestions.map((s, idx) => {
+                                                                const url = s.url_sitio || "";
+                                                                const display = /^https?:\/\//i.test(url) ? url : `https://${url}`;
+                                                                const active = idx === clientHighlightIdx;
+                                                                return (
+                                                                    <button
+                                                                        key={s.url_sitio}
+                                                                        type="button"
+                                                                        className={`${styles.clientSuggestionItem} ${active ? styles.clientSuggestionActive : ""}`}
+                                                                        onMouseEnter={() => setClientHighlightIdx(idx)}
+                                                                        onMouseDown={(e) => {
+                                                                            // mousedown evita que el input pierda foco antes del click
+                                                                            e.preventDefault();
+                                                                            setForm((f) => ({ ...f, client: url }));
+                                                                            setClientSearchOpen(false);
+                                                                        }}
+                                                                    >
+                                                                        <span className={styles.clientSuggestionName}>
+                                                                            {s.nombre_empresa || "(sin nombre)"}
+                                                                        </span>
+                                                                        <span className={styles.clientSuggestionUrl}>{display}</span>
+                                                                    </button>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                {touched && !isClientValid && (
+                                                    <div className={styles.fieldError}>
+                                                        {clientListLoading
+                                                            ? "Cargando lista de clientes…"
+                                                            : "Selecciona un cliente del listado (no se admite texto libre)."}
+                                                    </div>
+                                                )}
                                             </div>
                                             <div>
                                                 <label className={styles.label}>Módulo(s)</label>
@@ -2101,6 +2972,80 @@ export default function TareasClient({ identity }: Props) {
                                                 />
                                             </div>
                                         </div>
+
+                                        {duplicateCandidates.length > 0 && (
+                                            <div className={styles.duplicatePanel}>
+                                                <div className={styles.duplicateHeader}>
+                                                    <span className={styles.duplicateIcon}>⚠️</span>
+                                                    <div>
+                                                        <div className={styles.duplicateTitle}>
+                                                            Posibles reportes ya resueltos
+                                                        </div>
+                                                        <div className={styles.duplicateHint}>
+                                                            Encontramos {duplicateCandidates.length === 1 ? "1 reporte resuelto" : `${duplicateCandidates.length} reportes resueltos`} en este cliente que se parecen a lo que estás describiendo. Revisa antes de enviar para evitar duplicados.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <ul className={styles.duplicateList}>
+                                                    {duplicateCandidates.map((c) => {
+                                                        const t = c.task;
+                                                        const pct = Math.round(c.score * 100);
+                                                        const sev = SEVERITY_LABEL[t.severity];
+                                                        return (
+                                                            <li key={t.id} className={styles.duplicateItem}>
+                                                                <div className={styles.duplicateItemMain}>
+                                                                    <div className={styles.duplicateItemTop}>
+                                                                        <span className={styles.duplicateItemTitle}>{t.title}</span>
+                                                                        <span className={styles.duplicateItemScore} title="Similitud léxica">
+                                                                            {pct}% similar
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className={styles.duplicateItemMeta}>
+                                                                        <span>📅 Resuelto {fmtDate(t.completedAt)}</span>
+                                                                        {t.assignedToName && <span>· 👤 {t.assignedToName}</span>}
+                                                                        {t.modules && <span>· 🧩 {t.modules}</span>}
+                                                                        <span>· 🎯 {sev}</span>
+                                                                        {t.releaseVersion && (
+                                                                            <span>· 🚀 {t.releaseVersion}</span>
+                                                                        )}
+                                                                    </div>
+                                                                    {t.description && (
+                                                                        <div className={styles.duplicateItemDesc}>
+                                                                            {t.description.length > 180
+                                                                                ? t.description.slice(0, 180) + "…"
+                                                                                : t.description}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                                <div className={styles.duplicateItemActions}>
+                                                                    <button
+                                                                        type="button"
+                                                                        className={styles.duplicateBtn}
+                                                                        onClick={() => setDetail(t)}
+                                                                    >
+                                                                        Ver detalle
+                                                                    </button>
+                                                                    <button
+                                                                        type="button"
+                                                                        className={styles.duplicateBtnGhost}
+                                                                        onClick={() =>
+                                                                            setDismissedDuplicateIds((prev) => {
+                                                                                const next = new Set(prev);
+                                                                                next.add(t.id);
+                                                                                return next;
+                                                                            })
+                                                                        }
+                                                                        title="No es el mismo problema"
+                                                                    >
+                                                                        Descartar
+                                                                    </button>
+                                                                </div>
+                                                            </li>
+                                                        );
+                                                    })}
+                                                </ul>
+                                            </div>
+                                        )}
 
                                         <div>
                                             <label className={styles.label}>Severidad</label>
@@ -2272,7 +3217,7 @@ export default function TareasClient({ identity }: Props) {
                                     </h2>
                                     <div className={styles.section}>
                                         {projectDisplay.length === 0 ? (
-                                            <div className={styles.emptyBox}>Sin desarrollos largos esta semana.</div>
+                                            <div className={styles.emptyBox}>Sin desarrollos largos pendientes.</div>
                                         ) : (
                                             projectDisplay.map((t, i) => (
                                                 <TaskCard
@@ -2398,7 +3343,7 @@ export default function TareasClient({ identity }: Props) {
                 {view === "release" && (
                     <div className={styles.twoCol}>
                         <div className={styles.section}>
-                            <div className={styles.formCard}>
+                            <div className={styles.queueCard}>
                                 <div className={styles.formBody}>
                                     <h2 className={styles.sectionTitle}>
                                         <span className={`${styles.dotMarker} ${styles.dotPurple}`}></span>
@@ -2410,7 +3355,7 @@ export default function TareasClient({ identity }: Props) {
                                             Aún no has marcado tareas para la próxima versión.
                                         </div>
                                     ) : (
-                                        <div className={styles.section}>
+                                        <div className={styles.releaseQueueList}>
                                             {releaseQueue.map((t) => (
                                                 <article key={t.id} className={styles.releaseQueueCard}>
                                                     <div style={{ display: "flex", gap: "0.6rem", alignItems: "flex-start" }}>
@@ -2693,6 +3638,21 @@ export default function TareasClient({ identity }: Props) {
                                     </option>
                                 ))}
                             </select>
+                            <select
+                                className={styles.select}
+                                value={archiveVersion}
+                                onChange={(e) => setArchiveVersion(e.target.value)}
+                                style={{ maxWidth: "220px" }}
+                                title="Filtrar por versión publicada"
+                            >
+                                <option value="all">Todas las versiones</option>
+                                <option value="none">Sin versión asignada</option>
+                                {archiveVersions.map((v) => (
+                                    <option key={v} value={v}>
+                                        {v}
+                                    </option>
+                                ))}
+                            </select>
                             <div className={styles.filterGroup}>
                                 {(["all", "daily", "project"] as const).map((c) => (
                                     <button
@@ -2785,6 +3745,19 @@ export default function TareasClient({ identity }: Props) {
                                                         >
                                                             {STATUS_LABEL[t.status]}
                                                         </span>
+                                                        {t.releaseVersion && (
+                                                            <span
+                                                                className={styles.severityChip}
+                                                                style={{
+                                                                    background: "rgba(34,197,94,0.12)",
+                                                                    color: "#15803d",
+                                                                    borderColor: "rgba(34,197,94,0.3)",
+                                                                    fontFamily: "monospace",
+                                                                }}
+                                                            >
+                                                                ✓ {t.releaseVersion}
+                                                            </span>
+                                                        )}
                                                     </div>
                                                     <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>
                                                         {t.client} · {t.modules || "—"} · reportado por {t.reporter}
@@ -2818,9 +3791,9 @@ export default function TareasClient({ identity }: Props) {
                 onClose={() => setDetail(null)}
                 tick={tick}
                 isDev={isDev}
-                identityName={identity.name}
                 onChangeCategory={onChangeCategory}
                 onAdjustTime={onAdjustTime}
+                onChangeResponsable={onChangeResponsable}
                 onSaveDevNotes={onSaveDevNotes}
                 onAddSubtask={onAddSubtask}
                 onToggleSubtask={onToggleSubtask}

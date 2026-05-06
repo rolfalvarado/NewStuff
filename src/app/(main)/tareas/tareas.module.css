@@ -148,6 +148,9 @@
     overflow: hidden;
     position: sticky;
     top: 0;
+    max-height: calc(100vh - 11rem);
+    display: flex;
+    flex-direction: column;
 }
 
 .formHeader {
@@ -163,6 +166,7 @@
     border-bottom: 1px solid var(--border-color);
     font-family: inherit;
     text-align: left;
+    flex-shrink: 0;
 }
 
 .formHeader:hover {
@@ -190,6 +194,8 @@
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
+    overflow-y: auto;
+    min-height: 0;
 }
 
 .label {
@@ -787,8 +793,10 @@
 }
 
 .timerCircleLg {
+    position: relative;
     width: 80px;
     height: 80px;
+    flex-shrink: 0;
 }
 
 .timerSvg {
@@ -960,6 +968,26 @@
     border-left: 3px solid #8b5cf6;
     border-radius: var(--radius-md);
     padding: 0.85rem;
+}
+
+.releaseQueueList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 480px;
+    overflow-y: auto;
+    padding-right: 0.35rem;
+}
+
+/* Misma estética que .formCard pero sin position: sticky.
+   Se usa en la vista de Versiones para que la "Cola" no se quede
+   pegada arriba ni se monte sobre las tarjetas de abajo. */
+.queueCard {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
 }
 
 .publishCard {
@@ -1588,4 +1616,221 @@
     cursor: pointer;
     font-family: inherit;
     font-weight: 600;
+}
+
+/* ===========================================================
+   Buscador de clientes (combobox) en el formulario "Nuevo reporte"
+   =========================================================== */
+.clientSearchWrapper {
+    position: relative;
+}
+
+.clientSuggestions {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 30;
+    max-height: 280px;
+    overflow-y: auto;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.25);
+    padding: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.clientSuggestionItem {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.1rem;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    padding: 0.5rem 0.65rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--text-main);
+    transition: background-color 120ms var(--ease-smooth);
+}
+
+.clientSuggestionItem:hover,
+.clientSuggestionActive {
+    background: rgba(30, 136, 229, 0.12);
+}
+
+.clientSuggestionName {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.clientSuggestionUrl {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    font-family: 'JetBrains Mono', monospace;
+    word-break: break-all;
+}
+
+.clientSuggestionEmpty {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+/* ===== Panel de detección de reportes duplicados ===== */
+.duplicatePanel {
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    background: rgba(245, 158, 11, 0.08);
+    border-radius: 10px;
+    padding: 0.75rem 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.duplicateHeader {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+}
+
+.duplicateIcon {
+    font-size: 1.1rem;
+    line-height: 1.2;
+    flex-shrink: 0;
+}
+
+.duplicateTitle {
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #92400e;
+}
+
+:global(.dark-mode) .duplicateTitle {
+    color: #fbbf24;
+}
+
+.duplicateHint {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 0.15rem;
+    line-height: 1.4;
+}
+
+.duplicateList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.duplicateItem {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.6rem 0.7rem;
+    display: flex;
+    gap: 0.6rem;
+    align-items: stretch;
+}
+
+.duplicateItemMain {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.duplicateItemTop {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.duplicateItemTitle {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-main);
+    flex: 1;
+    min-width: 0;
+}
+
+.duplicateItemScore {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #92400e;
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 999px;
+    padding: 0.1rem 0.5rem;
+    flex-shrink: 0;
+}
+
+:global(.dark-mode) .duplicateItemScore {
+    color: #fbbf24;
+}
+
+.duplicateItemMeta {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.duplicateItemDesc {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin-top: 0.15rem;
+}
+
+.duplicateItemActions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.duplicateBtn,
+.duplicateBtnGhost {
+    border-radius: 6px;
+    font-size: 0.72rem;
+    padding: 0.35rem 0.6rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: filter 120ms;
+}
+
+.duplicateBtn {
+    background: var(--accent-primary, #1e88e5);
+    color: white;
+    border: 1px solid var(--accent-primary, #1e88e5);
+}
+
+.duplicateBtn:hover {
+    filter: brightness(1.05);
+}
+
+.duplicateBtnGhost {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+}
+
+.duplicateBtnGhost:hover {
+    color: var(--text-main);
+    border-color: var(--text-muted);
 }
