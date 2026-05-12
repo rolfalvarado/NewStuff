@@ -1143,11 +1143,35 @@ function StagePanel({
     const [savingNotes, setSavingNotes] = useState(false);
     const [notesDraft, setNotesDraft] = useState(stage.notes || "");
     const notesTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const [editingTitle, setEditingTitle] = useState(false);
+    const [titleDraft, setTitleDraft] = useState(stage.title);
 
     // Sync cuando cambia de etapa
     useEffect(() => {
         setNotesDraft(stage.notes || "");
     }, [stage.key, stage.notes]);
+    useEffect(() => {
+        setTitleDraft(stage.title);
+        setEditingTitle(false);
+    }, [stage.key, stage.title]);
+
+    // ---- Rename stage ----
+    const commitStageTitle = useCallback(async () => {
+        const t = titleDraft.trim();
+        setEditingTitle(false);
+        if (!t || t === stage.title) {
+            setTitleDraft(stage.title);
+            return;
+        }
+        try {
+            const updated = await ProyectosAPI.setStageTitle(project.id, stage.key, t);
+            onRefreshOne(updated);
+            showToast("Nombre de la etapa actualizado");
+        } catch (e: any) {
+            showToast(e?.message || "Error al renombrar la etapa", true);
+            setTitleDraft(stage.title);
+        }
+    }, [titleDraft, project.id, stage.key, stage.title, onRefreshOne, showToast]);
 
     // ---- Toggle item done ----
     const toggleItem = useCallback(
@@ -1255,7 +1279,52 @@ function StagePanel({
                         </span>
                     )}
                 </div>
-                <h2 className={styles.stageHeroTitle}>{stage.title}</h2>
+                {editingTitle ? (
+                    <input
+                        autoFocus
+                        className={styles.stageHeroTitle}
+                        style={{
+                            width: "100%",
+                            border: "1px solid var(--border-color)",
+                            borderRadius: "var(--radius-sm)",
+                            padding: "0.2rem 0.4rem",
+                            background: "var(--bg-main)",
+                            fontFamily: "inherit",
+                        }}
+                        value={titleDraft}
+                        maxLength={160}
+                        onChange={(e) => setTitleDraft(e.target.value)}
+                        onBlur={commitStageTitle}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                e.preventDefault();
+                                commitStageTitle();
+                            }
+                            if (e.key === "Escape") {
+                                setTitleDraft(stage.title);
+                                setEditingTitle(false);
+                            }
+                        }}
+                    />
+                ) : (
+                    <h2
+                        className={styles.stageHeroTitle}
+                        style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+                    >
+                        <span onDoubleClick={() => setEditingTitle(true)}>{stage.title}</span>
+                        <button
+                            className={styles.iconBtn}
+                            title="Editar nombre de la etapa"
+                            onClick={() => {
+                                setTitleDraft(stage.title);
+                                setEditingTitle(true);
+                            }}
+                            style={{ fontSize: "0.8rem", flexShrink: 0 }}
+                        >
+                            ✎
+                        </button>
+                    </h2>
+                )}
                 {stage.objective && (
                     <p className={styles.stageHeroObjective}>{stage.objective}</p>
                 )}

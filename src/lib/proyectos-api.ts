@@ -152,6 +152,13 @@ export const ProyectosAPI = {
             { notes }
         ).then((r) => r.data),
 
+    setStageTitle: (id: string, stageKey: string, title: string) =>
+        call<{ success: boolean; data: Project }>(
+            `/proyectos/${id}/stages/${stageKey}`,
+            "PUT",
+            { title }
+        ).then((r) => r.data),
+
     addItem: (id: string, stageKey: string, title: string, createdBy?: string) =>
         call<{ success: boolean; data: Project }>(
             `/proyectos/${id}/stages/${stageKey}/items`,

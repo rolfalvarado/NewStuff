@@ -49,6 +49,25 @@ export const ATTACHMENTS = {
     ],
 } as const;
 
+export interface TaskReview {
+    /** true mientras el reporte está devuelto a soporte / administración. */
+    active: boolean;
+    /** Responsable de soporte/administración que el dev indica al devolver (texto libre). */
+    responsable: string;
+    /** Motivo por el que el reporte fue devuelto a soporte. */
+    reason: string;
+    /** Nombre/usuario del dev que lo devolvió a soporte. */
+    movedBy: string;
+    movedById: string;
+    movedAt: number | null;
+    /** Estado que tenía la tarea antes de ser devuelta. */
+    prevStatus: string | null;
+    /** Quién la reactivó en la pila (soporte/administración). */
+    resolvedBy?: string;
+    resolvedById?: string;
+    resolvedAt?: number | null;
+}
+
 export interface Task {
     id: string;
     title: string;
@@ -76,6 +95,7 @@ export interface Task {
     attachments?: Attachment[];
     devNotes?: string;
     subtasks?: Subtask[];
+    review?: TaskReview;
     createdAt: number;
 }
 
@@ -192,6 +212,23 @@ export const TareasAPI = {
         call<{ success: boolean; data: Task }>(
             `/tareas/${id}/release-toggle`,
             "POST"
+        ).then((r) => r.data),
+
+    /** Devuelve un reporte a soporte / administración (responsable + motivo). */
+    sendToReview: (
+        id: string,
+        body: { responsable: string; reason: string; movedBy: string; movedById: string }
+    ) =>
+        call<{ success: boolean; data: Task }>(`/tareas/${id}/review`, "POST", body).then(
+            (r) => r.data
+        ),
+
+    /** Reactiva en la pila un reporte que estaba devuelto a soporte (soporte/administración). */
+    returnFromReview: (id: string, body?: { resolvedBy?: string; resolvedById?: string }) =>
+        call<{ success: boolean; data: Task }>(
+            `/tareas/${id}/review/return`,
+            "POST",
+            body || {}
         ).then((r) => r.data),
 
     publishRelease: (version: string) =>

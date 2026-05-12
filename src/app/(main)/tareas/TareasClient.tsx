@@ -66,7 +66,7 @@ interface PendingFile {
     error?: string;
 }
 
-type View = "stack" | "release" | "archive";
+type View = "stack" | "review" | "release" | "archive";
 
 interface Props {
     identity: TareasIdentity;
@@ -369,6 +369,7 @@ function TaskCard({
     onResume,
     onComplete,
     onDelete,
+    onSendToReview,
 }: {
     task: Task;
     priority: number;
@@ -381,6 +382,7 @@ function TaskCard({
     onResume?: (t: Task) => void;
     onComplete?: (t: Task) => void;
     onDelete?: (t: Task) => void;
+    onSendToReview?: (t: Task) => void;
 }) {
     const isInProgress = task.status === "in_progress";
     const isDone = task.status === "done";
@@ -501,6 +503,15 @@ function TaskCard({
                                 onClick={() => onComplete?.(task)}
                             >
                                 Resolver
+                            </button>
+                        )}
+                        {mode === "dev" && !isDone && !task.review?.active && (
+                            <button
+                                className={styles.smallBtn}
+                                onClick={() => onSendToReview?.(task)}
+                                title="Devolver el reporte a soporte / administración"
+                            >
+                                ↪ Devolver a soporte
                             </button>
                         )}
                         <button className={styles.iconBtn} onClick={() => onOpen(task)} title="Ver detalle">
@@ -734,6 +745,32 @@ function TaskDetailModal({
                     </button>
                 )}
             </div>
+
+            {task.review?.active && (
+                <div
+                    style={{
+                        background: "rgba(255, 107, 53, 0.08)",
+                        border: "1px solid rgba(255, 107, 53, 0.35)",
+                        borderRadius: "var(--radius-md)",
+                        padding: "0.75rem 0.9rem",
+                        marginBottom: "1rem",
+                        fontSize: "0.85rem",
+                    }}
+                >
+                    <div style={{ fontWeight: 700, color: "#c2410c", marginBottom: "0.35rem" }}>
+                        ↩ Devuelto a soporte
+                    </div>
+                    <div style={{ color: "var(--text-main)" }}>
+                        Responsable: <strong>{task.review.responsable || "—"}</strong>
+                    </div>
+                    <div style={{ color: "var(--text-secondary)", marginTop: "0.25rem", whiteSpace: "pre-wrap" }}>
+                        Motivo: {task.review.reason || "—"}
+                    </div>
+                    <div style={{ color: "var(--text-muted)", marginTop: "0.35rem", fontSize: "0.75rem" }}>
+                        Devuelto por {task.review.movedBy || "—"} · {fmtAgo(task.review.movedAt)}
+                    </div>
+                </div>
+            )}
 
             <p style={{ color: "var(--text-secondary)", whiteSpace: "pre-wrap", marginBottom: "1rem" }}>
                 {task.description || "—"}
@@ -1554,6 +1591,115 @@ function AssignTimeModal({
     );
 }
 
+// =================== SendToReviewModal ===================
+function SendToReviewModal({
+    task,
+    devUser,
+    onClose,
+    onConfirm,
+}: {
+    task: Task | null;
+    devUser: TareasIdentity | null;
+    onClose: () => void;
+    onConfirm: (responsable: string, reason: string) => void;
+}) {
+    const [responsable, setResponsable] = useState("");
+    const [reason, setReason] = useState("");
+    const [submitting, setSubmitting] = useState(false);
+
+    useEffect(() => {
+        if (task) {
+            setResponsable("");
+            setReason("");
+            setSubmitting(false);
+        }
+    }, [task?.id]);
+
+    if (!task) return null;
+
+    const canConfirm =
+        responsable.trim().length >= 2 && reason.trim().length >= 3 && !submitting;
+
+    const submit = () => {
+        if (!canConfirm) return;
+        setSubmitting(true);
+        onConfirm(responsable.trim(), reason.trim());
+    };
+
+    return (
+        <ModalShell open={!!task} onClose={onClose} title="Devolver a soporte" size="md">
+            <p style={{ color: "var(--text-secondary)", fontSize: "0.85rem", marginBottom: "1rem" }}>
+                Vas a devolver{" "}
+                <strong style={{ color: "var(--text-main)" }}>"{task.title}"</strong> a soporte /
+                administración. Saldrá de la pila activa (y se pausará el cronómetro si corre)
+                hasta que soporte o administración lo reactive.
+            </p>
+
+            <div className={styles.detailField}>
+                <div className={styles.label}>Responsable *</div>
+                <input
+                    type="text"
+                    className={styles.input}
+                    placeholder="¿Quién de soporte / administración se hace cargo?"
+                    value={responsable}
+                    onChange={(e) => setResponsable(e.target.value)}
+                    maxLength={120}
+                    autoFocus
+                />
+                {responsable.trim().length > 0 && responsable.trim().length < 2 && (
+                    <div className={styles.fieldError}>Indica un responsable (mínimo 2 caracteres).</div>
+                )}
+            </div>
+
+            <div className={styles.detailField} style={{ marginTop: "0.6rem" }}>
+                <div className={styles.label}>Motivo *</div>
+                <textarea
+                    className={styles.textarea}
+                    placeholder="¿Por qué lo devuelves? (ej: falta información, hay que validar con el cliente, depende de otra área…)"
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                    rows={4}
+                    maxLength={2000}
+                />
+                {reason.trim().length > 0 && reason.trim().length < 3 && (
+                    <div className={styles.fieldError}>Describe brevemente el motivo.</div>
+                )}
+            </div>
+
+            {devUser && (
+                <div style={{ marginTop: "0.75rem", fontSize: "0.78rem", color: "var(--text-secondary)" }}>
+                    Lo devuelve{" "}
+                    <span
+                        className={styles.severityChip}
+                        style={{
+                            background: devUser.color + "22",
+                            color: devUser.color,
+                            borderColor: devUser.color + "55",
+                        }}
+                    >
+                        {devUser.name}
+                    </span>
+                </div>
+            )}
+
+            <div style={{ display: "flex", gap: "0.5rem", marginTop: "1.25rem" }}>
+                <button type="button" className="btn btn-ghost" onClick={onClose} style={{ flex: 1 }}>
+                    Cancelar
+                </button>
+                <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={submit}
+                    disabled={!canConfirm}
+                    style={{ flex: 1 }}
+                >
+                    {submitting ? "Devolviendo…" : "Devolver a soporte"}
+                </button>
+            </div>
+        </ModalShell>
+    );
+}
+
 // =================== Main client ===================
 export default function TareasClient({ identity }: Props) {
     const isDev = identity.role === "dev";
@@ -1572,6 +1718,7 @@ export default function TareasClient({ identity }: Props) {
     // UI state
     const [detail, setDetail] = useState<Task | null>(null);
     const [assigning, setAssigning] = useState<Task | null>(null);
+    const [reviewing, setReviewing] = useState<Task | null>(null);
     const [filter, setFilter] = useState<"all" | "mine" | "free">("all");
     const [formOpen, setFormOpen] = useState(true);
     const [touched, setTouched] = useState(false);
@@ -2027,8 +2174,18 @@ export default function TareasClient({ identity }: Props) {
     // Las tareas no resueltas se mantienen visibles aunque cambie la semana;
     // sólo las "done" se acotan a la semana actual (para la sección "Resueltas esta semana").
     const activeTasks = useMemo(
-        () => tasks.filter((t) => t.status !== "done" || t.weekKey === currentWeek),
+        () =>
+            tasks.filter(
+                (t) => !t.review?.active && (t.status !== "done" || t.weekKey === currentWeek)
+            ),
         [tasks, currentWeek]
+    );
+    const inReviewTasks = useMemo(
+        () =>
+            tasks
+                .filter((t) => t.review?.active)
+                .sort((a, b) => (b.review?.movedAt || 0) - (a.review?.movedAt || 0)),
+        [tasks]
     );
     const dailyStack = useMemo(
         () =>
@@ -2239,6 +2396,44 @@ export default function TareasClient({ identity }: Props) {
             setAssigning(null);
         } catch (e: any) {
             alert("Error al asignar: " + (e.message || e));
+        }
+    }
+
+    async function onSendToReview(responsable: string, reason: string) {
+        if (!reviewing) return;
+        try {
+            const u = await TareasAPI.sendToReview(reviewing.id, {
+                responsable,
+                reason,
+                movedBy: identity.name,
+                movedById: identity.id,
+            });
+            setTasks((prev) => prev.map((x) => (x.id === u.id ? u : x)));
+            setDetail((cur) => (cur && cur.id === u.id ? u : cur));
+            setReviewing(null);
+            pushToast({
+                title: "Reporte devuelto a soporte",
+                msg: `Responsable: ${responsable}`,
+                kind: "info",
+            });
+        } catch (e: any) {
+            alert("Error al devolver a soporte: " + (e.message || e));
+            setReviewing(null);
+        }
+    }
+    async function onReturnFromReview(t: Task) {
+        if (isDev) return; // sólo soporte/administración reactiva
+        if (!confirm(`¿Reactivar "${t.title}" en la pila activa?`)) return;
+        try {
+            const u = await TareasAPI.returnFromReview(t.id, {
+                resolvedBy: identity.name,
+                resolvedById: identity.id,
+            });
+            setTasks((prev) => prev.map((x) => (x.id === u.id ? u : x)));
+            setDetail((cur) => (cur && cur.id === u.id ? u : cur));
+            pushToast({ title: "Reporte reactivado en la pila", msg: t.title, kind: "success" });
+        } catch (e: any) {
+            alert("Error al reactivar el reporte: " + (e.message || e));
         }
     }
 
@@ -2526,6 +2721,12 @@ export default function TareasClient({ identity }: Props) {
                         <div className={styles.metricLabel}>Resueltas</div>
                         <div className={styles.metricValue}>{doneThisWeek.length}</div>
                     </div>
+                    <div className={styles.metricCard}>
+                        <div className={styles.metricLabel}>Devueltos</div>
+                        <div className={styles.metricValue} style={{ color: "#c2410c" }}>
+                            {inReviewTasks.length}
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -2536,6 +2737,17 @@ export default function TareasClient({ identity }: Props) {
                     onClick={() => setView("stack")}
                 >
                     Pila activa
+                </button>
+                <button
+                    className={`${styles.tab} ${view === "review" ? styles.tabActive : ""}`}
+                    onClick={() => setView("review")}
+                >
+                    Devueltos
+                    {inReviewTasks.length > 0 && (
+                        <span className={styles.countBadge} style={{ marginLeft: "0.4rem" }}>
+                            {inReviewTasks.length}
+                        </span>
+                    )}
                 </button>
                 <button
                     className={`${styles.tab} ${view === "release" ? styles.tabActive : ""}`}
@@ -3202,6 +3414,7 @@ export default function TareasClient({ identity }: Props) {
                                                     onResume={onResume}
                                                     onComplete={onComplete}
                                                     onDelete={onDelete}
+                                                    onSendToReview={(x) => setReviewing(x)}
                                                 />
                                             ))
                                         )}
@@ -3232,6 +3445,7 @@ export default function TareasClient({ identity }: Props) {
                                                     onResume={onResume}
                                                     onComplete={onComplete}
                                                     onDelete={onDelete}
+                                                    onSendToReview={(x) => setReviewing(x)}
                                                 />
                                             ))
                                         )}
@@ -3337,6 +3551,108 @@ export default function TareasClient({ identity }: Props) {
                             </div>
                         </div>
                     </>
+                )}
+
+                {/* ============ REVIEW VIEW ============ */}
+                {view === "review" && (
+                    <div className={styles.section}>
+                        <h2 className={styles.sectionTitle}>
+                            <span className={styles.dotMarker} style={{ background: "#ff6b35" }}></span>
+                            Devueltos a soporte
+                            <span className={styles.countBadge}>{inReviewTasks.length}</span>
+                            <span style={{ marginLeft: "auto", fontSize: "0.72rem", color: "var(--text-muted)", fontWeight: 400 }}>
+                                {isDev
+                                    ? "Soporte / administración deben reactivarlos en la pila"
+                                    : "Reportes que desarrollo te devolvió: esperan tu respuesta"}
+                            </span>
+                        </h2>
+
+                        {inReviewTasks.length === 0 ? (
+                            <div className={styles.emptyBox}>
+                                ↩ No hay reportes devueltos a soporte.
+                            </div>
+                        ) : (
+                            <div className={styles.section}>
+                                {inReviewTasks.map((t) => (
+                                    <article
+                                        key={t.id}
+                                        className={styles.taskCard}
+                                        style={{ borderLeft: "4px solid #ff6b35" }}
+                                    >
+                                        <div className={styles.taskBody}>
+                                            <div className={styles.taskRow}>
+                                                <h3
+                                                    className={styles.taskTitle}
+                                                    onClick={() => setDetail(t)}
+                                                >
+                                                    {t.title}
+                                                </h3>
+                                                <span
+                                                    className={styles.severityChip}
+                                                    style={severityChipStyle(t.severity)}
+                                                >
+                                                    <span className={styles.dot}></span>
+                                                    {SEVERITY_LABEL[t.severity]}
+                                                </span>
+                                            </div>
+
+                                            <div className={styles.metaRow}>
+                                                <span className={styles.metaItem}>📍 <strong>{t.client}</strong></span>
+                                                {t.modules && <span className={styles.metaItem}>🧩 {t.modules}</span>}
+                                                <span className={styles.metaItem}>👤 {t.reporter}</span>
+                                                {t.category === "project" && (
+                                                    <span className={styles.projectChip}>PROYECTO</span>
+                                                )}
+                                            </div>
+
+                                            <div
+                                                style={{
+                                                    background: "rgba(255, 107, 53, 0.08)",
+                                                    border: "1px solid rgba(255, 107, 53, 0.3)",
+                                                    borderRadius: "var(--radius-md)",
+                                                    padding: "0.6rem 0.75rem",
+                                                    marginTop: "0.5rem",
+                                                    fontSize: "0.82rem",
+                                                }}
+                                            >
+                                                <div style={{ color: "var(--text-main)" }}>
+                                                    Responsable: <strong>{t.review?.responsable || "—"}</strong>
+                                                </div>
+                                                <div style={{ color: "var(--text-secondary)", marginTop: "0.2rem", whiteSpace: "pre-wrap" }}>
+                                                    Motivo: {t.review?.reason || "—"}
+                                                </div>
+                                                <div style={{ color: "var(--text-muted)", marginTop: "0.3rem", fontSize: "0.72rem" }}>
+                                                    Devuelto por {t.review?.movedBy || "—"} · {fmtAgo(t.review?.movedAt)}
+                                                </div>
+                                            </div>
+
+                                            <div className={styles.actionsRow} style={{ marginTop: "0.6rem" }}>
+                                                <div style={{ flex: 1 }} />
+                                                <div style={{ display: "flex", gap: "0.3rem", flexShrink: 0 }}>
+                                                    {!isDev && (
+                                                        <button
+                                                            className={`${styles.smallBtn} ${styles.smallBtnSuccess}`}
+                                                            onClick={() => onReturnFromReview(t)}
+                                                            title="Reactivar el reporte en la pila activa"
+                                                        >
+                                                            ↩ Reactivar en la pila
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        className={styles.iconBtn}
+                                                        onClick={() => setDetail(t)}
+                                                        title="Ver detalle"
+                                                    >
+                                                        👁
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </article>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 )}
 
                 {/* ============ RELEASE VIEW ============ */}
@@ -3805,6 +4121,12 @@ export default function TareasClient({ identity }: Props) {
                 devUser={identity}
                 onClose={() => setAssigning(null)}
                 onConfirm={confirmAssign}
+            />
+            <SendToReviewModal
+                task={reviewing}
+                devUser={identity}
+                onClose={() => setReviewing(null)}
+                onConfirm={onSendToReview}
             />
 
             {confirmPublish && (

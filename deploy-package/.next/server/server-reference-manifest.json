@@ -1,6 +1,6 @@
 {
   "node": {
-    "0028c48b9faa14a540379ea8b2cae7ab4ddf11f3a7": {
+    "00d2ead4668eb3a412a1fc04a3069c783b358c7e80": {
       "workers": {
         "app/(main)/bandeja-dtc/page": {
           "moduleId": 79664,
@@ -99,7 +99,7 @@
       "filename": "src/app/actions/get-systems.ts",
       "exportedName": "getAllSystems"
     },
-    "40a443f4627dc459e0795995e39856a48ec1c27481": {
+    "408eb4e33e46dc219a317f827e026cb81b1e06721f": {
       "workers": {
         "app/(main)/bandeja-dtc/page": {
           "moduleId": 79664,
@@ -198,7 +198,7 @@
       "filename": "src/app/actions/update-logos.ts",
       "exportedName": "updateLogosBatch"
     },
-    "40829c1833215c1bd66f07ff99cba57bb6b1b4de23": {
+    "40118d625e00e98c763f701905cb90e14cbae19673": {
       "workers": {
         "app/(main)/bandeja-dtc/page": {
           "moduleId": 79664,
@@ -297,7 +297,7 @@
       "filename": "src/app/actions/update-user-counts.ts",
       "exportedName": "updateUserCountsBatch"
     },
-    "0090ee3f94583caa586068f31dfaa6b61c20dfb359": {
+    "008ff21a6e903cb571efd751ae4331461741b9d23a": {
       "workers": {
         "app/(main)/bandeja-dtc/page": {
           "moduleId": 79664,
@@ -396,7 +396,7 @@
       "filename": "src/app/actions/update-ftp-backups.ts",
       "exportedName": "updateFTPBackupsAction"
     },
-    "00e7cbd342883ddeb870374f297653dfe776cf8903": {
+    "00a1c046585742674d5eb2cba9464b67a386113a58": {
       "workers": {
         "app/(main)/bandeja-dtc/page": {
           "moduleId": 79664,
@@ -495,7 +495,7 @@
       "filename": "src/app/actions/update-ftp-backups.ts",
       "exportedName": "getGlobalBackupDateAction"
     },
-    "00daab4eff7f627f8ac77ab7fad1b0429074d26cdb": {
+    "0063e9729157a565e61252a02a083bd36efcb89cb2": {
       "workers": {
         "app/(main)/bandeja-dtc/page": {
           "moduleId": 79664,
@@ -594,7 +594,7 @@
       "filename": "src/app/actions/auth.ts",
       "exportedName": "getCurrentUser"
     },
-    "00be44faee34682922fac83fadf2d86529ad4e3e7b": {
+    "00074e7a016bf267a7396da2f7753e56f95065b907": {
       "workers": {
         "app/(main)/bandeja-dtc/page": {
           "moduleId": 79664,
@@ -693,7 +693,7 @@
       "filename": "src/app/actions/auth.ts",
       "exportedName": "logoutAction"
     },
-    "001fc2821e63657094c138e24cb985bcb49d568860": {
+    "00277ce1ef296dc686bd9a448042faafc3817ca4be": {
       "workers": {
         "app/(main)/chat/page": {
           "moduleId": 97432,
@@ -708,7 +708,7 @@
       "filename": "src/app/actions/chat.ts",
       "exportedName": "getTopics"
     },
-    "4021cc110d6ba4db2abbdc5469d46cfa2ac81336b4": {
+    "40f7ae41690c222d7da9df7788ad3962c7753505d1": {
       "workers": {
         "app/(main)/chat/page": {
           "moduleId": 97432,
@@ -723,7 +723,7 @@
       "filename": "src/app/actions/chat.ts",
       "exportedName": "createTopic"
     },
-    "70b495da3b3203761aa7028e8326a725ecee0697d9": {
+    "704e3aaef112255f90390ecf47aa1538af842b7339": {
       "workers": {
         "app/(main)/chat/page": {
           "moduleId": 97432,
@@ -738,7 +738,7 @@
       "filename": "src/app/actions/chat.ts",
       "exportedName": "updateTopicStatus"
     },
-    "4020dcdf4f3cc3cbbbabce207d4ea64f0df507a53c": {
+    "4018570fcb09033bfb81e1e37583e6b3375fa874a0": {
       "workers": {
         "app/(main)/chat/page": {
           "moduleId": 97432,
@@ -753,7 +753,7 @@
       "filename": "src/app/actions/chat.ts",
       "exportedName": "getMessages"
     },
-    "781964aaa37580ae20b55d9daded4e8958a675808b": {
+    "78df59c022665287ccafc376f5ea2c4a24215c182b": {
       "workers": {
         "app/(main)/chat/page": {
           "moduleId": 97432,
@@ -768,7 +768,7 @@
       "filename": "src/app/actions/chat.ts",
       "exportedName": "sendMessage"
     },
-    "7e7792703427c46c479aefdcf3b61cb6d7cf63800b": {
+    "7eb24e0f38752d98d48a72d88e84ea9a01c2c14a76": {
       "workers": {
         "app/(main)/chat/page": {
           "moduleId": 97432,
@@ -783,7 +783,7 @@
       "filename": "src/app/actions/chat.ts",
       "exportedName": "sendFileMessage"
     },
-    "00f36ebb37bc7754030e06bacb129313f5a873e3bc": {
+    "00a4764671e82555e40267b7f316d64d391ecab92b": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -819,7 +819,7 @@
       "filename": "src/app/actions/get-servers.ts",
       "exportedName": "getServers"
     },
-    "405d8ea0e359bf258b94c1f018f921462ae0f789b5": {
+    "4082497fd5936c0356d07d95b99ccd026929906646": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -841,7 +841,7 @@
       "filename": "src/app/actions/get-servers.ts",
       "exportedName": "getServerPassword"
     },
-    "40a92caef3a5e5ef1eebf5c0a9f14650cfedc28848": {
+    "4056d0e109287ae2d8edfc6ff9b9de2b4755a2caa8": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -856,7 +856,7 @@
       "filename": "src/app/actions/create-server.ts",
       "exportedName": "createServer"
     },
-    "403c71e317a453a0935a50a411eed633f3d4114cd8": {
+    "4078af7bf723a861244a5faa1362cf4d2a35aef948": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -871,7 +871,7 @@
       "filename": "src/app/actions/delete-server.ts",
       "exportedName": "deleteServer"
     },
-    "60c43bcd3a0a1b3d2e0620f95d5ad1fc8d695801aa": {
+    "602590330de370198a31d82f07255c863dcbbb27a0": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -886,7 +886,7 @@
       "filename": "src/app/actions/update-server.ts",
       "exportedName": "updateServer"
     },
-    "40d5241be620cac3545393df2d88990f2d83fb45dd": {
+    "408babc1ca51472d30aa8a17db4265fec25e87502d": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -901,57 +901,7 @@
       "filename": "src/app/actions/bulk-import-servers.ts",
       "exportedName": "bulkImportServers"
     },
-    "0078e89ad983d8f1c4121e322d5702cf060a4d7fef": {
-      "workers": {
-        "app/(main)/claves/page": {
-          "moduleId": 93975,
-          "async": false,
-          "exportedName": "validateSession",
-          "filename": "src/lib/session.ts"
-        },
-        "app/(main)/dashboard/page": {
-          "moduleId": 5617,
-          "async": false,
-          "exportedName": "validateSession",
-          "filename": "src/lib/session.ts"
-        },
-        "app/(main)/datos/page": {
-          "moduleId": 19479,
-          "async": false,
-          "exportedName": "validateSession",
-          "filename": "src/lib/session.ts"
-        },
-        "app/(main)/proyectos/page": {
-          "moduleId": 7048,
-          "async": false,
-          "exportedName": "validateSession",
-          "filename": "src/lib/session.ts"
-        },
-        "app/(main)/sistemas/page": {
-          "moduleId": 56475,
-          "async": false,
-          "exportedName": "validateSession",
-          "filename": "src/lib/session.ts"
-        },
-        "app/(main)/tareas/page": {
-          "moduleId": 90199,
-          "async": false,
-          "exportedName": "validateSession",
-          "filename": "src/lib/session.ts"
-        }
-      },
-      "layer": {
-        "app/(main)/claves/page": "rsc",
-        "app/(main)/dashboard/page": "rsc",
-        "app/(main)/datos/page": "rsc",
-        "app/(main)/proyectos/page": "rsc",
-        "app/(main)/sistemas/page": "rsc",
-        "app/(main)/tareas/page": "rsc"
-      },
-      "filename": "src/lib/session.ts",
-      "exportedName": "validateSession"
-    },
-    "00c2cff61bbc143116501fbd76f8325916b02ba117": {
+    "00b3c550a905f592f69b75728b3a8b3386d520e3a3": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -1001,7 +951,7 @@
       "filename": "src/lib/session.ts",
       "exportedName": "destroySession"
     },
-    "00c4d45eded8586eaaff4ffc700e04aea6e78c5499": {
+    "00d6ecd0d53d01be696e582cb0ae38e77af65aa051": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -1051,7 +1001,57 @@
       "filename": "src/lib/session.ts",
       "exportedName": "hasValidSession"
     },
-    "40007df990e7c24384abb086e6988e01343223a537": {
+    "00fd9767200e64cadf85af44f9f812c035f01270c8": {
+      "workers": {
+        "app/(main)/claves/page": {
+          "moduleId": 93975,
+          "async": false,
+          "exportedName": "validateSession",
+          "filename": "src/lib/session.ts"
+        },
+        "app/(main)/dashboard/page": {
+          "moduleId": 5617,
+          "async": false,
+          "exportedName": "validateSession",
+          "filename": "src/lib/session.ts"
+        },
+        "app/(main)/datos/page": {
+          "moduleId": 19479,
+          "async": false,
+          "exportedName": "validateSession",
+          "filename": "src/lib/session.ts"
+        },
+        "app/(main)/proyectos/page": {
+          "moduleId": 7048,
+          "async": false,
+          "exportedName": "validateSession",
+          "filename": "src/lib/session.ts"
+        },
+        "app/(main)/sistemas/page": {
+          "moduleId": 56475,
+          "async": false,
+          "exportedName": "validateSession",
+          "filename": "src/lib/session.ts"
+        },
+        "app/(main)/tareas/page": {
+          "moduleId": 90199,
+          "async": false,
+          "exportedName": "validateSession",
+          "filename": "src/lib/session.ts"
+        }
+      },
+      "layer": {
+        "app/(main)/claves/page": "rsc",
+        "app/(main)/dashboard/page": "rsc",
+        "app/(main)/datos/page": "rsc",
+        "app/(main)/proyectos/page": "rsc",
+        "app/(main)/sistemas/page": "rsc",
+        "app/(main)/tareas/page": "rsc"
+      },
+      "filename": "src/lib/session.ts",
+      "exportedName": "validateSession"
+    },
+    "408f430bece22d8eed82343c38e1caae909fb76e75": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -1101,7 +1101,7 @@
       "filename": "src/lib/session.ts",
       "exportedName": "createSession"
     },
-    "407c22ed95873caf827321a95d1240b3808997921d": {
+    "403f3da423b8769b3b11fd5da20ea6d0ccfe150d9e": {
       "workers": {
         "app/(main)/dashboard/page": {
           "moduleId": 5617,
@@ -1116,7 +1116,7 @@
       "filename": "src/app/actions/ec2-actions.ts",
       "exportedName": "getInstances"
     },
-    "60801c801fc80098c3e4527c5e5c896dfada94cc45": {
+    "60d1a911864030dbc29fa99b6f43d3c8f608640907": {
       "workers": {
         "app/(main)/dashboard/page": {
           "moduleId": 5617,
@@ -1131,7 +1131,7 @@
       "filename": "src/app/actions/ec2-actions.ts",
       "exportedName": "startInstances"
     },
-    "60e1d4323199bf45ca6c8def6d825147960bb34424": {
+    "60cc503e8418cf84b753634803645fb93d4ec7dd7d": {
       "workers": {
         "app/(main)/dashboard/page": {
           "moduleId": 5617,
@@ -1146,7 +1146,7 @@
       "filename": "src/app/actions/ec2-actions.ts",
       "exportedName": "stopInstances"
     },
-    "606599c4c82bd8ec6104348e6704a59cdcacba65c4": {
+    "60ea30cafce63826569b499b349f00f26b0b19b9d6": {
       "workers": {
         "app/(main)/dashboard/page": {
           "moduleId": 5617,
@@ -1161,7 +1161,7 @@
       "filename": "src/app/actions/ec2-actions.ts",
       "exportedName": "rebootInstances"
     },
-    "600a8367bd8e2739ba0bb739ba259d862db8bdf105": {
+    "609e0fd64be1d9387f5066668647352b4d1d781e33": {
       "workers": {
         "app/(main)/datos/page": {
           "moduleId": 19479,
@@ -1183,7 +1183,7 @@
       "filename": "src/app/actions/get-systems.ts",
       "exportedName": "getSystems"
     },
-    "00ed4ac010b232d2732cd32c7d5b6ef7ef92fa922f": {
+    "0032c395b805b4cb0a2c678d6f950552f2e9e55b7f": {
       "workers": {
         "app/(main)/reciclaje/page": {
           "moduleId": 78342,
@@ -1198,7 +1198,7 @@
       "filename": "src/app/actions/get-recycled.ts",
       "exportedName": "getRecycledItems"
     },
-    "404a6efab7096f06fcdf0fca5136a4f7af1757f277": {
+    "40347a6af8a1f7258c0641aac078b8f98b0c9f01ae": {
       "workers": {
         "app/(main)/reciclaje/page": {
           "moduleId": 78342,
@@ -1213,7 +1213,7 @@
       "filename": "src/app/actions/restore-recycled.ts",
       "exportedName": "restoreRecycledItem"
     },
-    "40a22a73c16284a4f89d0b814fb891f63597dccab1": {
+    "405d69738593c44ce0a9d42d40db134f406a668ad4": {
       "workers": {
         "app/(main)/reciclaje/page": {
           "moduleId": 78342,
@@ -1228,7 +1228,7 @@
       "filename": "src/app/actions/purge-recycled.ts",
       "exportedName": "purgeRecycledItem"
     },
-    "00ebb1aad23614689d0255ffbd51f2978b2332ed65": {
+    "00d7e94d11da47106d91b2ee1de89483f2af3522b0": {
       "workers": {
         "app/(main)/reportes/page": {
           "moduleId": 96801,
@@ -1243,7 +1243,7 @@
       "filename": "src/app/actions/export-systems.ts",
       "exportedName": "exportSystemsToExcel"
     },
-    "00ecd95e7219d0fc84bc1703df20606f7ba2196a19": {
+    "0067b6a8342773e46fdfaa4bbc74ddd3c5e9dc3fdf": {
       "workers": {
         "app/(main)/reportes/page": {
           "moduleId": 96801,
@@ -1258,7 +1258,7 @@
       "filename": "src/app/actions/export-servers.ts",
       "exportedName": "exportServersToExcel"
     },
-    "00ba972b4c220c030212bc9035d5938b1340229161": {
+    "00da049a99ded216c8d81cca102b7c5116a9cd6dc2": {
       "workers": {
         "app/(main)/reportes/page": {
           "moduleId": 96801,
@@ -1273,7 +1273,7 @@
       "filename": "src/app/actions/export-holdings.ts",
       "exportedName": "exportHoldingsToExcel"
     },
-    "00056c1e1f4e1e4c65bf1511d7e02b67e811e82989": {
+    "0015414c71d06c34baf0369f292be0be970de903d3": {
       "workers": {
         "app/(main)/reportes/page": {
           "moduleId": 96801,
@@ -1288,7 +1288,7 @@
       "filename": "src/app/actions/export-monitoring.ts",
       "exportedName": "exportMonitoringToExcel"
     },
-    "00ef5d09640724c1d4b9698b177dca6f81e321e952": {
+    "00165334f57f763ee3c6bb13402f28d5e82b38a3ac": {
       "workers": {
         "app/(main)/reportes/page": {
           "moduleId": 96801,
@@ -1303,7 +1303,7 @@
       "filename": "src/app/actions/export-users.ts",
       "exportedName": "exportUsersToExcel"
     },
-    "002da06b6671d9d916f68d2b9ead2e4d0ac2526aa4": {
+    "00d56e6444b4e10beb855528e429ea84cbdb12a892": {
       "workers": {
         "app/(main)/reportes/page": {
           "moduleId": 96801,
@@ -1318,7 +1318,7 @@
       "filename": "src/app/actions/export-backup-report.ts",
       "exportedName": "exportBackupReportToExcel"
     },
-    "00d68baae531922f93328b9ed3ebe9d488ae1ff290": {
+    "0028947e13ba6be74f60e74981c6bd3754d2f25b90": {
       "workers": {
         "app/(main)/reportes/page": {
           "moduleId": 96801,
@@ -1333,7 +1333,7 @@
       "filename": "src/app/actions/get-growth-logs.ts",
       "exportedName": "getGrowthLogs"
     },
-    "60cfb0d643bd755864c9692bbd9e21469800c4e756": {
+    "60934a1fe1bd2a49eb66e8a346957792f292a6f1b3": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -1348,7 +1348,7 @@
       "filename": "src/app/actions/update-system.ts",
       "exportedName": "updateSystemFields"
     },
-    "40d17836bb1cdfef44a9d54f9e951e47598e579d5f": {
+    "408e98720b84290ad4f01f508330e73b50e42caea1": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -1363,7 +1363,7 @@
       "filename": "src/app/actions/delete-system.ts",
       "exportedName": "deleteSystem"
     },
-    "40d3b177bfadcf62ba4666af6c5937bca882b8f24b": {
+    "402ca10407024fe283dab664da5ea03c0beae3e3dc": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -1378,7 +1378,7 @@
       "filename": "src/app/actions/create-system.ts",
       "exportedName": "createSystem"
     },
-    "6049532323ee3b6e89b45521dc67899db93106c913": {
+    "607859b177f5707f8326c761e33d053db2afc6c71d": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -1393,7 +1393,7 @@
       "filename": "src/app/actions/manage-holdings.ts",
       "exportedName": "renameHolding"
     },
-    "40228d47ee87bd5e664fb112776fd7b8a635e6f872": {
+    "407fdbb1e8981cd30a1ac8f7889387332ebc07a265": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -1408,7 +1408,7 @@
       "filename": "src/app/actions/manage-holdings.ts",
       "exportedName": "deleteHolding"
     },
-    "400503d761f4756e50c6ed8f489b8682c972bbcaf4": {
+    "40cf77f3c65084f512f737fc7498e6081e62c0d67f": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -1423,7 +1423,7 @@
       "filename": "src/app/actions/bulk-import-systems.ts",
       "exportedName": "bulkImportSystems"
     },
-    "408ff3bab93fc5e1b5cbe5bbe4e94fc16c3b946d25": {
+    "4088f9538b2782129bfa59838abb52bba752f830f7": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -1438,7 +1438,7 @@
       "filename": "src/app/actions/get-monitoring-logs.ts",
       "exportedName": "getSystemHistory"
     },
-    "70d40b963ba7b788769b1a80773cb1d2be99fba6b8": {
+    "70ee1750869a652d19c29e15a6184a855ff2109414": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -1453,7 +1453,7 @@
       "filename": "src/app/actions/update-log.ts",
       "exportedName": "toggleLogScheduled"
     },
-    "40928eb15ebf308e7bc0fcbddc13384d36ae52481c": {
+    "40500ced38274cd762871753b294fc35bcc029611a": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -1468,7 +1468,7 @@
       "filename": "src/app/actions/google-drive-actions.ts",
       "exportedName": "uploadFileToDrive"
     },
-    "40f220674b4367179be6de3badd555a80e18310a4c": {
+    "40be8efd928b654949994bf3636b6b6b13f63f3fab": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -1483,7 +1483,7 @@
       "filename": "src/app/actions/google-drive-actions.ts",
       "exportedName": "listFilesFromDrive"
     },
-    "001ec2afd2fb88dda247485c786956fa07b857b34f": {
+    "00e4471c56334513b034bd0bd24fef7a91ddc6da5c": {
       "workers": {
         "app/(main)/usuarios/page": {
           "moduleId": 60238,
@@ -1498,7 +1498,7 @@
       "filename": "src/app/actions/get-monitored-users.ts",
       "exportedName": "getMonitoredUsers"
     },
-    "40252e0510d8d17a97c2e40f91d0ce23ac5c17e4da": {
+    "4027abf8ebeb4ecb9c1e9cf182cef9873fe4c95170": {
       "workers": {
         "app/login/page": {
           "moduleId": 22746,
@@ -1515,5 +1515,5 @@
     }
   },
   "edge": {},
-  "encryptionKey": "DvCLkn7YSXpGsQ3JBInS/NY/tLDA9G75VtTL97t7Kl8="
+  "encryptionKey": "GCWBjGxY5tug0fdgmR+bHogeTnobWyn+2kxp5ZN6RbQ="
 }
