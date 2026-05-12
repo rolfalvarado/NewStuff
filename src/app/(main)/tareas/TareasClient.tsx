@@ -2704,26 +2704,35 @@ export default function TareasClient({ identity }: Props) {
                     </p>
                 </div>
 
-                <div className={styles.metricGrid}>
-                    <div className={styles.metricCard}>
-                        <div className={styles.metricLabel}>En espera</div>
-                        <div className={`${styles.metricValue} ${styles.metricValueAccent}`}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)", backgroundColor: "var(--bg-card)", overflow: "hidden", marginLeft: "auto" }}>
+                    {/* En espera */}
+                    <div style={{ minWidth: "90px", textAlign: "center", padding: "0.6rem 1.25rem" }}>
+                        <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.25rem" }}>En espera</div>
+                        <div style={{ fontSize: "1.25rem", fontWeight: "700", color: "var(--primary)" }}>
                             {dailyStack.filter((t) => t.status === "pending").length}
                         </div>
                     </div>
-                    <div className={styles.metricCard}>
-                        <div className={styles.metricLabel}>En curso</div>
-                        <div className={`${styles.metricValue} ${styles.metricValueOk}`}>
+                    <div style={{ width: "1px", height: "45px", backgroundColor: "var(--border-color)", flexShrink: 0 }} />
+                    {/* En curso */}
+                    <div style={{ minWidth: "90px", textAlign: "center", padding: "0.6rem 1.25rem" }}>
+                        <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.25rem" }}>En curso</div>
+                        <div style={{ fontSize: "1.25rem", fontWeight: "700", color: "#059669" }}>
                             {activeTasks.filter((t) => t.status === "in_progress").length}
                         </div>
                     </div>
-                    <div className={styles.metricCard}>
-                        <div className={styles.metricLabel}>Resueltas</div>
-                        <div className={styles.metricValue}>{doneThisWeek.length}</div>
+                    <div style={{ width: "1px", height: "45px", backgroundColor: "var(--border-color)", flexShrink: 0 }} />
+                    {/* Resueltas */}
+                    <div style={{ minWidth: "90px", textAlign: "center", padding: "0.6rem 1.25rem" }}>
+                        <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.25rem" }}>Resueltas</div>
+                        <div style={{ fontSize: "1.25rem", fontWeight: "700", color: "var(--text-main)" }}>
+                            {doneThisWeek.length}
+                        </div>
                     </div>
-                    <div className={styles.metricCard}>
-                        <div className={styles.metricLabel}>Devueltos</div>
-                        <div className={styles.metricValue} style={{ color: "#c2410c" }}>
+                    <div style={{ width: "1px", height: "45px", backgroundColor: "var(--border-color)", flexShrink: 0 }} />
+                    {/* Devueltos */}
+                    <div style={{ minWidth: "90px", textAlign: "center", padding: "0.6rem 1.25rem" }}>
+                        <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.25rem" }}>Devueltos</div>
+                        <div style={{ fontSize: "1.25rem", fontWeight: "700", color: "#c2410c" }}>
                             {inReviewTasks.length}
                         </div>
                     </div>

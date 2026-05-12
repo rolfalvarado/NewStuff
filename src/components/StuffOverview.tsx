@@ -126,7 +126,8 @@ export default function StuffOverview() {
             systems.some(sys =>
                 String(sys.nombre_servidor).toLowerCase() === String(server.nombre_servidor).toLowerCase() &&
                 ((sys.nombre_empresa && String(sys.nombre_empresa).toLowerCase().includes(query)) ||
-                    (sys.puerto_web && String(sys.puerto_web).toLowerCase().includes(query)))
+                    (sys.puerto_web && String(sys.puerto_web).toLowerCase().includes(query)) ||
+                    (sys.url_sitio && String(sys.url_sitio).toLowerCase().includes(query)))
             )
         );
     }).sort((a, b) => {
@@ -208,8 +209,18 @@ export default function StuffOverview() {
                         {filteredServers
                             .filter(server => systems.some(sys => String(sys.nombre_servidor).toLowerCase() === String(server.nombre_servidor).toLowerCase()))
                             .map((server) => {
+                                const query = searchQuery.toLowerCase();
                                 const hostedSystems = systems.filter(sys =>
-                                    String(sys.nombre_servidor).toLowerCase() === String(server.nombre_servidor).toLowerCase()
+                                    String(sys.nombre_servidor).toLowerCase() === String(server.nombre_servidor).toLowerCase() &&
+                                    // Si hay búsqueda activa, filtrar también por los campos del sistema
+                                    (!searchQuery || (
+                                        (sys.nombre_empresa && String(sys.nombre_empresa).toLowerCase().includes(query)) ||
+                                        (sys.puerto_web && String(sys.puerto_web).toLowerCase().includes(query)) ||
+                                        (sys.url_sitio && String(sys.url_sitio).toLowerCase().includes(query)) ||
+                                        // También mostrar si el query coincide con servidor o IP (para no perder contexto)
+                                        (server.nombre_servidor && String(server.nombre_servidor).toLowerCase().includes(query)) ||
+                                        (server.ip_servidor && String(server.ip_servidor).toLowerCase().includes(query))
+                                    ))
                                 ).sort((a, b) => {
                                     const portA = Number(a.puerto_web) || 0;
                                     const portB = Number(b.puerto_web) || 0;
@@ -221,16 +232,18 @@ export default function StuffOverview() {
                                         <tr style={{ backgroundColor: "#DAE3F3", height: "8px" }}>
                                             <td colSpan={8} style={{ border: "1px solid #B4C7E7" }}></td>
                                         </tr>
-                                        {hostedSystems.map((sys, idx) => (
+                                        {hostedSystems.map((sys, idx) => {
+                                            const isInactive = sys.disabled_state === true;
+                                            const inactiveStyle = isInactive ? { color: "#9CA3AF", fontStyle: "italic" as const } : {};
+
+                                            return (
                                             <tr key={`${server.nombre_servidor}-${idx}`} style={{ borderBottom: "1px solid #E5E7EB" }}>
-                                                <td style={{ padding: "8px 10px", fontWeight: "600", border: "1px solid #E5E7EB", backgroundColor: idx === 0 ? "#E2F0D9" : "transparent" }}>
+                                                <td style={{ padding: "8px 10px", fontWeight: "600", border: "1px solid #E5E7EB", backgroundColor: idx === 0 ? "#E2F0D9" : "transparent", ...inactiveStyle }}>
                                                     {idx === 0 ? (
                                                         <span 
                                                             onClick={(e) => {
                                                                 e.preventDefault();
                                                                 e.stopPropagation();
-                                                                
-                                                                // Abre mstsc.exe directamente via protocolo rdp://
                                                                 window.location.assign(`rdp://${server.ip_servidor}`);
                                                             }}
                                                             style={{ color: "inherit", cursor: "pointer" }}
@@ -240,31 +253,32 @@ export default function StuffOverview() {
                                                         </span>
                                                     ) : ""}
                                                 </td>
-                                                <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB" }}>
+                                                <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", ...inactiveStyle }}>
                                                     {idx === 0 ? server.tipo_instancia : ""}
                                                 </td>
-                                                <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB" }}>
+                                                <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", ...inactiveStyle }}>
                                                     {idx === 0 ? server.version_sistema : ""}
                                                 </td>
-                                                <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", backgroundColor: "#E2F0D9", fontWeight: "500" }}>
+                                                <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", backgroundColor: "#E2F0D9", fontWeight: "500", ...inactiveStyle }}>
                                                     {sys.nombre_empresa}
                                                 </td>
-                                                <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", fontFamily: "monospace" }}>
+                                                <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", fontFamily: "monospace", ...inactiveStyle }}>
                                                     {idx === 0 ? server.ip_servidor : ""}
                                                 </td>
-                                                <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", backgroundColor: "#E2F0D9", textAlign: "center" }}>
+                                                <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", backgroundColor: "#E2F0D9", textAlign: "center", ...inactiveStyle }}>
                                                     {sys.puerto_web || "-"}
                                                 </td>
-                                                <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", backgroundColor: "#E2F0D9" }}>
+                                                <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", backgroundColor: "#E2F0D9", ...inactiveStyle }}>
                                                     {sys.memoria_sistema || "-"}
                                                 </td>
-                                                <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", backgroundColor: "#E2F0D9", color: "#2563EB", maxWidth: "250px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                                    <a href={sys.url_sitio} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "inherit" }}>
+                                                <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", backgroundColor: "#E2F0D9", maxWidth: "250px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", ...inactiveStyle }}>
+                                                    <a href={sys.url_sitio} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: isInactive ? "#9CA3AF" : "#2563EB" }}>
                                                         {sys.url_sitio}
                                                     </a>
                                                 </td>
                                             </tr>
-                                        ))}
+                                            );
+                                        })}
                                     </Fragment>
                                 );
                             })}

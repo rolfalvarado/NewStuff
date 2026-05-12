@@ -307,40 +307,35 @@ function ListView({
                         Gestión de onboarding y seguimiento de clientes
                     </p>
                 </div>
-                <div className={styles.metricGrid}>
-                    <div className={styles.metricCard}>
-                        <div className={styles.metricLabel}>Total</div>
-                        <div className={styles.metricValue}>{metrics.total}</div>
+                <div style={{ display: "flex", alignItems: "center", gap: "0", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)", backgroundColor: "var(--bg-card)", overflow: "hidden", marginLeft: "auto" }}>
+                    {/* Total */}
+                    <div style={{ minWidth: "90px", textAlign: "center", padding: "0.6rem 1.25rem" }}>
+                        <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.25rem" }}>Total</div>
+                        <div style={{ fontSize: "1.25rem", fontWeight: "700", color: "var(--text-main)" }}>{metrics.total}</div>
                     </div>
-                    <div className={styles.metricCard}>
-                        <div className={styles.metricLabel}>En curso</div>
-                        <div
-                            className={`${styles.metricValue} ${styles.metricValueAccent}`}
-                        >
-                            {metrics.inProgress}
-                        </div>
+                    <div style={{ width: "1px", height: "45px", backgroundColor: "var(--border-color)", flexShrink: 0 }} />
+                    {/* En curso */}
+                    <div style={{ minWidth: "90px", textAlign: "center", padding: "0.6rem 1.25rem" }}>
+                        <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.25rem" }}>En curso</div>
+                        <div style={{ fontSize: "1.25rem", fontWeight: "700", color: "var(--primary)" }}>{metrics.inProgress}</div>
                     </div>
-                    <div className={styles.metricCard}>
-                        <div className={styles.metricLabel}>En facturación</div>
-                        <div
-                            className={`${styles.metricValue} ${styles.metricValueWarn}`}
-                        >
-                            {metrics.billing}
-                        </div>
+                    <div style={{ width: "1px", height: "45px", backgroundColor: "var(--border-color)", flexShrink: 0 }} />
+                    {/* En facturación */}
+                    <div style={{ minWidth: "110px", textAlign: "center", padding: "0.6rem 1.25rem" }}>
+                        <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.25rem" }}>En facturación</div>
+                        <div style={{ fontSize: "1.25rem", fontWeight: "700", color: "#d97706" }}>{metrics.billing}</div>
                     </div>
-                    <div className={styles.metricCard}>
-                        <div className={styles.metricLabel}>Completados</div>
-                        <div className={`${styles.metricValue} ${styles.metricValueOk}`}>
-                            {metrics.completed}
-                        </div>
+                    <div style={{ width: "1px", height: "45px", backgroundColor: "var(--border-color)", flexShrink: 0 }} />
+                    {/* Completados */}
+                    <div style={{ minWidth: "100px", textAlign: "center", padding: "0.6rem 1.25rem" }}>
+                        <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.25rem" }}>Completados</div>
+                        <div style={{ fontSize: "1.25rem", fontWeight: "700", color: "#059669" }}>{metrics.completed}</div>
                     </div>
-                    <div className={styles.metricCard}>
-                        <div className={styles.metricLabel}>Checks totales</div>
-                        <div
-                            className={`${styles.metricValue} ${styles.metricValuePurple}`}
-                        >
-                            {metrics.checks}
-                        </div>
+                    <div style={{ width: "1px", height: "45px", backgroundColor: "var(--border-color)", flexShrink: 0 }} />
+                    {/* Checks totales */}
+                    <div style={{ minWidth: "100px", textAlign: "center", padding: "0.6rem 1.25rem" }}>
+                        <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.25rem" }}>Checks totales</div>
+                        <div style={{ fontSize: "1.25rem", fontWeight: "700", color: "#8B5CF6" }}>{metrics.checks}</div>
                     </div>
                 </div>
             </div>

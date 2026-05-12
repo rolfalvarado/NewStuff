@@ -1,6 +1,6 @@
 {
   "node": {
-    "00d2ead4668eb3a412a1fc04a3069c783b358c7e80": {
+    "000c4366762957437b868a01861ef2f583c046d966": {
       "workers": {
         "app/(main)/dashboard/page": {
           "moduleId": 5617,
@@ -15,7 +15,7 @@
       "exportedName": "getAllSystems",
       "filename": "src/app/actions/get-systems.ts"
     },
-    "408eb4e33e46dc219a317f827e026cb81b1e06721f": {
+    "406d38a64f6352fff3ab5d0231be9417b0a42f1acc": {
       "workers": {
         "app/(main)/dashboard/page": {
           "moduleId": 5617,
@@ -30,7 +30,7 @@
       "exportedName": "updateLogosBatch",
       "filename": "src/app/actions/update-logos.ts"
     },
-    "40118d625e00e98c763f701905cb90e14cbae19673": {
+    "4000174c9200913a8f86d135a44311ec9d585b4352": {
       "workers": {
         "app/(main)/dashboard/page": {
           "moduleId": 5617,
@@ -45,7 +45,7 @@
       "exportedName": "updateUserCountsBatch",
       "filename": "src/app/actions/update-user-counts.ts"
     },
-    "008ff21a6e903cb571efd751ae4331461741b9d23a": {
+    "007eccfd877829a1dcc62b4dc084d458af21c28d2c": {
       "workers": {
         "app/(main)/dashboard/page": {
           "moduleId": 5617,
@@ -60,7 +60,7 @@
       "exportedName": "updateFTPBackupsAction",
       "filename": "src/app/actions/update-ftp-backups.ts"
     },
-    "00a1c046585742674d5eb2cba9464b67a386113a58": {
+    "005c59dfcc3153730f5568c601a01afaeda7b2a1bb": {
       "workers": {
         "app/(main)/dashboard/page": {
           "moduleId": 5617,
@@ -75,7 +75,7 @@
       "exportedName": "getGlobalBackupDateAction",
       "filename": "src/app/actions/update-ftp-backups.ts"
     },
-    "0063e9729157a565e61252a02a083bd36efcb89cb2": {
+    "00cca2d98124cfc717b8c1d0fad9c28842a2219eca": {
       "workers": {
         "app/(main)/dashboard/page": {
           "moduleId": 5617,
@@ -90,7 +90,7 @@
       "exportedName": "getCurrentUser",
       "filename": "src/app/actions/auth.ts"
     },
-    "00074e7a016bf267a7396da2f7753e56f95065b907": {
+    "0079c22516d4c80d03435fca8d6944b7b5f63bffbb": {
       "workers": {
         "app/(main)/dashboard/page": {
           "moduleId": 5617,
@@ -105,7 +105,7 @@
       "exportedName": "logoutAction",
       "filename": "src/app/actions/auth.ts"
     },
-    "403f3da423b8769b3b11fd5da20ea6d0ccfe150d9e": {
+    "40c74a51c1798db4137e138584a152104e81fb515e": {
       "workers": {
         "app/(main)/dashboard/page": {
           "moduleId": 5617,
@@ -120,7 +120,7 @@
       "exportedName": "getInstances",
       "filename": "src/app/actions/ec2-actions.ts"
     },
-    "60d1a911864030dbc29fa99b6f43d3c8f608640907": {
+    "6010ca8df454c9e62792db85bd21d0fa9c2d3a4881": {
       "workers": {
         "app/(main)/dashboard/page": {
           "moduleId": 5617,
@@ -135,7 +135,7 @@
       "exportedName": "startInstances",
       "filename": "src/app/actions/ec2-actions.ts"
     },
-    "60cc503e8418cf84b753634803645fb93d4ec7dd7d": {
+    "60d8ecfadb6bfe5864a3f24b04709bb4db1437faa3": {
       "workers": {
         "app/(main)/dashboard/page": {
           "moduleId": 5617,
@@ -150,7 +150,7 @@
       "exportedName": "stopInstances",
       "filename": "src/app/actions/ec2-actions.ts"
     },
-    "60ea30cafce63826569b499b349f00f26b0b19b9d6": {
+    "6083431a57a20152ec17ba34e76235d01e4ca579e1": {
       "workers": {
         "app/(main)/dashboard/page": {
           "moduleId": 5617,
@@ -165,37 +165,7 @@
       "exportedName": "rebootInstances",
       "filename": "src/app/actions/ec2-actions.ts"
     },
-    "00b3c550a905f592f69b75728b3a8b3386d520e3a3": {
-      "workers": {
-        "app/(main)/dashboard/page": {
-          "moduleId": 5617,
-          "async": false,
-          "exportedName": "destroySession",
-          "filename": "src/lib/session.ts"
-        }
-      },
-      "layer": {
-        "app/(main)/dashboard/page": "rsc"
-      },
-      "exportedName": "destroySession",
-      "filename": "src/lib/session.ts"
-    },
-    "00d6ecd0d53d01be696e582cb0ae38e77af65aa051": {
-      "workers": {
-        "app/(main)/dashboard/page": {
-          "moduleId": 5617,
-          "async": false,
-          "exportedName": "hasValidSession",
-          "filename": "src/lib/session.ts"
-        }
-      },
-      "layer": {
-        "app/(main)/dashboard/page": "rsc"
-      },
-      "exportedName": "hasValidSession",
-      "filename": "src/lib/session.ts"
-    },
-    "00fd9767200e64cadf85af44f9f812c035f01270c8": {
+    "0000ecb28ce560a09151dc76b9c36c01d31a912329": {
       "workers": {
         "app/(main)/dashboard/page": {
           "moduleId": 5617,
@@ -210,7 +180,37 @@
       "exportedName": "validateSession",
       "filename": "src/lib/session.ts"
     },
-    "408f430bece22d8eed82343c38e1caae909fb76e75": {
+    "000a2d212d4a244306ba8b474d18ea25e2eeb6e4cb": {
+      "workers": {
+        "app/(main)/dashboard/page": {
+          "moduleId": 5617,
+          "async": false,
+          "exportedName": "destroySession",
+          "filename": "src/lib/session.ts"
+        }
+      },
+      "layer": {
+        "app/(main)/dashboard/page": "rsc"
+      },
+      "exportedName": "destroySession",
+      "filename": "src/lib/session.ts"
+    },
+    "0058610f351059d4ba981b10c20e611ef1c9f8951f": {
+      "workers": {
+        "app/(main)/dashboard/page": {
+          "moduleId": 5617,
+          "async": false,
+          "exportedName": "hasValidSession",
+          "filename": "src/lib/session.ts"
+        }
+      },
+      "layer": {
+        "app/(main)/dashboard/page": "rsc"
+      },
+      "exportedName": "hasValidSession",
+      "filename": "src/lib/session.ts"
+    },
+    "40197c861d6aad24af2554ec065d8ec7f8289e5ad3": {
       "workers": {
         "app/(main)/dashboard/page": {
           "moduleId": 5617,

@@ -1,6 +1,6 @@
 {
   "node": {
-    "00d2ead4668eb3a412a1fc04a3069c783b358c7e80": {
+    "000c4366762957437b868a01861ef2f583c046d966": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -15,7 +15,7 @@
       "exportedName": "getAllSystems",
       "filename": "src/app/actions/get-systems.ts"
     },
-    "408eb4e33e46dc219a317f827e026cb81b1e06721f": {
+    "406d38a64f6352fff3ab5d0231be9417b0a42f1acc": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -30,7 +30,7 @@
       "exportedName": "updateLogosBatch",
       "filename": "src/app/actions/update-logos.ts"
     },
-    "40118d625e00e98c763f701905cb90e14cbae19673": {
+    "4000174c9200913a8f86d135a44311ec9d585b4352": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -45,7 +45,7 @@
       "exportedName": "updateUserCountsBatch",
       "filename": "src/app/actions/update-user-counts.ts"
     },
-    "008ff21a6e903cb571efd751ae4331461741b9d23a": {
+    "007eccfd877829a1dcc62b4dc084d458af21c28d2c": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -60,7 +60,7 @@
       "exportedName": "updateFTPBackupsAction",
       "filename": "src/app/actions/update-ftp-backups.ts"
     },
-    "00a1c046585742674d5eb2cba9464b67a386113a58": {
+    "005c59dfcc3153730f5568c601a01afaeda7b2a1bb": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -75,7 +75,7 @@
       "exportedName": "getGlobalBackupDateAction",
       "filename": "src/app/actions/update-ftp-backups.ts"
     },
-    "0063e9729157a565e61252a02a083bd36efcb89cb2": {
+    "00cca2d98124cfc717b8c1d0fad9c28842a2219eca": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -90,7 +90,7 @@
       "exportedName": "getCurrentUser",
       "filename": "src/app/actions/auth.ts"
     },
-    "00074e7a016bf267a7396da2f7753e56f95065b907": {
+    "0079c22516d4c80d03435fca8d6944b7b5f63bffbb": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -105,7 +105,7 @@
       "exportedName": "logoutAction",
       "filename": "src/app/actions/auth.ts"
     },
-    "00a4764671e82555e40267b7f316d64d391ecab92b": {
+    "002df518754172b2840c935d4c76b7af6ec1ea04f6": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -120,7 +120,7 @@
       "exportedName": "getServers",
       "filename": "src/app/actions/get-servers.ts"
     },
-    "4082497fd5936c0356d07d95b99ccd026929906646": {
+    "40045089cfd38d811c604013e0317a23aeb535e35b": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -135,7 +135,7 @@
       "exportedName": "getServerPassword",
       "filename": "src/app/actions/get-servers.ts"
     },
-    "4056d0e109287ae2d8edfc6ff9b9de2b4755a2caa8": {
+    "40bca3cf25124fc215b6bb3fc9ea84e93134f4149b": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -150,7 +150,7 @@
       "exportedName": "createServer",
       "filename": "src/app/actions/create-server.ts"
     },
-    "4078af7bf723a861244a5faa1362cf4d2a35aef948": {
+    "40e3d02c6873dc5045a4f48f507b90aad84331f3b5": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -165,7 +165,7 @@
       "exportedName": "deleteServer",
       "filename": "src/app/actions/delete-server.ts"
     },
-    "602590330de370198a31d82f07255c863dcbbb27a0": {
+    "602211fe65412a8bf81f545400a1f44fe97d22ee43": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -180,7 +180,7 @@
       "exportedName": "updateServer",
       "filename": "src/app/actions/update-server.ts"
     },
-    "408babc1ca51472d30aa8a17db4265fec25e87502d": {
+    "4042ecf6af80ec70b15ddb4b05101552a57c79b170": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -195,37 +195,7 @@
       "exportedName": "bulkImportServers",
       "filename": "src/app/actions/bulk-import-servers.ts"
     },
-    "00b3c550a905f592f69b75728b3a8b3386d520e3a3": {
-      "workers": {
-        "app/(main)/claves/page": {
-          "moduleId": 93975,
-          "async": false,
-          "exportedName": "destroySession",
-          "filename": "src/lib/session.ts"
-        }
-      },
-      "layer": {
-        "app/(main)/claves/page": "rsc"
-      },
-      "exportedName": "destroySession",
-      "filename": "src/lib/session.ts"
-    },
-    "00d6ecd0d53d01be696e582cb0ae38e77af65aa051": {
-      "workers": {
-        "app/(main)/claves/page": {
-          "moduleId": 93975,
-          "async": false,
-          "exportedName": "hasValidSession",
-          "filename": "src/lib/session.ts"
-        }
-      },
-      "layer": {
-        "app/(main)/claves/page": "rsc"
-      },
-      "exportedName": "hasValidSession",
-      "filename": "src/lib/session.ts"
-    },
-    "00fd9767200e64cadf85af44f9f812c035f01270c8": {
+    "0000ecb28ce560a09151dc76b9c36c01d31a912329": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -240,7 +210,37 @@
       "exportedName": "validateSession",
       "filename": "src/lib/session.ts"
     },
-    "408f430bece22d8eed82343c38e1caae909fb76e75": {
+    "000a2d212d4a244306ba8b474d18ea25e2eeb6e4cb": {
+      "workers": {
+        "app/(main)/claves/page": {
+          "moduleId": 93975,
+          "async": false,
+          "exportedName": "destroySession",
+          "filename": "src/lib/session.ts"
+        }
+      },
+      "layer": {
+        "app/(main)/claves/page": "rsc"
+      },
+      "exportedName": "destroySession",
+      "filename": "src/lib/session.ts"
+    },
+    "0058610f351059d4ba981b10c20e611ef1c9f8951f": {
+      "workers": {
+        "app/(main)/claves/page": {
+          "moduleId": 93975,
+          "async": false,
+          "exportedName": "hasValidSession",
+          "filename": "src/lib/session.ts"
+        }
+      },
+      "layer": {
+        "app/(main)/claves/page": "rsc"
+      },
+      "exportedName": "hasValidSession",
+      "filename": "src/lib/session.ts"
+    },
+    "40197c861d6aad24af2554ec065d8ec7f8289e5ad3": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,

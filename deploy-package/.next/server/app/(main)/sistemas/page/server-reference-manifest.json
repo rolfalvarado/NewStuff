@@ -1,6 +1,6 @@
 {
   "node": {
-    "00d2ead4668eb3a412a1fc04a3069c783b358c7e80": {
+    "000c4366762957437b868a01861ef2f583c046d966": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -15,7 +15,7 @@
       "exportedName": "getAllSystems",
       "filename": "src/app/actions/get-systems.ts"
     },
-    "408eb4e33e46dc219a317f827e026cb81b1e06721f": {
+    "406d38a64f6352fff3ab5d0231be9417b0a42f1acc": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -30,7 +30,7 @@
       "exportedName": "updateLogosBatch",
       "filename": "src/app/actions/update-logos.ts"
     },
-    "40118d625e00e98c763f701905cb90e14cbae19673": {
+    "4000174c9200913a8f86d135a44311ec9d585b4352": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -45,7 +45,7 @@
       "exportedName": "updateUserCountsBatch",
       "filename": "src/app/actions/update-user-counts.ts"
     },
-    "008ff21a6e903cb571efd751ae4331461741b9d23a": {
+    "007eccfd877829a1dcc62b4dc084d458af21c28d2c": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -60,7 +60,7 @@
       "exportedName": "updateFTPBackupsAction",
       "filename": "src/app/actions/update-ftp-backups.ts"
     },
-    "00a1c046585742674d5eb2cba9464b67a386113a58": {
+    "005c59dfcc3153730f5568c601a01afaeda7b2a1bb": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -75,7 +75,7 @@
       "exportedName": "getGlobalBackupDateAction",
       "filename": "src/app/actions/update-ftp-backups.ts"
     },
-    "0063e9729157a565e61252a02a083bd36efcb89cb2": {
+    "00cca2d98124cfc717b8c1d0fad9c28842a2219eca": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -90,7 +90,7 @@
       "exportedName": "getCurrentUser",
       "filename": "src/app/actions/auth.ts"
     },
-    "00074e7a016bf267a7396da2f7753e56f95065b907": {
+    "0079c22516d4c80d03435fca8d6944b7b5f63bffbb": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -105,7 +105,7 @@
       "exportedName": "logoutAction",
       "filename": "src/app/actions/auth.ts"
     },
-    "609e0fd64be1d9387f5066668647352b4d1d781e33": {
+    "60bfcab4c5a63959706c7de53d2868020b4fc362e3": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -120,37 +120,7 @@
       "exportedName": "getSystems",
       "filename": "src/app/actions/get-systems.ts"
     },
-    "00b3c550a905f592f69b75728b3a8b3386d520e3a3": {
-      "workers": {
-        "app/(main)/sistemas/page": {
-          "moduleId": 56475,
-          "async": false,
-          "exportedName": "destroySession",
-          "filename": "src/lib/session.ts"
-        }
-      },
-      "layer": {
-        "app/(main)/sistemas/page": "rsc"
-      },
-      "exportedName": "destroySession",
-      "filename": "src/lib/session.ts"
-    },
-    "00d6ecd0d53d01be696e582cb0ae38e77af65aa051": {
-      "workers": {
-        "app/(main)/sistemas/page": {
-          "moduleId": 56475,
-          "async": false,
-          "exportedName": "hasValidSession",
-          "filename": "src/lib/session.ts"
-        }
-      },
-      "layer": {
-        "app/(main)/sistemas/page": "rsc"
-      },
-      "exportedName": "hasValidSession",
-      "filename": "src/lib/session.ts"
-    },
-    "00fd9767200e64cadf85af44f9f812c035f01270c8": {
+    "0000ecb28ce560a09151dc76b9c36c01d31a912329": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -165,7 +135,37 @@
       "exportedName": "validateSession",
       "filename": "src/lib/session.ts"
     },
-    "408f430bece22d8eed82343c38e1caae909fb76e75": {
+    "000a2d212d4a244306ba8b474d18ea25e2eeb6e4cb": {
+      "workers": {
+        "app/(main)/sistemas/page": {
+          "moduleId": 56475,
+          "async": false,
+          "exportedName": "destroySession",
+          "filename": "src/lib/session.ts"
+        }
+      },
+      "layer": {
+        "app/(main)/sistemas/page": "rsc"
+      },
+      "exportedName": "destroySession",
+      "filename": "src/lib/session.ts"
+    },
+    "0058610f351059d4ba981b10c20e611ef1c9f8951f": {
+      "workers": {
+        "app/(main)/sistemas/page": {
+          "moduleId": 56475,
+          "async": false,
+          "exportedName": "hasValidSession",
+          "filename": "src/lib/session.ts"
+        }
+      },
+      "layer": {
+        "app/(main)/sistemas/page": "rsc"
+      },
+      "exportedName": "hasValidSession",
+      "filename": "src/lib/session.ts"
+    },
+    "40197c861d6aad24af2554ec065d8ec7f8289e5ad3": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -180,7 +180,7 @@
       "exportedName": "createSession",
       "filename": "src/lib/session.ts"
     },
-    "00a4764671e82555e40267b7f316d64d391ecab92b": {
+    "002df518754172b2840c935d4c76b7af6ec1ea04f6": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -195,7 +195,7 @@
       "exportedName": "getServers",
       "filename": "src/app/actions/get-servers.ts"
     },
-    "60934a1fe1bd2a49eb66e8a346957792f292a6f1b3": {
+    "6080b45ee3c9fc73c008e8817a8c847c30f2f4e5f5": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -210,7 +210,7 @@
       "exportedName": "updateSystemFields",
       "filename": "src/app/actions/update-system.ts"
     },
-    "408e98720b84290ad4f01f508330e73b50e42caea1": {
+    "401366f42db9ec371f199ca63d189048e28aa1e709": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -225,7 +225,7 @@
       "exportedName": "deleteSystem",
       "filename": "src/app/actions/delete-system.ts"
     },
-    "402ca10407024fe283dab664da5ea03c0beae3e3dc": {
+    "40db75cf36fd581fa0d5648d95a1b6d72982e47316": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -240,7 +240,7 @@
       "exportedName": "createSystem",
       "filename": "src/app/actions/create-system.ts"
     },
-    "607859b177f5707f8326c761e33d053db2afc6c71d": {
+    "60aa54b9842eed366e0ee3198ffcc4328a2e56e759": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -255,7 +255,7 @@
       "exportedName": "renameHolding",
       "filename": "src/app/actions/manage-holdings.ts"
     },
-    "407fdbb1e8981cd30a1ac8f7889387332ebc07a265": {
+    "407481bc5b28af83cb008def0d74c1fa2e0ca591d4": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -270,7 +270,7 @@
       "exportedName": "deleteHolding",
       "filename": "src/app/actions/manage-holdings.ts"
     },
-    "40cf77f3c65084f512f737fc7498e6081e62c0d67f": {
+    "4098d6537396fca86d940dd87b3a0258b13352611c": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -285,7 +285,7 @@
       "exportedName": "bulkImportSystems",
       "filename": "src/app/actions/bulk-import-systems.ts"
     },
-    "4088f9538b2782129bfa59838abb52bba752f830f7": {
+    "4049919e221c5bb639411de5cd4a7f8b6c858cd505": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -300,7 +300,7 @@
       "exportedName": "getSystemHistory",
       "filename": "src/app/actions/get-monitoring-logs.ts"
     },
-    "70ee1750869a652d19c29e15a6184a855ff2109414": {
+    "707cafa27a4b9008fcb758a40e57c90ae83992671a": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -315,7 +315,7 @@
       "exportedName": "toggleLogScheduled",
       "filename": "src/app/actions/update-log.ts"
     },
-    "40500ced38274cd762871753b294fc35bcc029611a": {
+    "407e5ccf8b24ad5539585cf7ad5ef91f8fb6841984": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
@@ -330,7 +330,7 @@
       "exportedName": "uploadFileToDrive",
       "filename": "src/app/actions/google-drive-actions.ts"
     },
-    "40be8efd928b654949994bf3636b6b6b13f63f3fab": {
+    "40e124056d7b9eaa5342279affab404fdcd752859f": {
       "workers": {
         "app/(main)/sistemas/page": {
           "moduleId": 56475,
