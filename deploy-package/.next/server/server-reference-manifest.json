@@ -1,6 +1,6 @@
 {
   "node": {
-    "000c4366762957437b868a01861ef2f583c046d966": {
+    "005ba40a2f59af50af0476d6878f3a4771a6eb7575": {
       "workers": {
         "app/(main)/bandeja-dtc/page": {
           "moduleId": 79664,
@@ -38,6 +38,12 @@
           "exportedName": "getAllSystems",
           "filename": "src/app/actions/get-systems.ts"
         },
+        "app/(main)/proyectos/page": {
+          "moduleId": 7048,
+          "async": false,
+          "exportedName": "getAllSystems",
+          "filename": "src/app/actions/get-systems.ts"
+        },
         "app/(main)/reciclaje/page": {
           "moduleId": 78342,
           "async": false,
@@ -51,13 +57,19 @@
           "filename": "src/app/actions/get-systems.ts"
         },
         "app/(main)/sistemas/page": {
-          "moduleId": 56475,
+          "moduleId": 47115,
           "async": false,
           "exportedName": "getAllSystems",
           "filename": "src/app/actions/get-systems.ts"
         },
         "app/(main)/stuff/page": {
           "moduleId": 44748,
+          "async": false,
+          "exportedName": "getAllSystems",
+          "filename": "src/app/actions/get-systems.ts"
+        },
+        "app/(main)/tareas/page": {
+          "moduleId": 90199,
           "async": false,
           "exportedName": "getAllSystems",
           "filename": "src/app/actions/get-systems.ts"
@@ -76,16 +88,18 @@
         "app/(main)/dashboard/page": "action-browser",
         "app/(main)/datos/page": "rsc",
         "app/(main)/herramientas/page": "action-browser",
+        "app/(main)/proyectos/page": "action-browser",
         "app/(main)/reciclaje/page": "action-browser",
         "app/(main)/reportes/page": "action-browser",
         "app/(main)/sistemas/page": "rsc",
         "app/(main)/stuff/page": "action-browser",
+        "app/(main)/tareas/page": "action-browser",
         "app/(main)/usuarios/page": "action-browser"
       },
       "filename": "src/app/actions/get-systems.ts",
       "exportedName": "getAllSystems"
     },
-    "406d38a64f6352fff3ab5d0231be9417b0a42f1acc": {
+    "406f971879bbb58fb10a44ee5479e1c614e18097a2": {
       "workers": {
         "app/(main)/bandeja-dtc/page": {
           "moduleId": 79664,
@@ -123,6 +137,12 @@
           "exportedName": "updateLogosBatch",
           "filename": "src/app/actions/update-logos.ts"
         },
+        "app/(main)/proyectos/page": {
+          "moduleId": 7048,
+          "async": false,
+          "exportedName": "updateLogosBatch",
+          "filename": "src/app/actions/update-logos.ts"
+        },
         "app/(main)/reciclaje/page": {
           "moduleId": 78342,
           "async": false,
@@ -136,13 +156,19 @@
           "filename": "src/app/actions/update-logos.ts"
         },
         "app/(main)/sistemas/page": {
-          "moduleId": 56475,
+          "moduleId": 47115,
           "async": false,
           "exportedName": "updateLogosBatch",
           "filename": "src/app/actions/update-logos.ts"
         },
         "app/(main)/stuff/page": {
           "moduleId": 44748,
+          "async": false,
+          "exportedName": "updateLogosBatch",
+          "filename": "src/app/actions/update-logos.ts"
+        },
+        "app/(main)/tareas/page": {
+          "moduleId": 90199,
           "async": false,
           "exportedName": "updateLogosBatch",
           "filename": "src/app/actions/update-logos.ts"
@@ -161,16 +187,18 @@
         "app/(main)/dashboard/page": "action-browser",
         "app/(main)/datos/page": "action-browser",
         "app/(main)/herramientas/page": "action-browser",
+        "app/(main)/proyectos/page": "action-browser",
         "app/(main)/reciclaje/page": "action-browser",
         "app/(main)/reportes/page": "action-browser",
         "app/(main)/sistemas/page": "action-browser",
         "app/(main)/stuff/page": "action-browser",
+        "app/(main)/tareas/page": "action-browser",
         "app/(main)/usuarios/page": "action-browser"
       },
       "filename": "src/app/actions/update-logos.ts",
       "exportedName": "updateLogosBatch"
     },
-    "4000174c9200913a8f86d135a44311ec9d585b4352": {
+    "405ae47e544274ef01c327107d7915714e65972b61": {
       "workers": {
         "app/(main)/bandeja-dtc/page": {
           "moduleId": 79664,
@@ -208,6 +236,12 @@
           "exportedName": "updateUserCountsBatch",
           "filename": "src/app/actions/update-user-counts.ts"
         },
+        "app/(main)/proyectos/page": {
+          "moduleId": 7048,
+          "async": false,
+          "exportedName": "updateUserCountsBatch",
+          "filename": "src/app/actions/update-user-counts.ts"
+        },
         "app/(main)/reciclaje/page": {
           "moduleId": 78342,
           "async": false,
@@ -221,13 +255,19 @@
           "filename": "src/app/actions/update-user-counts.ts"
         },
         "app/(main)/sistemas/page": {
-          "moduleId": 56475,
+          "moduleId": 47115,
           "async": false,
           "exportedName": "updateUserCountsBatch",
           "filename": "src/app/actions/update-user-counts.ts"
         },
         "app/(main)/stuff/page": {
           "moduleId": 44748,
+          "async": false,
+          "exportedName": "updateUserCountsBatch",
+          "filename": "src/app/actions/update-user-counts.ts"
+        },
+        "app/(main)/tareas/page": {
+          "moduleId": 90199,
           "async": false,
           "exportedName": "updateUserCountsBatch",
           "filename": "src/app/actions/update-user-counts.ts"
@@ -246,16 +286,18 @@
         "app/(main)/dashboard/page": "action-browser",
         "app/(main)/datos/page": "action-browser",
         "app/(main)/herramientas/page": "action-browser",
+        "app/(main)/proyectos/page": "action-browser",
         "app/(main)/reciclaje/page": "action-browser",
         "app/(main)/reportes/page": "action-browser",
         "app/(main)/sistemas/page": "action-browser",
         "app/(main)/stuff/page": "action-browser",
+        "app/(main)/tareas/page": "action-browser",
         "app/(main)/usuarios/page": "action-browser"
       },
       "filename": "src/app/actions/update-user-counts.ts",
       "exportedName": "updateUserCountsBatch"
     },
-    "007eccfd877829a1dcc62b4dc084d458af21c28d2c": {
+    "00e3a5dad4a758e1599a6b20761d03e56ba86c5296": {
       "workers": {
         "app/(main)/bandeja-dtc/page": {
           "moduleId": 79664,
@@ -293,6 +335,12 @@
           "exportedName": "updateFTPBackupsAction",
           "filename": "src/app/actions/update-ftp-backups.ts"
         },
+        "app/(main)/proyectos/page": {
+          "moduleId": 7048,
+          "async": false,
+          "exportedName": "updateFTPBackupsAction",
+          "filename": "src/app/actions/update-ftp-backups.ts"
+        },
         "app/(main)/reciclaje/page": {
           "moduleId": 78342,
           "async": false,
@@ -306,13 +354,19 @@
           "filename": "src/app/actions/update-ftp-backups.ts"
         },
         "app/(main)/sistemas/page": {
-          "moduleId": 56475,
+          "moduleId": 47115,
           "async": false,
           "exportedName": "updateFTPBackupsAction",
           "filename": "src/app/actions/update-ftp-backups.ts"
         },
         "app/(main)/stuff/page": {
           "moduleId": 44748,
+          "async": false,
+          "exportedName": "updateFTPBackupsAction",
+          "filename": "src/app/actions/update-ftp-backups.ts"
+        },
+        "app/(main)/tareas/page": {
+          "moduleId": 90199,
           "async": false,
           "exportedName": "updateFTPBackupsAction",
           "filename": "src/app/actions/update-ftp-backups.ts"
@@ -331,16 +385,18 @@
         "app/(main)/dashboard/page": "action-browser",
         "app/(main)/datos/page": "action-browser",
         "app/(main)/herramientas/page": "action-browser",
+        "app/(main)/proyectos/page": "action-browser",
         "app/(main)/reciclaje/page": "action-browser",
         "app/(main)/reportes/page": "action-browser",
         "app/(main)/sistemas/page": "action-browser",
         "app/(main)/stuff/page": "action-browser",
+        "app/(main)/tareas/page": "action-browser",
         "app/(main)/usuarios/page": "action-browser"
       },
       "filename": "src/app/actions/update-ftp-backups.ts",
       "exportedName": "updateFTPBackupsAction"
     },
-    "005c59dfcc3153730f5568c601a01afaeda7b2a1bb": {
+    "00fee1b2a4c5820caeb7b9505aa312ebffe95813a0": {
       "workers": {
         "app/(main)/bandeja-dtc/page": {
           "moduleId": 79664,
@@ -378,6 +434,12 @@
           "exportedName": "getGlobalBackupDateAction",
           "filename": "src/app/actions/update-ftp-backups.ts"
         },
+        "app/(main)/proyectos/page": {
+          "moduleId": 7048,
+          "async": false,
+          "exportedName": "getGlobalBackupDateAction",
+          "filename": "src/app/actions/update-ftp-backups.ts"
+        },
         "app/(main)/reciclaje/page": {
           "moduleId": 78342,
           "async": false,
@@ -391,13 +453,19 @@
           "filename": "src/app/actions/update-ftp-backups.ts"
         },
         "app/(main)/sistemas/page": {
-          "moduleId": 56475,
+          "moduleId": 47115,
           "async": false,
           "exportedName": "getGlobalBackupDateAction",
           "filename": "src/app/actions/update-ftp-backups.ts"
         },
         "app/(main)/stuff/page": {
           "moduleId": 44748,
+          "async": false,
+          "exportedName": "getGlobalBackupDateAction",
+          "filename": "src/app/actions/update-ftp-backups.ts"
+        },
+        "app/(main)/tareas/page": {
+          "moduleId": 90199,
           "async": false,
           "exportedName": "getGlobalBackupDateAction",
           "filename": "src/app/actions/update-ftp-backups.ts"
@@ -416,16 +484,18 @@
         "app/(main)/dashboard/page": "action-browser",
         "app/(main)/datos/page": "action-browser",
         "app/(main)/herramientas/page": "action-browser",
+        "app/(main)/proyectos/page": "action-browser",
         "app/(main)/reciclaje/page": "action-browser",
         "app/(main)/reportes/page": "action-browser",
         "app/(main)/sistemas/page": "action-browser",
         "app/(main)/stuff/page": "action-browser",
+        "app/(main)/tareas/page": "action-browser",
         "app/(main)/usuarios/page": "action-browser"
       },
       "filename": "src/app/actions/update-ftp-backups.ts",
       "exportedName": "getGlobalBackupDateAction"
     },
-    "00cca2d98124cfc717b8c1d0fad9c28842a2219eca": {
+    "00486a47a1a279c922dcb10a2e7605f16d61bbc3f3": {
       "workers": {
         "app/(main)/bandeja-dtc/page": {
           "moduleId": 79664,
@@ -463,6 +533,12 @@
           "exportedName": "getCurrentUser",
           "filename": "src/app/actions/auth.ts"
         },
+        "app/(main)/proyectos/page": {
+          "moduleId": 7048,
+          "async": false,
+          "exportedName": "getCurrentUser",
+          "filename": "src/app/actions/auth.ts"
+        },
         "app/(main)/reciclaje/page": {
           "moduleId": 78342,
           "async": false,
@@ -476,13 +552,19 @@
           "filename": "src/app/actions/auth.ts"
         },
         "app/(main)/sistemas/page": {
-          "moduleId": 56475,
+          "moduleId": 47115,
           "async": false,
           "exportedName": "getCurrentUser",
           "filename": "src/app/actions/auth.ts"
         },
         "app/(main)/stuff/page": {
           "moduleId": 44748,
+          "async": false,
+          "exportedName": "getCurrentUser",
+          "filename": "src/app/actions/auth.ts"
+        },
+        "app/(main)/tareas/page": {
+          "moduleId": 90199,
           "async": false,
           "exportedName": "getCurrentUser",
           "filename": "src/app/actions/auth.ts"
@@ -501,16 +583,18 @@
         "app/(main)/dashboard/page": "action-browser",
         "app/(main)/datos/page": "action-browser",
         "app/(main)/herramientas/page": "action-browser",
+        "app/(main)/proyectos/page": "action-browser",
         "app/(main)/reciclaje/page": "action-browser",
         "app/(main)/reportes/page": "action-browser",
         "app/(main)/sistemas/page": "action-browser",
         "app/(main)/stuff/page": "action-browser",
+        "app/(main)/tareas/page": "action-browser",
         "app/(main)/usuarios/page": "action-browser"
       },
       "filename": "src/app/actions/auth.ts",
       "exportedName": "getCurrentUser"
     },
-    "0079c22516d4c80d03435fca8d6944b7b5f63bffbb": {
+    "00424d841b8d64859b900ea727cdbe95247507c61e": {
       "workers": {
         "app/(main)/bandeja-dtc/page": {
           "moduleId": 79664,
@@ -548,6 +632,12 @@
           "exportedName": "logoutAction",
           "filename": "src/app/actions/auth.ts"
         },
+        "app/(main)/proyectos/page": {
+          "moduleId": 7048,
+          "async": false,
+          "exportedName": "logoutAction",
+          "filename": "src/app/actions/auth.ts"
+        },
         "app/(main)/reciclaje/page": {
           "moduleId": 78342,
           "async": false,
@@ -561,13 +651,19 @@
           "filename": "src/app/actions/auth.ts"
         },
         "app/(main)/sistemas/page": {
-          "moduleId": 56475,
+          "moduleId": 47115,
           "async": false,
           "exportedName": "logoutAction",
           "filename": "src/app/actions/auth.ts"
         },
         "app/(main)/stuff/page": {
           "moduleId": 44748,
+          "async": false,
+          "exportedName": "logoutAction",
+          "filename": "src/app/actions/auth.ts"
+        },
+        "app/(main)/tareas/page": {
+          "moduleId": 90199,
           "async": false,
           "exportedName": "logoutAction",
           "filename": "src/app/actions/auth.ts"
@@ -586,16 +682,18 @@
         "app/(main)/dashboard/page": "action-browser",
         "app/(main)/datos/page": "action-browser",
         "app/(main)/herramientas/page": "action-browser",
+        "app/(main)/proyectos/page": "action-browser",
         "app/(main)/reciclaje/page": "action-browser",
         "app/(main)/reportes/page": "action-browser",
         "app/(main)/sistemas/page": "action-browser",
         "app/(main)/stuff/page": "action-browser",
+        "app/(main)/tareas/page": "action-browser",
         "app/(main)/usuarios/page": "action-browser"
       },
       "filename": "src/app/actions/auth.ts",
       "exportedName": "logoutAction"
     },
-    "00edc0c9ebfc7378f19741c69261907792ca5ee1bd": {
+    "006e3446b389b23ed1aa7872f6e4ef04f5dfa7e201": {
       "workers": {
         "app/(main)/chat/page": {
           "moduleId": 97432,
@@ -610,7 +708,7 @@
       "filename": "src/app/actions/chat.ts",
       "exportedName": "getTopics"
     },
-    "406abb4469bdb55f3b140c14f549e4b471b80d9b53": {
+    "406c11bf8796b73ea8379a99350c2f395513366f03": {
       "workers": {
         "app/(main)/chat/page": {
           "moduleId": 97432,
@@ -625,7 +723,7 @@
       "filename": "src/app/actions/chat.ts",
       "exportedName": "createTopic"
     },
-    "70da5ae29195ec099e84e6986ac5646175ffffd1d3": {
+    "703d715af37cb76d4e186de100376d7840356ed209": {
       "workers": {
         "app/(main)/chat/page": {
           "moduleId": 97432,
@@ -640,7 +738,7 @@
       "filename": "src/app/actions/chat.ts",
       "exportedName": "updateTopicStatus"
     },
-    "40aaa6600825855d641ce8f51e863c8854e2468d62": {
+    "40444ce8da090c254c02b78d04ca4e57dfd8fc29ad": {
       "workers": {
         "app/(main)/chat/page": {
           "moduleId": 97432,
@@ -655,7 +753,7 @@
       "filename": "src/app/actions/chat.ts",
       "exportedName": "getMessages"
     },
-    "78543c3b72041c13e8c43224e8b7add92841b9e0ca": {
+    "78cc98b020ac48cabe26d2019f05f08e651aa43815": {
       "workers": {
         "app/(main)/chat/page": {
           "moduleId": 97432,
@@ -670,7 +768,7 @@
       "filename": "src/app/actions/chat.ts",
       "exportedName": "sendMessage"
     },
-    "7ef1acf6ad67083023ac4189b1c3155ac7bba0828b": {
+    "7e149dc63c359f8cfdc96d6742d8a43b1f91cf1541": {
       "workers": {
         "app/(main)/chat/page": {
           "moduleId": 97432,
@@ -685,7 +783,7 @@
       "filename": "src/app/actions/chat.ts",
       "exportedName": "sendFileMessage"
     },
-    "002df518754172b2840c935d4c76b7af6ec1ea04f6": {
+    "00cdd42afe9c0531f887cbab29bc1fe7d81e165e10": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -700,7 +798,7 @@
           "filename": "src/app/actions/get-servers.ts"
         },
         "app/(main)/sistemas/page": {
-          "moduleId": 56475,
+          "moduleId": 47115,
           "async": false,
           "exportedName": "getServers",
           "filename": "src/app/actions/get-servers.ts"
@@ -721,7 +819,7 @@
       "filename": "src/app/actions/get-servers.ts",
       "exportedName": "getServers"
     },
-    "40045089cfd38d811c604013e0317a23aeb535e35b": {
+    "402fb2424fb20d323bcfa6c4d3baae04b2102b3696": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -743,7 +841,7 @@
       "filename": "src/app/actions/get-servers.ts",
       "exportedName": "getServerPassword"
     },
-    "40bca3cf25124fc215b6bb3fc9ea84e93134f4149b": {
+    "408db7054c721c91f35413583259924cb2b9ded84d": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -758,7 +856,7 @@
       "filename": "src/app/actions/create-server.ts",
       "exportedName": "createServer"
     },
-    "40e3d02c6873dc5045a4f48f507b90aad84331f3b5": {
+    "40f48f92775de1e6d872625b115ffa6553d858d885": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -773,7 +871,7 @@
       "filename": "src/app/actions/delete-server.ts",
       "exportedName": "deleteServer"
     },
-    "602211fe65412a8bf81f545400a1f44fe97d22ee43": {
+    "60115ec80658099a1abcc939a82d29237fa1dfc832": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -788,7 +886,7 @@
       "filename": "src/app/actions/update-server.ts",
       "exportedName": "updateServer"
     },
-    "4042ecf6af80ec70b15ddb4b05101552a57c79b170": {
+    "404ad04f5729fb4d3e481cc4694f284e925e24eed9": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -803,79 +901,7 @@
       "filename": "src/app/actions/bulk-import-servers.ts",
       "exportedName": "bulkImportServers"
     },
-    "0000ecb28ce560a09151dc76b9c36c01d31a912329": {
-      "workers": {
-        "app/(main)/claves/page": {
-          "moduleId": 93975,
-          "async": false,
-          "exportedName": "validateSession",
-          "filename": "src/lib/session.ts"
-        },
-        "app/(main)/dashboard/page": {
-          "moduleId": 5617,
-          "async": false,
-          "exportedName": "validateSession",
-          "filename": "src/lib/session.ts"
-        },
-        "app/(main)/datos/page": {
-          "moduleId": 19479,
-          "async": false,
-          "exportedName": "validateSession",
-          "filename": "src/lib/session.ts"
-        },
-        "app/(main)/sistemas/page": {
-          "moduleId": 56475,
-          "async": false,
-          "exportedName": "validateSession",
-          "filename": "src/lib/session.ts"
-        }
-      },
-      "layer": {
-        "app/(main)/claves/page": "rsc",
-        "app/(main)/dashboard/page": "rsc",
-        "app/(main)/datos/page": "rsc",
-        "app/(main)/sistemas/page": "rsc"
-      },
-      "filename": "src/lib/session.ts",
-      "exportedName": "validateSession"
-    },
-    "000a2d212d4a244306ba8b474d18ea25e2eeb6e4cb": {
-      "workers": {
-        "app/(main)/claves/page": {
-          "moduleId": 93975,
-          "async": false,
-          "exportedName": "destroySession",
-          "filename": "src/lib/session.ts"
-        },
-        "app/(main)/dashboard/page": {
-          "moduleId": 5617,
-          "async": false,
-          "exportedName": "destroySession",
-          "filename": "src/lib/session.ts"
-        },
-        "app/(main)/datos/page": {
-          "moduleId": 19479,
-          "async": false,
-          "exportedName": "destroySession",
-          "filename": "src/lib/session.ts"
-        },
-        "app/(main)/sistemas/page": {
-          "moduleId": 56475,
-          "async": false,
-          "exportedName": "destroySession",
-          "filename": "src/lib/session.ts"
-        }
-      },
-      "layer": {
-        "app/(main)/claves/page": "rsc",
-        "app/(main)/dashboard/page": "rsc",
-        "app/(main)/datos/page": "rsc",
-        "app/(main)/sistemas/page": "rsc"
-      },
-      "filename": "src/lib/session.ts",
-      "exportedName": "destroySession"
-    },
-    "0058610f351059d4ba981b10c20e611ef1c9f8951f": {
+    "0059b863cd837c4f08d92e1b70e91eab97cab01025": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -895,8 +921,20 @@
           "exportedName": "hasValidSession",
           "filename": "src/lib/session.ts"
         },
+        "app/(main)/proyectos/page": {
+          "moduleId": 7048,
+          "async": false,
+          "exportedName": "hasValidSession",
+          "filename": "src/lib/session.ts"
+        },
         "app/(main)/sistemas/page": {
-          "moduleId": 56475,
+          "moduleId": 47115,
+          "async": false,
+          "exportedName": "hasValidSession",
+          "filename": "src/lib/session.ts"
+        },
+        "app/(main)/tareas/page": {
+          "moduleId": 90199,
           "async": false,
           "exportedName": "hasValidSession",
           "filename": "src/lib/session.ts"
@@ -906,12 +944,114 @@
         "app/(main)/claves/page": "rsc",
         "app/(main)/dashboard/page": "rsc",
         "app/(main)/datos/page": "rsc",
-        "app/(main)/sistemas/page": "rsc"
+        "app/(main)/proyectos/page": "rsc",
+        "app/(main)/sistemas/page": "rsc",
+        "app/(main)/tareas/page": "rsc"
       },
       "filename": "src/lib/session.ts",
       "exportedName": "hasValidSession"
     },
-    "40197c861d6aad24af2554ec065d8ec7f8289e5ad3": {
+    "005d219a0d8c229fdc926f21c608216c59ad8d617b": {
+      "workers": {
+        "app/(main)/claves/page": {
+          "moduleId": 93975,
+          "async": false,
+          "exportedName": "destroySession",
+          "filename": "src/lib/session.ts"
+        },
+        "app/(main)/dashboard/page": {
+          "moduleId": 5617,
+          "async": false,
+          "exportedName": "destroySession",
+          "filename": "src/lib/session.ts"
+        },
+        "app/(main)/datos/page": {
+          "moduleId": 19479,
+          "async": false,
+          "exportedName": "destroySession",
+          "filename": "src/lib/session.ts"
+        },
+        "app/(main)/proyectos/page": {
+          "moduleId": 7048,
+          "async": false,
+          "exportedName": "destroySession",
+          "filename": "src/lib/session.ts"
+        },
+        "app/(main)/sistemas/page": {
+          "moduleId": 47115,
+          "async": false,
+          "exportedName": "destroySession",
+          "filename": "src/lib/session.ts"
+        },
+        "app/(main)/tareas/page": {
+          "moduleId": 90199,
+          "async": false,
+          "exportedName": "destroySession",
+          "filename": "src/lib/session.ts"
+        }
+      },
+      "layer": {
+        "app/(main)/claves/page": "rsc",
+        "app/(main)/dashboard/page": "rsc",
+        "app/(main)/datos/page": "rsc",
+        "app/(main)/proyectos/page": "rsc",
+        "app/(main)/sistemas/page": "rsc",
+        "app/(main)/tareas/page": "rsc"
+      },
+      "filename": "src/lib/session.ts",
+      "exportedName": "destroySession"
+    },
+    "009e6ba5774b860c596dc87733807677cd590b855e": {
+      "workers": {
+        "app/(main)/claves/page": {
+          "moduleId": 93975,
+          "async": false,
+          "exportedName": "validateSession",
+          "filename": "src/lib/session.ts"
+        },
+        "app/(main)/dashboard/page": {
+          "moduleId": 5617,
+          "async": false,
+          "exportedName": "validateSession",
+          "filename": "src/lib/session.ts"
+        },
+        "app/(main)/datos/page": {
+          "moduleId": 19479,
+          "async": false,
+          "exportedName": "validateSession",
+          "filename": "src/lib/session.ts"
+        },
+        "app/(main)/proyectos/page": {
+          "moduleId": 7048,
+          "async": false,
+          "exportedName": "validateSession",
+          "filename": "src/lib/session.ts"
+        },
+        "app/(main)/sistemas/page": {
+          "moduleId": 47115,
+          "async": false,
+          "exportedName": "validateSession",
+          "filename": "src/lib/session.ts"
+        },
+        "app/(main)/tareas/page": {
+          "moduleId": 90199,
+          "async": false,
+          "exportedName": "validateSession",
+          "filename": "src/lib/session.ts"
+        }
+      },
+      "layer": {
+        "app/(main)/claves/page": "rsc",
+        "app/(main)/dashboard/page": "rsc",
+        "app/(main)/datos/page": "rsc",
+        "app/(main)/proyectos/page": "rsc",
+        "app/(main)/sistemas/page": "rsc",
+        "app/(main)/tareas/page": "rsc"
+      },
+      "filename": "src/lib/session.ts",
+      "exportedName": "validateSession"
+    },
+    "409df107e58601e8301986937cf6a3e41fbb6f8897": {
       "workers": {
         "app/(main)/claves/page": {
           "moduleId": 93975,
@@ -931,8 +1071,20 @@
           "exportedName": "createSession",
           "filename": "src/lib/session.ts"
         },
+        "app/(main)/proyectos/page": {
+          "moduleId": 7048,
+          "async": false,
+          "exportedName": "createSession",
+          "filename": "src/lib/session.ts"
+        },
         "app/(main)/sistemas/page": {
-          "moduleId": 56475,
+          "moduleId": 47115,
+          "async": false,
+          "exportedName": "createSession",
+          "filename": "src/lib/session.ts"
+        },
+        "app/(main)/tareas/page": {
+          "moduleId": 90199,
           "async": false,
           "exportedName": "createSession",
           "filename": "src/lib/session.ts"
@@ -942,12 +1094,14 @@
         "app/(main)/claves/page": "rsc",
         "app/(main)/dashboard/page": "rsc",
         "app/(main)/datos/page": "rsc",
-        "app/(main)/sistemas/page": "rsc"
+        "app/(main)/proyectos/page": "rsc",
+        "app/(main)/sistemas/page": "rsc",
+        "app/(main)/tareas/page": "rsc"
       },
       "filename": "src/lib/session.ts",
       "exportedName": "createSession"
     },
-    "40c74a51c1798db4137e138584a152104e81fb515e": {
+    "4082f063c9a9c03b97ff87f4eb9acddefa630302a2": {
       "workers": {
         "app/(main)/dashboard/page": {
           "moduleId": 5617,
@@ -962,7 +1116,7 @@
       "filename": "src/app/actions/ec2-actions.ts",
       "exportedName": "getInstances"
     },
-    "6010ca8df454c9e62792db85bd21d0fa9c2d3a4881": {
+    "6010c981eaeb82871918088764317005b92f3bfbb4": {
       "workers": {
         "app/(main)/dashboard/page": {
           "moduleId": 5617,
@@ -977,7 +1131,7 @@
       "filename": "src/app/actions/ec2-actions.ts",
       "exportedName": "startInstances"
     },
-    "60d8ecfadb6bfe5864a3f24b04709bb4db1437faa3": {
+    "60b609a77a6b5206016211ba4a7d8421fd20ae72e5": {
       "workers": {
         "app/(main)/dashboard/page": {
           "moduleId": 5617,
@@ -992,7 +1146,7 @@
       "filename": "src/app/actions/ec2-actions.ts",
       "exportedName": "stopInstances"
     },
-    "6083431a57a20152ec17ba34e76235d01e4ca579e1": {
+    "60d5a5811473f13438bc0cedbf89c9c0ba572f9c3b": {
       "workers": {
         "app/(main)/dashboard/page": {
           "moduleId": 5617,
@@ -1007,7 +1161,7 @@
       "filename": "src/app/actions/ec2-actions.ts",
       "exportedName": "rebootInstances"
     },
-    "60bfcab4c5a63959706c7de53d2868020b4fc362e3": {
+    "60008526a48f910dd66f1c90bc0c65fd3755b3bf36": {
       "workers": {
         "app/(main)/datos/page": {
           "moduleId": 19479,
@@ -1016,7 +1170,7 @@
           "filename": "src/app/actions/get-systems.ts"
         },
         "app/(main)/sistemas/page": {
-          "moduleId": 56475,
+          "moduleId": 47115,
           "async": false,
           "exportedName": "getSystems",
           "filename": "src/app/actions/get-systems.ts"
@@ -1029,7 +1183,7 @@
       "filename": "src/app/actions/get-systems.ts",
       "exportedName": "getSystems"
     },
-    "0063b8ce1b44e951f0d3e5fdda1db6cb54a8575b2e": {
+    "00952809f3f3463598738cf64aa632cc24a340b06a": {
       "workers": {
         "app/(main)/reciclaje/page": {
           "moduleId": 78342,
@@ -1044,7 +1198,7 @@
       "filename": "src/app/actions/get-recycled.ts",
       "exportedName": "getRecycledItems"
     },
-    "40bc8f666b7f5610e54a85a1ca6df86aaedb4c153e": {
+    "40834668c235916fba89e706ae6db58c8857c6a57e": {
       "workers": {
         "app/(main)/reciclaje/page": {
           "moduleId": 78342,
@@ -1059,7 +1213,7 @@
       "filename": "src/app/actions/restore-recycled.ts",
       "exportedName": "restoreRecycledItem"
     },
-    "401dd55b800e8ddb73c1b9f4ea2100ab66ec6ee028": {
+    "4075c8ea86ac06370570bb52195008369c1b74ee8e": {
       "workers": {
         "app/(main)/reciclaje/page": {
           "moduleId": 78342,
@@ -1074,22 +1228,29 @@
       "filename": "src/app/actions/purge-recycled.ts",
       "exportedName": "purgeRecycledItem"
     },
-    "00b60c8f58f09b23d3185474b6122279a88e6781e5": {
+    "00fda95aed2f6e73e2bf722901a334583da337508e": {
       "workers": {
         "app/(main)/reportes/page": {
           "moduleId": 96801,
           "async": false,
           "exportedName": "exportSystemsToExcel",
           "filename": "src/app/actions/export-systems.ts"
+        },
+        "app/(main)/sistemas/page": {
+          "moduleId": 47115,
+          "async": false,
+          "exportedName": "exportSystemsToExcel",
+          "filename": "src/app/actions/export-systems.ts"
         }
       },
       "layer": {
-        "app/(main)/reportes/page": "action-browser"
+        "app/(main)/reportes/page": "action-browser",
+        "app/(main)/sistemas/page": "action-browser"
       },
       "filename": "src/app/actions/export-systems.ts",
       "exportedName": "exportSystemsToExcel"
     },
-    "0058f443c8f18126e24213be39871d17426e07d1e9": {
+    "00a6bf89101b9ada4196ad6cb835be81bfc9a5557e": {
       "workers": {
         "app/(main)/reportes/page": {
           "moduleId": 96801,
@@ -1104,7 +1265,7 @@
       "filename": "src/app/actions/export-servers.ts",
       "exportedName": "exportServersToExcel"
     },
-    "00608125b140ba2749485460304b0037ff48c1381b": {
+    "00218882b4c0da37073b6848b9103b4d071229b710": {
       "workers": {
         "app/(main)/reportes/page": {
           "moduleId": 96801,
@@ -1119,7 +1280,7 @@
       "filename": "src/app/actions/export-holdings.ts",
       "exportedName": "exportHoldingsToExcel"
     },
-    "007c211ff6234411b175639727842101b8bb288696": {
+    "004126bb5949a646f958575f165c7766e336611a7c": {
       "workers": {
         "app/(main)/reportes/page": {
           "moduleId": 96801,
@@ -1134,7 +1295,7 @@
       "filename": "src/app/actions/export-monitoring.ts",
       "exportedName": "exportMonitoringToExcel"
     },
-    "000e5dac35f72800f4295afc3314b3259f1e60b210": {
+    "00423c80327ce4112c673439dbcdd1566d06d8b1b9": {
       "workers": {
         "app/(main)/reportes/page": {
           "moduleId": 96801,
@@ -1149,7 +1310,7 @@
       "filename": "src/app/actions/export-users.ts",
       "exportedName": "exportUsersToExcel"
     },
-    "003280b12b56f52ea19da2f2cd1448b334a63ea6a7": {
+    "00939e804300945490f93fe2ff95a471979a39a415": {
       "workers": {
         "app/(main)/reportes/page": {
           "moduleId": 96801,
@@ -1164,7 +1325,7 @@
       "filename": "src/app/actions/export-backup-report.ts",
       "exportedName": "exportBackupReportToExcel"
     },
-    "00093ce8dcd9b1f6c224ebfa1427aa70f950731a9b": {
+    "00ca32143238194e9de12b6953548131c4977b3cae": {
       "workers": {
         "app/(main)/reportes/page": {
           "moduleId": 96801,
@@ -1179,10 +1340,10 @@
       "filename": "src/app/actions/get-growth-logs.ts",
       "exportedName": "getGrowthLogs"
     },
-    "6080b45ee3c9fc73c008e8817a8c847c30f2f4e5f5": {
+    "60605f9fb7b8c8de3ed0423f677d9070786fe09c46": {
       "workers": {
         "app/(main)/sistemas/page": {
-          "moduleId": 56475,
+          "moduleId": 47115,
           "async": false,
           "exportedName": "updateSystemFields",
           "filename": "src/app/actions/update-system.ts"
@@ -1194,10 +1355,10 @@
       "filename": "src/app/actions/update-system.ts",
       "exportedName": "updateSystemFields"
     },
-    "401366f42db9ec371f199ca63d189048e28aa1e709": {
+    "40b2f88f7f966220246d0f91ffe5dfb8b56b540f37": {
       "workers": {
         "app/(main)/sistemas/page": {
-          "moduleId": 56475,
+          "moduleId": 47115,
           "async": false,
           "exportedName": "deleteSystem",
           "filename": "src/app/actions/delete-system.ts"
@@ -1209,10 +1370,10 @@
       "filename": "src/app/actions/delete-system.ts",
       "exportedName": "deleteSystem"
     },
-    "40db75cf36fd581fa0d5648d95a1b6d72982e47316": {
+    "40ced1e85ff01b30151822584b02639d73a1b18524": {
       "workers": {
         "app/(main)/sistemas/page": {
-          "moduleId": 56475,
+          "moduleId": 47115,
           "async": false,
           "exportedName": "createSystem",
           "filename": "src/app/actions/create-system.ts"
@@ -1224,10 +1385,10 @@
       "filename": "src/app/actions/create-system.ts",
       "exportedName": "createSystem"
     },
-    "60aa54b9842eed366e0ee3198ffcc4328a2e56e759": {
+    "60030bfca196927ab08b0582361f42e3be2ed16fd1": {
       "workers": {
         "app/(main)/sistemas/page": {
-          "moduleId": 56475,
+          "moduleId": 47115,
           "async": false,
           "exportedName": "renameHolding",
           "filename": "src/app/actions/manage-holdings.ts"
@@ -1239,10 +1400,10 @@
       "filename": "src/app/actions/manage-holdings.ts",
       "exportedName": "renameHolding"
     },
-    "407481bc5b28af83cb008def0d74c1fa2e0ca591d4": {
+    "409cdeff7d28c96b7f58631ea7cbc4516ba04b9f2b": {
       "workers": {
         "app/(main)/sistemas/page": {
-          "moduleId": 56475,
+          "moduleId": 47115,
           "async": false,
           "exportedName": "deleteHolding",
           "filename": "src/app/actions/manage-holdings.ts"
@@ -1254,10 +1415,10 @@
       "filename": "src/app/actions/manage-holdings.ts",
       "exportedName": "deleteHolding"
     },
-    "4098d6537396fca86d940dd87b3a0258b13352611c": {
+    "401689ad30e121b061ae70e8a0ed4160e897cc7a8d": {
       "workers": {
         "app/(main)/sistemas/page": {
-          "moduleId": 56475,
+          "moduleId": 47115,
           "async": false,
           "exportedName": "bulkImportSystems",
           "filename": "src/app/actions/bulk-import-systems.ts"
@@ -1269,10 +1430,10 @@
       "filename": "src/app/actions/bulk-import-systems.ts",
       "exportedName": "bulkImportSystems"
     },
-    "4049919e221c5bb639411de5cd4a7f8b6c858cd505": {
+    "4013eda4fe14f160602cb28743123b747538da0da2": {
       "workers": {
         "app/(main)/sistemas/page": {
-          "moduleId": 56475,
+          "moduleId": 47115,
           "async": false,
           "exportedName": "getSystemHistory",
           "filename": "src/app/actions/get-monitoring-logs.ts"
@@ -1284,10 +1445,10 @@
       "filename": "src/app/actions/get-monitoring-logs.ts",
       "exportedName": "getSystemHistory"
     },
-    "707cafa27a4b9008fcb758a40e57c90ae83992671a": {
+    "705ec23205e9094ed460a7f67b4e75717aaf5a2974": {
       "workers": {
         "app/(main)/sistemas/page": {
-          "moduleId": 56475,
+          "moduleId": 47115,
           "async": false,
           "exportedName": "toggleLogScheduled",
           "filename": "src/app/actions/update-log.ts"
@@ -1299,10 +1460,10 @@
       "filename": "src/app/actions/update-log.ts",
       "exportedName": "toggleLogScheduled"
     },
-    "407e5ccf8b24ad5539585cf7ad5ef91f8fb6841984": {
+    "40286d0eb6ce9cc93702f6bb297969bf1a75915544": {
       "workers": {
         "app/(main)/sistemas/page": {
-          "moduleId": 56475,
+          "moduleId": 47115,
           "async": false,
           "exportedName": "uploadFileToDrive",
           "filename": "src/app/actions/google-drive-actions.ts"
@@ -1314,10 +1475,10 @@
       "filename": "src/app/actions/google-drive-actions.ts",
       "exportedName": "uploadFileToDrive"
     },
-    "40e124056d7b9eaa5342279affab404fdcd752859f": {
+    "4014939ac079247f1570015ec5871b30392adafcd8": {
       "workers": {
         "app/(main)/sistemas/page": {
-          "moduleId": 56475,
+          "moduleId": 47115,
           "async": false,
           "exportedName": "listFilesFromDrive",
           "filename": "src/app/actions/google-drive-actions.ts"
@@ -1329,7 +1490,7 @@
       "filename": "src/app/actions/google-drive-actions.ts",
       "exportedName": "listFilesFromDrive"
     },
-    "00d61cfa90ad4f24cd767142753dc1cb45aeb3ca85": {
+    "009c8a35f18546b7b325f1278925af8ddad19d5dce": {
       "workers": {
         "app/(main)/usuarios/page": {
           "moduleId": 60238,
@@ -1344,7 +1505,7 @@
       "filename": "src/app/actions/get-monitored-users.ts",
       "exportedName": "getMonitoredUsers"
     },
-    "409edd17b9083a0b4952818c2059912dfead4a0cf8": {
+    "40c29ce02ee38095b63f367c1a8f84a9e3ba5868a3": {
       "workers": {
         "app/login/page": {
           "moduleId": 22746,
@@ -1361,5 +1522,5 @@
     }
   },
   "edge": {},
-  "encryptionKey": "ngYkaSqaEFFsGsI9Wicp+Vnb2F6VFF+YUZs40aHdnww="
+  "encryptionKey": "Eqrwy4xWqhJIbHHhB9ed+E8wiElGGXd0SOl+Pb1iJLs="
 }

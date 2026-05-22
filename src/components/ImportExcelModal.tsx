@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import * as XLSX from "xlsx";
 import { bulkImportSystems, ImportSystemRow } from "@/app/actions/bulk-import-systems";
+import { exportSystemsToExcel } from "@/app/actions/export-systems";
 
 interface ImportExcelModalProps {
     isOpen: boolean;
@@ -15,46 +16,47 @@ interface ImportExcelModalProps {
 export default function ImportExcelModal({ isOpen, onClose, onSuccess, systems }: ImportExcelModalProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [isDownloading, setIsDownloading] = useState(false);
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
     if (!isOpen) return null;
 
-    const handleDownloadTemplate = () => {
-        const headers = [
-            "nombre_empresa",
-            "url_sitio",
-            "nombre_servidor",
-            "memoria_sistema",
-            "puerto_web"
-        ];
+    const handleDownloadTemplate = async () => {
+        setIsDownloading(true);
+        setMessage(null);
+        try {
+            const result = await exportSystemsToExcel();
 
-        // Use all loaded systems if available, otherwise an example
-        const dataToExport = systems.length > 0
-            ? systems.map(sys => ({
-                nombre_empresa: sys.nombre_empresa,
-                url_sitio: sys.url_sitio,
-                nombre_servidor: sys.nombre_servidor,
-                memoria_sistema: sys.memoria_sistema || "",
-                puerto_web: sys.puerto_web || ""
-            }))
-            : [
-                {
-                    nombre_empresa: "Ejemplo Empresa",
-                    url_sitio: "https://ejemplo.com",
-                    nombre_servidor: "Servidor 1",
-                    memoria_sistema: "4GB",
-                    puerto_web: "8080"
+            if (result.success && result.data) {
+                // Convertir base64 a blob
+                const byteCharacters = atob(result.data);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
                 }
-            ];
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], {
+                    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                });
 
-        const ws = XLSX.utils.json_to_sheet(dataToExport, { header: headers });
-
-        // Create a workbook
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Sistemas");
-
-        // Save file
-        XLSX.writeFile(wb, "plantilla_sistemas.xlsx");
+                // Crear enlace de descarga
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = "plantilla_sistemas.xlsx";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            } else {
+                setMessage({ type: "error", text: "Error al generar la plantilla." });
+            }
+        } catch (error) {
+            console.error("Error downloading template:", error);
+            setMessage({ type: "error", text: "Error al descargar la plantilla." });
+        } finally {
+            setIsDownloading(false);
+        }
     };
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,6 +112,8 @@ export default function ImportExcelModal({ isOpen, onClose, onSuccess, systems }
         reader.readAsBinaryString(file);
     };
 
+    const isBusy = isLoading || isDownloading;
+
     return (
         <div style={{
             position: "fixed",
@@ -145,12 +149,17 @@ export default function ImportExcelModal({ isOpen, onClose, onSuccess, systems }
                     </button>
                 </div>
 
+                {/* Info text */}
+                <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: "1.5rem", lineHeight: 1.5 }}>
+                    La plantilla utiliza el mismo formato del Reporte de Sistemas. Si un sistema ya existe (misma URL), se actualizan sus datos. Los nuevos sistemas se crean automáticamente.
+                </p>
+
                 {/* Actions */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
                     {/* Download Template */}
                     <button
                         onClick={handleDownloadTemplate}
-                        disabled={isLoading}
+                        disabled={isBusy}
                         style={{
                             display: "flex",
                             flexDirection: "column",
@@ -161,21 +170,21 @@ export default function ImportExcelModal({ isOpen, onClose, onSuccess, systems }
                             border: "1px solid var(--border-color)",
                             borderRadius: "var(--radius-md)",
                             backgroundColor: "var(--bg-main)",
-                            cursor: isLoading ? "not-allowed" : "pointer",
+                            cursor: isBusy ? "not-allowed" : "pointer",
                             transition: "all 200ms var(--ease-smooth)",
                             color: "var(--text-main)"
                         }}
-                        onMouseEnter={e => !isLoading && (e.currentTarget.style.borderColor = "#3b82f6")}
-                        onMouseLeave={e => !isLoading && (e.currentTarget.style.borderColor = "var(--border-color)")}
+                        onMouseEnter={e => !isBusy && (e.currentTarget.style.borderColor = "#3b82f6")}
+                        onMouseLeave={e => !isBusy && (e.currentTarget.style.borderColor = "var(--border-color)")}
                     >
                         <Image src="/Icons/download-square-solid.svg" alt="Descargar" width={48} height={48} style={{ opacity: 0.8 }} />
-                        <span style={{ fontWeight: "500", fontSize: "0.875rem" }}>Descargar Plantilla</span>
+                        <span style={{ fontWeight: "500", fontSize: "0.875rem" }}>{isDownloading ? "Generando..." : "Descargar Plantilla"}</span>
                     </button>
 
                     {/* Upload File */}
                     <button
                         onClick={() => fileInputRef.current?.click()}
-                        disabled={isLoading}
+                        disabled={isBusy}
                         style={{
                             display: "flex",
                             flexDirection: "column",
@@ -186,12 +195,12 @@ export default function ImportExcelModal({ isOpen, onClose, onSuccess, systems }
                             border: "1px solid var(--border-color)",
                             borderRadius: "var(--radius-md)",
                             backgroundColor: "var(--bg-main)",
-                            cursor: isLoading ? "not-allowed" : "pointer",
+                            cursor: isBusy ? "not-allowed" : "pointer",
                             transition: "all 200ms var(--ease-smooth)",
                             color: "var(--text-main)"
                         }}
-                        onMouseEnter={e => !isLoading && (e.currentTarget.style.borderColor = "#059669")}
-                        onMouseLeave={e => !isLoading && (e.currentTarget.style.borderColor = "var(--border-color)")}
+                        onMouseEnter={e => !isBusy && (e.currentTarget.style.borderColor = "#059669")}
+                        onMouseLeave={e => !isBusy && (e.currentTarget.style.borderColor = "var(--border-color)")}
                     >
                         <Image src="/Icons/upload-square-solid.svg" alt="Subir" width={48} height={48} style={{ opacity: 0.8 }} />
                         <span style={{ fontWeight: "500", fontSize: "0.875rem" }}>{isLoading ? "Procesando..." : "Subir Excel"}</span>

@@ -39,6 +39,7 @@ export interface System {
     actividad?: string[];
     holding?: string;
     puerto_web?: string;
+    ejecutivo_responsable?: string;
 }
 
 export interface PaginatedSystemsResult {

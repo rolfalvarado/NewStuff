@@ -29,6 +29,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+robust-deploy.ps1
 
 
 # env files (can opt-in for committing if needed)

@@ -154,7 +154,7 @@ self.__SERVER_FILES_MANIFEST={
       "isExperimentalCompile": false
     }
   },
-  "appDir": "C:\\Users\\ddelt\\Escritorio\\unabase\\newstuff\\NewStuff",
+  "appDir": "C:\\stuff",
   "relativeAppDir": "",
   "files": [
     ".next\\routes-manifest.json",

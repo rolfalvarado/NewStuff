@@ -48,7 +48,7 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
     const [isImportModalOpen, setIsImportModalOpen] = useState(false);
     const [isOfflineListOpen, setIsOfflineListOpen] = useState(false);
     const [isInactiveListOpen, setIsInactiveListOpen] = useState(false);
-    const [activeTabs, setActiveTabs] = useState<{ [key: string]: 'bitacora' | 'nexos' }>({});
+    const [activeTabs, setActiveTabs] = useState<{ [key: string]: 'bitacora' | 'nexos' | 'unabase' }>({});
 
     // History Modal State
     const [historyModalOpen, setHistoryModalOpen] = useState(false);
@@ -344,7 +344,8 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                 giro: editingSystem.giro,
                 actividad: editingSystem.actividad,
                 holding: editingSystem.holding,
-                puerto_web: editingSystem.puerto_web
+                puerto_web: editingSystem.puerto_web,
+                ejecutivo_responsable: editingSystem.ejecutivo_responsable
             });
 
             if (result.success) {
@@ -1393,6 +1394,22 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                                             >
                                                 Nexos
                                             </button>
+                                            <button
+                                                onClick={() => setActiveTabs({ ...activeTabs, [system.url_sitio]: 'unabase' })}
+                                                style={{
+                                                    padding: "0.4rem 1.2rem",
+                                                    fontSize: "0.8125rem",
+                                                    fontWeight: "600",
+                                                    backgroundColor: activeTabs[system.url_sitio] === 'unabase' ? "var(--bg-main)" : "transparent",
+                                                    border: "1px solid var(--border-color)",
+                                                    borderBottom: activeTabs[system.url_sitio] === 'unabase' ? "1px solid var(--bg-main)" : "1px solid var(--border-color)",
+                                                    borderRadius: "8px 8px 0 0",
+                                                    color: activeTabs[system.url_sitio] === 'unabase' ? "var(--primary)" : "var(--text-secondary)",
+                                                    cursor: "pointer"
+                                                }}
+                                            >
+                                                Unabase
+                                            </button>
                                         </div>
 
                                         <div style={{ display: "flex", flexDirection: "column", gap: "1rem", position: "relative", zIndex: 1 }}>
@@ -1539,6 +1556,50 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                                                     </div>
                                                 </div>
                                             )}
+                                            {activeTabs[system.url_sitio] === 'unabase' && (
+                                                <div style={{ backgroundColor: "#FFFFFF", padding: "1.25rem", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)", border: "1px solid rgba(0,0,0,0.05)", display: "flex", flexDirection: "column", gap: "1rem" }}>
+                                                    <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                                                        <span style={{ fontWeight: "600", fontSize: "0.75rem", color: "#1F2937", textTransform: "uppercase" }}>Unabase</span>
+                                                        
+                                                        <div style={{ display: "flex", gap: "1rem", alignItems: "flex-end" }}>
+                                                            <div style={{ flex: 1 }}>
+                                                                <label style={{ fontSize: "0.65rem", color: "#6B7280", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>EJECUTIVO RESPONSABLE</label>
+                                                                <input 
+                                                                    type="text" 
+                                                                    placeholder="Nombre del Ejecutivo" 
+                                                                    value={editValues[system.url_sitio]?.ejecutivo_responsable ?? system.ejecutivo_responsable ?? ""} 
+                                                                    onChange={(e) => setEditValues({ 
+                                                                        ...editValues, 
+                                                                        [system.url_sitio]: { 
+                                                                            ...editValues[system.url_sitio], 
+                                                                            ejecutivo_responsable: e.target.value 
+                                                                        } 
+                                                                    })} 
+                                                                    style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", border: "1px solid var(--border-color)", fontSize: "0.8125rem", backgroundColor: "transparent", color: "#1F2937", outline: "none" }} 
+                                                                />
+                                                            </div>
+                                                            <button
+                                                                onClick={async () => {
+                                                                    const val = editValues[system.url_sitio]?.ejecutivo_responsable;
+                                                                    if (val !== undefined) {
+                                                                        const result = await updateSystemFields(system.url_sitio, { ejecutivo_responsable: val });
+                                                                        if (result.success) {
+                                                                            setSystems(prev => prev.map(s => s.url_sitio === system.url_sitio ? { ...s, ejecutivo_responsable: val } : s));
+                                                                            alert("Ejecutivo Responsable guardado");
+                                                                        } else {
+                                                                            alert("Error al guardar: " + result.error);
+                                                                        }
+                                                                    }
+                                                                }}
+                                                                disabled={editValues[system.url_sitio]?.ejecutivo_responsable === undefined}
+                                                                style={{ background: "none", border: "none", padding: 0, cursor: "pointer", opacity: editValues[system.url_sitio]?.ejecutivo_responsable !== undefined ? 1 : 0.3 }}
+                                                            >
+                                                                <Image src="/Icons/floppy-disk-arrow-in.svg" alt="Save" width={22} height={22} />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 )}
@@ -1600,6 +1661,20 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                                             type="text"
                                             value={newSystem.url_sitio || ""}
                                             onChange={(e) => setNewSystem({ ...newSystem, url_sitio: e.target.value })}
+                                            style={{ padding: "0.625rem", borderRadius: "6px", border: "1px solid var(--border-color)", backgroundColor: "var(--border-color)", color: "var(--text-main)", outline: "none", width: "100%" }}
+                                        />
+                                    </div>
+                                </div>
+                                
+                                {/* Row: Ejecutivo Responsable */}
+                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+                                    <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                                        <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "500" }}>Ejecutivo Responsable (Unabase)</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Nombre del Ejecutivo"
+                                            value={newSystem.ejecutivo_responsable || ""}
+                                            onChange={(e) => setNewSystem({ ...newSystem, ejecutivo_responsable: e.target.value })}
                                             style={{ padding: "0.625rem", borderRadius: "6px", border: "1px solid var(--border-color)", backgroundColor: "var(--border-color)", color: "var(--text-main)", outline: "none", width: "100%" }}
                                         />
                                     </div>
@@ -1921,6 +1996,20 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                                             value={editingSystem.url_sitio || ""}
                                             disabled
                                             style={{ padding: "0.625rem", borderRadius: "6px", border: "1px solid #E5E7EB", backgroundColor: "#E5E7EB", outline: "none", width: "100%", cursor: "not-allowed", color: "#6B7280" }}
+                                        />
+                                    </div>
+                                </div>
+                                
+                                {/* Row: Ejecutivo Responsable */}
+                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+                                    <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                                        <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "500" }}>Ejecutivo Responsable (Unabase)</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Nombre del Ejecutivo"
+                                            value={editingSystem.ejecutivo_responsable || ""}
+                                            onChange={(e) => setEditingSystem({ ...editingSystem, ejecutivo_responsable: e.target.value })}
+                                            style={{ padding: "0.625rem", borderRadius: "6px", border: "1px solid var(--border-color)", backgroundColor: "var(--border-color)", color: "var(--text-main)", outline: "none", width: "100%" }}
                                         />
                                     </div>
                                 </div>
