@@ -239,7 +239,7 @@ export function buildProyectosIdentity(
         id: email,
         username: email,
         name: displayName,
-        color: "#1E88E5",
+        color: "#7CAEFF",
     };
 }
 

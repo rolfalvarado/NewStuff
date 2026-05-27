@@ -77,7 +77,7 @@ export default function LoginPage() {
         card: {
             position: "relative" as const,
             padding: "3rem 2rem",
-            backgroundColor: "#0F172A", // Color del Sidebar
+            backgroundColor: "#002C3E", // Color del Sidebar
             boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)", // Sombra fuerte
             borderRadius: "1rem",
             color: "#FFFFFF",

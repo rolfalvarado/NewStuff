@@ -16,9 +16,9 @@
   --text-muted: #9CA3AF;
 
   /* Primary Button Colors */
-  --primary: #1E88E5;
-  --primary-hover: #1565C0;
-  --text-on-primary: #FFFFFF;
+  --primary: #002C3E;
+  --primary-hover: #7CAEFF;
+  --text-on-primary: #F9F9F9;
 
   /* Spacing & Radius */
   --radius-sm: 4px;
@@ -53,7 +53,7 @@ body {
 body {
   color: var(--text-main);
   background: var(--bg-main);
-  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+  font-family: var(--font-syne), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
@@ -137,8 +137,9 @@ a:hover {
   font-weight: 500;
   cursor: pointer;
   border: none;
-  font-family: inherit;
+  font-family: var(--font-syne), sans-serif;
   font-size: 0.95rem;
+  color: #F9F9F9;
   transition: all 150ms var(--ease-smooth);
 }
 

@@ -340,7 +340,7 @@ export default function ClientReportsModal({ system, onClose }: Props) {
                         href={`/tareas?client=${encodeURIComponent(system.url_sitio || "")}`}
                         style={{
                             fontSize: "0.78rem",
-                            color: "var(--primary, #1E88E5)",
+                            color: "var(--primary, #002C3E)",
                             textDecoration: "none",
                             fontWeight: 600,
                         }}
@@ -350,8 +350,8 @@ export default function ClientReportsModal({ system, onClose }: Props) {
                     <button
                         onClick={onClose}
                         style={{
-                            background: "var(--primary, #1E88E5)",
-                            color: "white",
+                            background: "var(--primary, #002C3E)",
+                            color: "var(--text-on-primary, #F9F9F9)",
                             border: "none",
                             borderRadius: 8,
                             padding: "0.45rem 0.9rem",

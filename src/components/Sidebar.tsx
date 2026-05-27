@@ -133,16 +133,17 @@ export default function Sidebar() {
         <>
             <aside style={{
                 width: "170px",
-                backgroundColor: "#0F172A", // Negro azulado
+                backgroundColor: "#002C3E",
                 display: "flex",
                 flexDirection: "column",
                 height: "100vh",
                 position: "fixed",
                 left: 0,
                 top: 0,
-                color: "#FFFFFF",
+                color: "#F9F9F9",
                 borderRight: "1px solid var(--border-color)",
-                zIndex: 50
+                zIndex: 50,
+                fontFamily: "var(--font-syne), sans-serif"
             }}>
                 <div style={{ padding: "0.75rem 0.5rem", borderBottom: "1px solid rgba(255,255,255,0.1)", display: "flex", flexDirection: "column", alignItems: "center" }}>
                     <div
@@ -176,7 +177,7 @@ export default function Sidebar() {
                                     borderTop: "1px solid rgba(240, 242, 245, 0.1)",
                                     borderBottom: "1px solid rgba(240, 242, 245, 0.1)",
                                     backgroundColor: isActive ? "#1E293B" : "transparent",
-                                    color: "#FFFFFF",
+                                    color: "#F9F9F9",
                                     fontWeight: "400",
                                     fontSize: "13px",
                                     transition: "all 0.2s var(--ease-smooth)",
@@ -219,7 +220,7 @@ export default function Sidebar() {
                             background: isUpdating
                                 ? `linear-gradient(to right, #1E293B ${progress}%, #6b7280 ${progress}%)`
                                 : "transparent",
-                            color: "#FFFFFF",
+                            color: "#F9F9F9",
                             fontWeight: "400",
                             fontSize: "13px",
                             transition: "all 0.2s var(--ease-smooth)",
@@ -294,7 +295,7 @@ export default function Sidebar() {
                             padding: "1rem 1rem",
                             borderTop: "1px solid rgba(240, 242, 245, 0.1)",
                             borderBottom: "1px solid rgba(240, 242, 245, 0.1)",
-                            color: "#FFFFFF",
+                            color: "#F9F9F9",
                             fontWeight: "400",
                             fontSize: "13px",
                             transition: "all 0.2s",
@@ -304,7 +305,8 @@ export default function Sidebar() {
                             borderLeft: "none",
                             borderRight: "none",
                             width: "100%",
-                            textAlign: "left"
+                            textAlign: "left",
+                            fontFamily: "inherit"
                         }}
                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.05)"}
                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
