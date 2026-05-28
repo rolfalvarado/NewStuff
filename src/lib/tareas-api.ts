@@ -374,7 +374,7 @@ export interface TareasIdentity {
 }
 
 const ROLE_COLORS: Record<TareasRole, string> = {
-    dev: "#1E88E5",      // azul primario NewStuff
+    dev: "#002C3E",      // azul primario NewStuff
     support: "#ff6b35",  // naranja para diferenciar
 };
 

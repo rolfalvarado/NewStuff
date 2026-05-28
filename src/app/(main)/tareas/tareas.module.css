@@ -1815,9 +1815,9 @@
 }
 
 .duplicateBtn {
-    background: var(--accent-primary, #1e88e5);
-    color: white;
-    border: 1px solid var(--accent-primary, #1e88e5);
+    background: var(--primary, #002C3E);
+    color: var(--text-on-primary, #F9F9F9);
+    border: 1px solid var(--primary, #002C3E);
 }
 
 .duplicateBtn:hover {

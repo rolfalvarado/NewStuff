@@ -194,7 +194,7 @@ export default function StuffOverview() {
                     overflow: "hidden"
                 }}>
                     <thead>
-                        <tr style={{ backgroundColor: "#E2F0D9", borderBottom: "2px solid #C5E0B4" }}>
+                        <tr style={{ backgroundColor: "#f9f9f9", borderBottom: "2px solid #06ccb4" }}>
                             <th style={{ padding: "10px", textAlign: "left", color: "#374151", border: "1px solid #C5E0B4" }}>Servidor</th>
                             <th style={{ padding: "10px", textAlign: "left", color: "#374151", border: "1px solid #C5E0B4" }}>Instancia</th>
                             <th style={{ padding: "10px", textAlign: "left", color: "#374151", border: "1px solid #C5E0B4" }}>Version</th>
@@ -237,46 +237,46 @@ export default function StuffOverview() {
                                             const inactiveStyle = isInactive ? { color: "#9CA3AF", fontStyle: "italic" as const } : {};
 
                                             return (
-                                            <tr key={`${server.nombre_servidor}-${idx}`} style={{ borderBottom: "1px solid #E5E7EB" }}>
-                                                <td style={{ padding: "8px 10px", fontWeight: "600", border: "1px solid #E5E7EB", backgroundColor: idx === 0 ? "#E2F0D9" : "transparent", ...inactiveStyle }}>
-                                                    {idx === 0 ? (
-                                                        <span 
-                                                            onClick={(e) => {
-                                                                e.preventDefault();
-                                                                e.stopPropagation();
-                                                                window.location.assign(`rdp://${server.ip_servidor}`);
-                                                            }}
-                                                            style={{ color: "inherit", cursor: "pointer" }}
-                                                            title="Conectar a Escritorio Remoto"
-                                                        >
-                                                            {server.nombre_servidor}
-                                                        </span>
-                                                    ) : ""}
-                                                </td>
-                                                <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", ...inactiveStyle }}>
-                                                    {idx === 0 ? server.tipo_instancia : ""}
-                                                </td>
-                                                <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", ...inactiveStyle }}>
-                                                    {idx === 0 ? server.version_sistema : ""}
-                                                </td>
-                                                <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", backgroundColor: "#E2F0D9", fontWeight: "500", ...inactiveStyle }}>
-                                                    {sys.nombre_empresa}
-                                                </td>
-                                                <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", fontFamily: "monospace", ...inactiveStyle }}>
-                                                    {idx === 0 ? server.ip_servidor : ""}
-                                                </td>
-                                                <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", backgroundColor: "#E2F0D9", textAlign: "center", ...inactiveStyle }}>
-                                                    {sys.puerto_web || "-"}
-                                                </td>
-                                                <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", backgroundColor: "#E2F0D9", ...inactiveStyle }}>
-                                                    {sys.memoria_sistema || "-"}
-                                                </td>
-                                                <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", backgroundColor: "#E2F0D9", maxWidth: "250px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", ...inactiveStyle }}>
-                                                    <a href={sys.url_sitio} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: isInactive ? "#9CA3AF" : "#2563EB" }}>
-                                                        {sys.url_sitio}
-                                                    </a>
-                                                </td>
-                                            </tr>
+                                                <tr key={`${server.nombre_servidor}-${idx}`} style={{ borderBottom: "1px solid #E5E7EB" }}>
+                                                    <td style={{ padding: "8px 10px", fontWeight: "600", border: "1px solid #E5E7EB", backgroundColor: idx === 0 ? "#E2F0D9" : "transparent", ...inactiveStyle }}>
+                                                        {idx === 0 ? (
+                                                            <span
+                                                                onClick={(e) => {
+                                                                    e.preventDefault();
+                                                                    e.stopPropagation();
+                                                                    window.location.assign(`rdp://${server.ip_servidor}`);
+                                                                }}
+                                                                style={{ color: "inherit", cursor: "pointer" }}
+                                                                title="Conectar a Escritorio Remoto"
+                                                            >
+                                                                {server.nombre_servidor}
+                                                            </span>
+                                                        ) : ""}
+                                                    </td>
+                                                    <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", ...inactiveStyle }}>
+                                                        {idx === 0 ? server.tipo_instancia : ""}
+                                                    </td>
+                                                    <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", ...inactiveStyle }}>
+                                                        {idx === 0 ? server.version_sistema : ""}
+                                                    </td>
+                                                    <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", backgroundColor: "#E2F0D9", fontWeight: "500", ...inactiveStyle }}>
+                                                        {sys.nombre_empresa}
+                                                    </td>
+                                                    <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", fontFamily: "monospace", ...inactiveStyle }}>
+                                                        {idx === 0 ? server.ip_servidor : ""}
+                                                    </td>
+                                                    <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", backgroundColor: "#E2F0D9", textAlign: "center", ...inactiveStyle }}>
+                                                        {sys.puerto_web || "-"}
+                                                    </td>
+                                                    <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", backgroundColor: "#E2F0D9", ...inactiveStyle }}>
+                                                        {sys.memoria_sistema || "-"}
+                                                    </td>
+                                                    <td style={{ padding: "8px 10px", border: "1px solid #E5E7EB", backgroundColor: "#E2F0D9", maxWidth: "250px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", ...inactiveStyle }}>
+                                                        <a href={sys.url_sitio} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: isInactive ? "#9CA3AF" : "#2563EB" }}>
+                                                            {sys.url_sitio}
+                                                        </a>
+                                                    </td>
+                                                </tr>
                                             );
                                         })}
                                     </Fragment>

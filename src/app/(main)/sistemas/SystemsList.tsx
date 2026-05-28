@@ -103,10 +103,10 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
     const handleRenameHolding = async () => {
         const currentHolding = editingSystem?.holding;
         if (!currentHolding || currentHolding === "NEW_ENTRY" || currentHolding === "") return;
-        
+
         const newName = prompt(`Ingrese el nuevo nombre para editar el holding "${currentHolding}":`, currentHolding);
         if (!newName || newName === currentHolding) return;
-        
+
         const res = await renameHolding(currentHolding, newName);
         if (res.ok) {
             alert(`Holding renombrado exitosamente. Sistemas actualizados: ${res.count}`);
@@ -120,9 +120,9 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
     const handleDeleteHolding = async () => {
         const currentHolding = editingSystem?.holding;
         if (!currentHolding || currentHolding === "NEW_ENTRY" || currentHolding === "") return;
-        
+
         if (!confirm(`¿Seguro que deseas eliminar el holding "${currentHolding}" de todos los sistemas?`)) return;
-        
+
         const res = await deleteHolding(currentHolding);
         if (res.ok) {
             alert(`Holding eliminado exitosamente. Sistemas actualizados: ${res.count}`);
@@ -416,7 +416,7 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                     <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.25rem" }}>
                         Sitios Online
                     </div>
-                    <div style={{ fontSize: "1.25rem", fontWeight: "700", color: "#059669" }}>
+                    <div style={{ fontSize: "1.25rem", fontWeight: "700", color: "#06CCb4" }}>
                         {systems.filter(s => s.estado_sitio?.toLowerCase().includes("online") || s.estado_sitio?.toLowerCase().includes("on line")).length}
                     </div>
                 </div>
@@ -786,7 +786,7 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                                         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                                             <span style={{
                                                 fontSize: "0.75rem",
-                                                color: disabledSystems[system.url_sitio] ? "var(--text-muted)" : "#3DDC97",
+                                                color: disabledSystems[system.url_sitio] ? "var(--text-muted)" : "#06CCB4",
                                                 fontWeight: "600"
                                             }}>
                                                 {disabledSystems[system.url_sitio] ? "Inactivo" : "Activo"}
@@ -814,7 +814,7 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                                                     height: "20px",
                                                     borderRadius: "12px",
                                                     border: "none",
-                                                    backgroundColor: disabledSystems[system.url_sitio] ? "#334155" : "#3DDC97", // Gray Blue if Paused (Disabled=True), Green if Active (Disabled=False)
+                                                    backgroundColor: disabledSystems[system.url_sitio] ? "#334155" : "#06CCB4", // Gray Blue if Paused (Disabled=True), Green if Active (Disabled=False)
                                                     position: "relative",
                                                     cursor: "pointer",
                                                     padding: 0,
@@ -828,7 +828,7 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                                                     width: "16px",
                                                     height: "16px",
                                                     borderRadius: "50%",
-                                                    backgroundColor: "#FFFFFF",
+                                                    backgroundColor: "#F9F9F9",
                                                     position: "absolute",
                                                     left: disabledSystems[system.url_sitio] ? "2px" : "18px", // Inverted logic for visual "Active" (Right) vs "Disabled" (Left)
                                                     transition: "left 200ms cubic-bezier(0.4, 0, 0.2, 1)",
@@ -1083,7 +1083,7 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                                             style={{
                                                 fontSize: "0.75rem",
                                                 fontWeight: "600",
-                                                color: system.estado_sitio.toLowerCase().includes("online") ? "#3DDC97" : "#FF6B6B",
+                                                color: system.estado_sitio.toLowerCase().includes("online") ? "#06ccb4" : "#FF6B6B",
                                                 backgroundColor: system.estado_sitio.toLowerCase().includes("online") ? "rgba(61,220,151,0.12)" : "rgba(255,107,107,0.15)",
                                                 border: "none",
                                                 padding: "2px 10px",
@@ -1560,22 +1560,22 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                                                 <div style={{ backgroundColor: "#FFFFFF", padding: "1.25rem", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)", border: "1px solid rgba(0,0,0,0.05)", display: "flex", flexDirection: "column", gap: "1rem" }}>
                                                     <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                                                         <span style={{ fontWeight: "600", fontSize: "0.75rem", color: "#1F2937", textTransform: "uppercase" }}>Unabase</span>
-                                                        
+
                                                         <div style={{ display: "flex", gap: "1rem", alignItems: "flex-end" }}>
                                                             <div style={{ flex: 1 }}>
                                                                 <label style={{ fontSize: "0.65rem", color: "#6B7280", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>EJECUTIVO RESPONSABLE</label>
-                                                                <input 
-                                                                    type="text" 
-                                                                    placeholder="Nombre del Ejecutivo" 
-                                                                    value={editValues[system.url_sitio]?.ejecutivo_responsable ?? system.ejecutivo_responsable ?? ""} 
-                                                                    onChange={(e) => setEditValues({ 
-                                                                        ...editValues, 
-                                                                        [system.url_sitio]: { 
-                                                                            ...editValues[system.url_sitio], 
-                                                                            ejecutivo_responsable: e.target.value 
-                                                                        } 
-                                                                    })} 
-                                                                    style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", border: "1px solid var(--border-color)", fontSize: "0.8125rem", backgroundColor: "transparent", color: "#1F2937", outline: "none" }} 
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Nombre del Ejecutivo"
+                                                                    value={editValues[system.url_sitio]?.ejecutivo_responsable ?? system.ejecutivo_responsable ?? ""}
+                                                                    onChange={(e) => setEditValues({
+                                                                        ...editValues,
+                                                                        [system.url_sitio]: {
+                                                                            ...editValues[system.url_sitio],
+                                                                            ejecutivo_responsable: e.target.value
+                                                                        }
+                                                                    })}
+                                                                    style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", border: "1px solid var(--border-color)", fontSize: "0.8125rem", backgroundColor: "transparent", color: "#1F2937", outline: "none" }}
                                                                 />
                                                             </div>
                                                             <button
@@ -1665,7 +1665,7 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                                         />
                                     </div>
                                 </div>
-                                
+
                                 {/* Row: Ejecutivo Responsable */}
                                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
                                     <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
@@ -1999,7 +1999,7 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                                         />
                                     </div>
                                 </div>
-                                
+
                                 {/* Row: Ejecutivo Responsable */}
                                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
                                     <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
