@@ -65,6 +65,19 @@ function formatRut(val: string): string {
     return `${bodyFmt}-${dv}`;
 }
 
+function currentMonth(): string {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
+function monthRange(month: string): { from: string; to: string } {
+    const [y, m] = month.split("-").map(Number);
+    const from = `${month}-01`;
+    const lastDay = new Date(y, m, 0).getDate();
+    const to = `${month}-${String(lastDay).padStart(2, "0")}`;
+    return { from, to };
+}
+
 const HORAS_OPTIONS = [
     "08:00", "08:30", "09:00", "09:30", "10:00", "10:30",
     "11:00", "11:30", "12:00", "12:30", "13:00", "13:30",
@@ -103,8 +116,7 @@ export default function BandejaDTCPage() {
         horas_envio: ["08:30"] as string[],
         isEnabledUser: true,
     });
-    const [dateFrom, setDateFrom] = useState("");
-    const [dateTo, setDateTo] = useState("");
+    const [selectedMonth, setSelectedMonth] = useState(currentMonth());
     const [showSiiPass, setShowSiiPass] = useState(false);
     const [showApoderadoPass, setShowApoderadoPass] = useState(false);
     const [testingSii, setTestingSii] = useState(false);
@@ -321,12 +333,12 @@ export default function BandejaDTCPage() {
                 payload.claveApoderado = form.claveApoderado;
             }
 
-            // Incluir rango de fechas si están presentes
-            if (dateFrom) {
-                payload.dateFrom = dateFrom;
-            }
-            if (dateTo) {
-                payload.dateTo = dateTo;
+            // Incluir el mes seleccionado y su rango de fechas
+            if (selectedMonth) {
+                const { from, to } = monthRange(selectedMonth);
+                payload.mes = selectedMonth;
+                payload.dateFrom = from;
+                payload.dateTo = to;
             }
 
             const data = await siiProxy("frank:/sii/load", "POST", { payload });
@@ -634,26 +646,15 @@ export default function BandejaDTCPage() {
                         </div>
                     </div>
 
-                    {/* Rango de fechas para prueba de carga */}
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
-                        <div>
-                            <label style={labelStyle}>Fecha desde</label>
-                            <input
-                                type="date"
-                                value={dateFrom}
-                                onChange={e => setDateFrom(e.target.value)}
-                                style={inputStyle}
-                            />
-                        </div>
-                        <div>
-                            <label style={labelStyle}>Fecha hasta</label>
-                            <input
-                                type="date"
-                                value={dateTo}
-                                onChange={e => setDateTo(e.target.value)}
-                                style={inputStyle}
-                            />
-                        </div>
+                    {/* Mes para prueba de carga */}
+                    <div>
+                        <label style={labelStyle}>Mes</label>
+                        <input
+                            type="month"
+                            value={selectedMonth}
+                            onChange={e => setSelectedMonth(e.target.value)}
+                            style={inputStyle}
+                        />
                     </div>
 
                     {/* Scraping + Horas */}
@@ -700,7 +701,12 @@ export default function BandejaDTCPage() {
                             className="btn btn-primary"
                             onClick={testSiiLogin}
                             disabled={!canTestSii || !selectedClientId || testingSii}
-                            style={{ fontSize: "13px", padding: "0.5rem 1.25rem" }}
+                            style={{
+                                fontSize: "13px",
+                                padding: "0.5rem 1.25rem",
+                                cursor: (!canTestSii || !selectedClientId || testingSii) ? "not-allowed" : "pointer",
+                                opacity: (!canTestSii || !selectedClientId || testingSii) ? 0.5 : 1,
+                            }}
                         >
                             {testingSii ? "Probando..." : "Realizar prueba de carga"}
                         </button>

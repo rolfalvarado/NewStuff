@@ -4,7 +4,7 @@
 $ErrorActionPreference = "Stop"
 
 # --- Configuration ---
-$SERVER_KEY = "C:\llave\linuxdesa02.pem"
+$SERVER_KEY = "C:\Users\ddelt\Escritorio\unabase\newstuff\linuxdesa02.pem"
 $SERVER_USER = "ubuntu"
 $SERVER_IP = "ec2-44-212-189-160.compute-1.amazonaws.com"
 $SERVER_HOST = "$SERVER_USER@$SERVER_IP"
