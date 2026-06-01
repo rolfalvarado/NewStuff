@@ -424,6 +424,10 @@ export default function BandejaDTCPage() {
             if (data?.success === false || data?.ok === false) {
                 throw new Error("No se pudo actualizar el estado");
             }
+            // Sincronizar form.enabled para que saveSiiConfig no sobreescriba este cambio
+            setForm(f => ({ ...f, isEnabledUser: val, enabled: val }));
+            // Actualizar el array clients en memoria para reflejar el nuevo estado
+            setClients(prev => prev.map(cl => cl.id === c.id ? { ...cl, estado: val } : cl));
             showSnackbar("Estado actualizado");
         } catch (e) {
             setForm(f => ({ ...f, isEnabledUser: prev }));

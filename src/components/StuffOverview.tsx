@@ -10,6 +10,7 @@ export default function StuffOverview() {
     const [systems, setSystems] = useState<System[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
+    const [isOfflineListOpen, setIsOfflineListOpen] = useState(false);
 
     useEffect(() => {
         const loadData = async () => {
@@ -168,6 +169,41 @@ export default function StuffOverview() {
                         style={{ border: "none", outline: "none", fontSize: "0.875rem", width: "100%", backgroundColor: "transparent", color: "var(--text-main)" }}
                     />
                 </div>
+
+                {/* Offline badge */}
+                <button
+                    onClick={() => setIsOfflineListOpen(true)}
+                    style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        padding: "0.25rem 0.5rem",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.375rem"
+                    }}
+                    title="Ver sistemas offline"
+                >
+                    <span style={{
+                        width: "8px",
+                        height: "8px",
+                        borderRadius: "50%",
+                        backgroundColor: "#e11d48",
+                        display: "inline-block",
+                        flexShrink: 0
+                    }} />
+                    <span style={{
+                        fontSize: "0.875rem",
+                        fontWeight: "700",
+                        color: "#e11d48"
+                    }}>Offline</span>
+                    <span style={{
+                        fontSize: "0.875rem",
+                        fontWeight: "700",
+                        color: "#e11d48"
+                    }}>({systems.filter(s => !(s.estado_sitio?.toLowerCase().includes("online") || s.estado_sitio?.toLowerCase().includes("on line"))).length})</span>
+                </button>
+
                 <h2 style={{ fontSize: "1.25rem", fontWeight: "600", margin: 0, color: "var(--text-main)", marginLeft: "auto" }}>Stuff - Vista General</h2>
             </div>
 
@@ -285,6 +321,123 @@ export default function StuffOverview() {
                     </tbody>
                 </table>
             </div>
+
+            {/* Offline Systems Modal */}
+            {isOfflineListOpen && (
+                <div
+                    style={{
+                        position: "fixed",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        backgroundColor: "rgba(0,0,0,0.8)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        zIndex: 1000,
+                        backdropFilter: "blur(4px)"
+                    }}
+                    onClick={() => setIsOfflineListOpen(false)}
+                >
+                    <div
+                        style={{
+                            backgroundColor: "var(--bg-card)",
+                            borderRadius: "12px",
+                            width: "500px",
+                            maxWidth: "90%",
+                            maxHeight: "80vh",
+                            boxShadow: "var(--shadow-md)",
+                            display: "flex",
+                            flexDirection: "column",
+                            overflow: "hidden",
+                            border: "1px solid var(--border-color)"
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Header */}
+                        <div style={{ padding: "1.5rem", borderBottom: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <h2 style={{ fontSize: "1.25rem", fontWeight: "600", margin: 0, color: "var(--text-main)" }}>Sistemas Offline</h2>
+                            <button
+                                onClick={() => setIsOfflineListOpen(false)}
+                                style={{
+                                    width: "32px",
+                                    height: "32px",
+                                    borderRadius: "6px",
+                                    border: "none",
+                                    backgroundColor: "transparent",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    cursor: "pointer",
+                                    transition: "background-color 0.2s"
+                                }}
+                                onMouseEnter={e => e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.05)"}
+                                onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
+                            >
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+
+                        {/* Body */}
+                        <div style={{ padding: "1.5rem", overflowY: "auto", display: "flex", flexDirection: "column", gap: "1rem" }}>
+                            {systems.filter(s => !(s.estado_sitio?.toLowerCase().includes("online") || s.estado_sitio?.toLowerCase().includes("on line"))).length === 0 ? (
+                                <div style={{ textAlign: "center", color: "var(--text-muted)", padding: "2rem" }}>
+                                    No hay sistemas offline en este momento.
+                                </div>
+                            ) : (
+                                systems
+                                    .filter(s => !(s.estado_sitio?.toLowerCase().includes("online") || s.estado_sitio?.toLowerCase().includes("on line")))
+                                    .map((system, idx) => (
+                                        <div key={idx} style={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            alignItems: "center",
+                                            padding: "1rem",
+                                            backgroundColor: "rgba(239, 68, 68, 0.05)",
+                                            border: "1px solid rgba(239, 68, 68, 0.1)",
+                                            borderRadius: "8px"
+                                        }}>
+                                            <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                                                <span style={{ fontWeight: "600", color: "#f87171", fontSize: "0.875rem" }}>
+                                                    {system.nombre_empresa}
+                                                </span>
+                                                <span style={{ fontSize: "0.75rem", color: "rgba(248, 113, 113, 0.7)" }}>
+                                                    {system.nombre_servidor}
+                                                </span>
+                                                <a
+                                                    href={system.url_sitio}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    style={{ fontSize: "0.75rem", color: "rgba(248, 113, 113, 0.6)", textDecoration: "none" }}
+                                                    onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
+                                                    onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
+                                                >
+                                                    {system.url_sitio}
+                                                </a>
+                                            </div>
+                                            <div style={{
+                                                fontSize: "0.75rem",
+                                                padding: "0.25rem 0.625rem",
+                                                backgroundColor: "rgba(239, 68, 68, 0.1)",
+                                                color: "#f87171",
+                                                borderRadius: "4px",
+                                                fontWeight: "600",
+                                                textTransform: "uppercase",
+                                                letterSpacing: "0.025em"
+                                            }}>
+                                                Offline
+                                            </div>
+                                        </div>
+                                    ))
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
