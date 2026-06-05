@@ -97,6 +97,75 @@ def esperar_modal_visible(driver, modal_selector, timeout=ESPERA_CARGA):
     )
 
 
+def detectar_config_modal(driver, timeout=10):
+    """
+    Detecta cuál modal está activo y devuelve un dict con sus selectores.
+    Soporta dos variantes:
+      - Variante A (clásica):  #exampleModalClay   / #fecha_desde  / #fecha_hasta  / #update-clay
+      - Variante B (nueva):    #exampleModalGeneral / #fecha_desdea / #fecha_hastaa / .btn-accept
+    """
+    # Esperar a que al menos uno de los dos modales se vuelva visible
+    modales_candidatos = ["#exampleModalClay", "#exampleModalGeneral"]
+    modal_activo = None
+    deadline = time.time() + timeout
+
+    while time.time() < deadline:
+        for sel in modales_candidatos:
+            elems = driver.find_elements(By.CSS_SELECTOR, sel)
+            if elems and elems[0].is_displayed():
+                modal_activo = sel
+                break
+        if modal_activo:
+            break
+        time.sleep(0.5)
+
+    if not modal_activo:
+        raise Exception(
+            f"No se encontró ningún modal activo ({', '.join(modales_candidatos)}) en {timeout}s"
+        )
+
+    print(f"        [INFO] Modal detectado: {modal_activo}")
+
+    if modal_activo == "#exampleModalClay":
+        return {
+            "modal":       "#exampleModalClay",
+            "fecha_desde": "fecha_desde",
+            "fecha_hasta": "fecha_hasta",
+            "btn_update":  (By.ID, "update-clay"),
+            "btn_cerrar":  "#exampleModalClay .btn-secondary",
+        }
+    else:  # #exampleModalGeneral
+        return {
+            "modal":       "#exampleModalGeneral",
+            "fecha_desde": "fecha_desdea",
+            "fecha_hasta": "fecha_hastaa",
+            "btn_update":  (By.CSS_SELECTOR, "#exampleModalGeneral .btn-accept"),
+            "btn_cerrar":  "#exampleModalGeneral .btn-secondary",
+        }
+
+
+def esperar_invisibilidad_loading(driver, timeout=90, fallback_sleep=0):
+    """Espera a que desaparezca el loading-screen si se muestra. Si no existe, hace un fallback_sleep."""
+    try:
+        # Pausa mínima para que se renderice el overlay
+        time.sleep(1.5)
+        loading_elements = driver.find_elements(By.ID, "loading-screen")
+        if loading_elements:
+            print("        [INFO] Detectado elemento loading-screen, esperando invisibilidad...")
+            WebDriverWait(driver, timeout).until(
+                EC.invisibility_of_element_located((By.ID, "loading-screen"))
+            )
+            print("        ✓ El loading-screen ha desaparecido")
+        else:
+            if fallback_sleep > 0:
+                print(f"        [INFO] No se detectó loading-screen. Esperando fallback de {fallback_sleep} segundos...")
+                time.sleep(fallback_sleep)
+    except Exception as e:
+        print(f"        [WARN] Error esperando loading-screen: {e}")
+        if fallback_sleep > 0:
+            time.sleep(fallback_sleep)
+
+
 def buscar_con_fallback(driver, selectores, timeout=ESPERA_CARGA, descripcion="elemento"):
     """
     Intenta encontrar un elemento usando múltiples selectores.
@@ -155,9 +224,23 @@ def procesar_sistema(driver, sistema):
         
         print("        Esperando carga del iframe...")
         time.sleep(3)
-        esperar_iframe(driver, 1)
         
-        print("        ✓ En página de Configuración")
+        # Intentar buscar el iframe de configuración dinámicamente por URL
+        iframes = driver.find_elements(By.TAG_NAME, "iframe")
+        config_iframe = None
+        for iframe in iframes:
+            src = iframe.get_attribute("src") or ""
+            if "configuracion" in src:
+                config_iframe = iframe
+                break
+                
+        if config_iframe:
+            driver.switch_to.frame(config_iframe)
+            print("        ✓ Cambiado al iframe de Configuración de forma dinámica")
+        else:
+            esperar_iframe(driver, 1)
+            print("        ✓ Cambiado al iframe de Configuración por índice por defecto (1)")
+            
         time.sleep(2)
         
         # ========================================
@@ -170,7 +253,9 @@ def procesar_sistema(driver, sistema):
         selectores_dtc = [
             (By.CSS_SELECTOR, ".panel-collapse:nth-child(4) strong"),
             (By.XPATH, "//strong[contains(text(),'Actualizar DTC')]"),
+            (By.XPATH, "//strong[contains(text(),'Actualizar bandeja movimientos')]"),
             (By.XPATH, "//span[contains(text(),'Actualizar DTC')]"),
+            (By.XPATH, "//span[contains(text(),'Actualizar bandeja movimientos')]"),
             (By.XPATH, "//*[contains(text(),'DTC') and (contains(@class,'dropdown-item') or contains(@class,'unblock-menu'))]"),
             (By.CSS_SELECTOR, "span.unblock-menu[data-target='#exampleModalClay']"),
             (By.XPATH, "//strong[contains(text(),'DTC')]/parent::*"),
@@ -179,26 +264,25 @@ def procesar_sistema(driver, sistema):
         btn_dtc.click()
         
         time.sleep(2)
-        esperar_modal_visible(driver, "#exampleModalClay")
+        cfg_dtc = detectar_config_modal(driver)
         
         fecha_desde = obtener_fecha_hace_dias(3)
         fecha_hasta = obtener_hoy()
         
         print(f"        Rango: {fecha_desde} a {fecha_hasta}")
         
-        esperar_y_click(driver, By.ID, "fecha_desde")
-        esperar_y_escribir(driver, By.ID, "fecha_desde", fecha_desde)
+        esperar_y_click(driver, By.ID, cfg_dtc["fecha_desde"])
+        esperar_y_escribir(driver, By.ID, cfg_dtc["fecha_desde"], fecha_desde)
         
-        esperar_y_click(driver, By.ID, "fecha_hasta")
-        esperar_y_escribir(driver, By.ID, "fecha_hasta", fecha_hasta)
+        esperar_y_click(driver, By.ID, cfg_dtc["fecha_hasta"])
+        esperar_y_escribir(driver, By.ID, cfg_dtc["fecha_hasta"], fecha_hasta)
         
-        esperar_y_click(driver, By.ID, "update-clay")
+        esperar_y_click(driver, cfg_dtc["btn_update"][0], cfg_dtc["btn_update"][1])
         
-        print(f"        Esperando {ESPERA_DTC} segundos...")
-        time.sleep(ESPERA_DTC)
+        esperar_invisibilidad_loading(driver, timeout=90, fallback_sleep=ESPERA_DTC)
         
-        esperar_y_click(driver, By.CSS_SELECTOR, "#exampleModalClay .btn-secondary")
-        print("        ✓ DTC actualizado")
+        esperar_y_click(driver, By.CSS_SELECTOR, cfg_dtc["btn_cerrar"])
+        print("        ✓ DTC/Bandeja movimientos actualizada")
         time.sleep(1)
         
         # ========================================
@@ -222,22 +306,21 @@ def procesar_sistema(driver, sistema):
         btn_bandeja.click()
         
         time.sleep(2)
-        esperar_modal_visible(driver, "#exampleModalClay")
+        cfg_clay = detectar_config_modal(driver)
         
         fecha_desde_mes = obtener_fecha_hace_meses(1)
         
         print(f"        Rango: {fecha_desde_mes} a {fecha_hasta}")
         
-        esperar_y_click(driver, By.ID, "fecha_desde")
-        esperar_y_escribir(driver, By.ID, "fecha_desde", fecha_desde_mes)
+        esperar_y_click(driver, By.ID, cfg_clay["fecha_desde"])
+        esperar_y_escribir(driver, By.ID, cfg_clay["fecha_desde"], fecha_desde_mes)
         
-        esperar_y_click(driver, By.ID, "fecha_hasta")
-        esperar_y_escribir(driver, By.ID, "fecha_hasta", fecha_hasta)
+        esperar_y_click(driver, By.ID, cfg_clay["fecha_hasta"])
+        esperar_y_escribir(driver, By.ID, cfg_clay["fecha_hasta"], fecha_hasta)
         
-        esperar_y_click(driver, By.ID, "update-clay")
+        esperar_y_click(driver, cfg_clay["btn_update"][0], cfg_clay["btn_update"][1])
         
-        print(f"        Esperando {ESPERA_CLAY} segundos...")
-        time.sleep(ESPERA_CLAY)
+        esperar_invisibilidad_loading(driver, timeout=90, fallback_sleep=ESPERA_CLAY)
         
         print("        ✓ Bandeja Clay actualizada")
         

@@ -46,8 +46,9 @@ export async function POST(req: NextRequest) {
             orders: orders
         });
 
+        const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
         const scriptPath = path.join(process.cwd(), 'scripts', 'ordenes_compra.py');
-        const pythonProcess = spawn('python3', ['-u', scriptPath, '--config', config]);
+        const pythonProcess = spawn(pythonCmd, ['-u', scriptPath, '--config', config]);
 
         pythonProcess.stdout.on('data', (data) => {
             const text = data.toString('utf-8');

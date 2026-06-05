@@ -13,8 +13,9 @@ export async function POST(req: NextRequest) {
         const jobId = generateJobId();
         createJob(jobId);
 
+        const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
         const scriptPath = path.join(process.cwd(), 'scripts', 'clona.py');
-        const pythonProcess = spawn('python3', ['-u', scriptPath, '--config', config]);
+        const pythonProcess = spawn(pythonCmd, ['-u', scriptPath, '--config', config]);
 
         pythonProcess.stdout.on('data', (data) => {
             const text = data.toString('utf-8');

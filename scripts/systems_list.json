@@ -1,9 +1,5 @@
 [
     {
-        "nombre": "Alta",
-        "url": "https://alta.unabase.com/4DACTION/wbienvenidos"
-    },
-    {
         "nombre": "Ants Constructora",
         "url": "https://antsconstructora.unabase.com/4DACTION/wbienvenidos"
     },
@@ -16,24 +12,12 @@
         "url": "https://fe.unabase.com/4DACTION/wbienvenidos"
     },
     {
-        "nombre": "Modo",
-        "url": "https://modo.unabase.com/4DACTION/wbienvenidos"
-    },
-    {
-        "nombre": "Muta",
-        "url": "https://muta.unabase.com/4DACTION/wbienvenidos"
-    },
-    {
         "nombre": "Sauvalle",
         "url": "https://sauvalle.unabase.com/4DACTION/wbienvenidos"
     },
     {
         "nombre": "Social Lit",
         "url": "https://sociallit.unabase.com/4DACTION/wbienvenidos"
-    },
-    {
-        "nombre": "Sud",
-        "url": "https://sud.unabase.com/4DACTION/wbienvenidos"
     },
     {
         "nombre": "Crudo Films",
@@ -66,5 +50,9 @@
     {
         "nombre": "Otro Foco",
         "url": "https://otrofoco.unabase.com/4DACTION/wbienvenidos"
+    },
+    {
+        "nombre": "Glovox",
+        "url": "https://glovox.unabase.com/4DACTION/wbienvenidos"
     }
 ]
