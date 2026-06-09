@@ -2258,6 +2258,48 @@ export default function TareasClient({ identity }: Props) {
             .slice(0, 5);
     }, [tasks]);
 
+    // ===== Recordatorio al entrar al módulo =====
+    // Cuando el desarrollador abre Tareas, le recordamos UNA sola vez las tareas
+    // que ya tomó y siguen en curso, para que las cierre cuanto antes. Saludamos
+    // por el nombre del responsable (la cuenta dev es compartida, así que el
+    // nombre real está en assignedToName, no en identity.name).
+    const reminderShownRef = useRef(false);
+    useEffect(() => {
+        if (loading || reminderShownRef.current) return;
+        if (!isDev) return;
+        // Marcamos como mostrado en cuanto la carga inicial termina, así no se
+        // vuelve a disparar aunque el polling refresque la lista.
+        reminderShownRef.current = true;
+        if (inProgressMine.length === 0) return;
+
+        const names = inProgressMine
+            .map((t) => t.assignedToName?.trim())
+            .filter((n): n is string => !!n);
+        const greetName = names[0] || "Equipo";
+
+        if (inProgressMine.length === 1) {
+            const t = inProgressMine[0];
+            const who = t.assignedToName?.trim() || greetName;
+            const title = `📌 ${who}, recuerda tu tarea en curso`;
+            const msg = `Tienes "${t.title}" asignada. Intenta sacarla de la lista lo antes posible.`;
+            pushToast({ title, msg, kind: "info" });
+            notifyBrowser(title, msg, `tarea-recordatorio-${t.id}`);
+        } else {
+            const n = inProgressMine.length;
+            const title = `📌 ${greetName}, tienes ${n} tareas en curso`;
+            const titles = inProgressMine.map((t) => t.title);
+            const shown = titles.slice(0, 4);
+            const extra = n > 4 ? ` y ${n - 4} más` : "";
+            const msg = `Recuerda cerrarlas pronto: ${shown.join(" · ")}${extra}.`;
+            pushToast({ title, msg, kind: "info" });
+            notifyBrowser(
+                title,
+                `Recuerda cerrarlas pronto:\n${shown.map((x) => `• ${x}`).join("\n")}${extra}`,
+                "tarea-recordatorio-multi"
+            );
+        }
+    }, [loading, isDev, inProgressMine, pushToast, notifyBrowser]);
+
     // ===== Acciones =====
     async function submitForm() {
         setTouched(true);
@@ -2365,6 +2407,24 @@ export default function TareasClient({ identity }: Props) {
     ) {
         if (!assigning) return;
         const name = (responsable || identity.name).trim() || identity.name;
+
+        // Una persona no puede tener dos tareas en curso a la vez. Como la cuenta
+        // dev es compartida, distinguimos al responsable por su nombre (assignedToName).
+        const normalized = name.toLowerCase();
+        const alreadyInProgress = tasks.find(
+            (t) =>
+                t.id !== assigning.id &&
+                t.status === "in_progress" &&
+                (t.assignedToName || "").trim().toLowerCase() === normalized
+        );
+        if (alreadyInProgress) {
+            alert(
+                `${name} ya tiene una tarea en curso: "${alreadyInProgress.title}".\n\n` +
+                    `Termínala (o cámbiala de responsable) antes de tomar una nueva.`
+            );
+            return;
+        }
+
         try {
             let updated = await TareasAPI.assign(assigning.id, {
                 minutes,
@@ -2504,6 +2564,25 @@ export default function TareasClient({ identity }: Props) {
     async function onChangeResponsable(t: Task, newName: string) {
         const name = newName.trim();
         if (name.length < 2 || name === t.assignedToName) return;
+
+        // Misma regla que al tomar: nadie puede quedar con dos tareas en curso.
+        if (t.status === "in_progress") {
+            const normalized = name.toLowerCase();
+            const clash = tasks.find(
+                (x) =>
+                    x.id !== t.id &&
+                    x.status === "in_progress" &&
+                    (x.assignedToName || "").trim().toLowerCase() === normalized
+            );
+            if (clash) {
+                alert(
+                    `${name} ya tiene una tarea en curso: "${clash.title}".\n\n` +
+                        `No puede quedar a cargo de dos tareas en curso al mismo tiempo.`
+                );
+                return;
+            }
+        }
+
         try {
             const u = await TareasAPI.update(t.id, { assignedToName: name });
             setTasks((prev) => prev.map((x) => (x.id === u.id ? u : x)));
