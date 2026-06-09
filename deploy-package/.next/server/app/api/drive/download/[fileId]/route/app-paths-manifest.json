@@ -1,3 +1,0 @@
-{
-  "/api/drive/download/[fileId]/route": "app/api/drive/download/[fileId]/route.js"
-}
