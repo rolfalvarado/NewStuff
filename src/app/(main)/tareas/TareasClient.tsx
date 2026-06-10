@@ -2415,6 +2415,7 @@ export default function TareasClient({ identity }: Props) {
             (t) =>
                 t.id !== assigning.id &&
                 t.status === "in_progress" &&
+                !t.review?.active && // las devueltas a soporte no cuentan como "en curso"
                 (t.assignedToName || "").trim().toLowerCase() === normalized
         );
         if (alreadyInProgress) {
@@ -2572,6 +2573,7 @@ export default function TareasClient({ identity }: Props) {
                 (x) =>
                     x.id !== t.id &&
                     x.status === "in_progress" &&
+                    !x.review?.active && // las devueltas a soporte no cuentan como "en curso"
                     (x.assignedToName || "").trim().toLowerCase() === normalized
             );
             if (clash) {
