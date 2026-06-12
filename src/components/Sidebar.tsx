@@ -24,7 +24,7 @@ const MENU_ITEMS = [
     { name: "Tareas", href: "/tareas", icon: "/Icons/code.svg" },
     { name: "App Móvil", href: "/appmovil", icon: "/Icons/phone.svg" },
     { name: "Proyectos", href: "/proyectos", icon: "/Icons/stats-up-square.svg" },
-    { name: "Herramientas", href: "/herramientas", icon: "/Icons/codewi.svg" },
+    // { name: "Herramientas", href: "/herramientas", icon: "/Icons/codewi.svg" },
     { name: "Reciclaje", href: "/reciclaje", icon: "/Icons/reciclaje.svg" },
 ];
 
