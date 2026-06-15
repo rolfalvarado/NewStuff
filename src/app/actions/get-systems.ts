@@ -40,6 +40,7 @@ export interface System {
     holding?: string;
     puerto_web?: string;
     ejecutivo_responsable?: string;
+    pais?: string;
 }
 
 export interface PaginatedSystemsResult {

@@ -323,6 +323,43 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
         }
     };
 
+    const WORLD_COUNTRIES = [
+        "Afganistán", "Albania", "Alemania", "Andorra", "Angola", "Antigua y Barbuda",
+        "Arabia Saudita", "Argelia", "Argentina", "Armenia", "Australia", "Austria",
+        "Azerbaiyán", "Bahamas", "Bangladés", "Barbados", "Baréin", "Bélgica",
+        "Belice", "Benín", "Bielorrusia", "Bolivia", "Bosnia y Herzegovina", "Botsuana",
+        "Brasil", "Brunéi", "Bulgaria", "Burkina Faso", "Burundi", "Bután",
+        "Cabo Verde", "Camboya", "Camerún", "Canadá", "Catar", "Chad",
+        "Chile", "China", "Chipre", "Ciudad del Vaticano", "Colombia", "Comoras",
+        "Corea del Norte", "Corea del Sur", "Costa de Marfil", "Costa Rica", "Croacia", "Cuba",
+        "Dinamarca", "Djibouti", "Dominica", "Ecuador", "Egipto", "El Salvador",
+        "Emiratos Árabes Unidos", "Eritrea", "Eslovaquia", "Eslovenia", "España", "Estados Unidos",
+        "Estonia", "Etiopía", "Filipinas", "Finlandia", "Fiyi", "Francia",
+        "Gabón", "Gambia", "Georgia", "Ghana", "Granada", "Grecia",
+        "Guatemala", "Guinea", "Guinea-Bisáu", "Guinea Ecuatorial", "Guyana", "Haití",
+        "Honduras", "Hungría", "India", "Indonesia", "Irak", "Irán",
+        "Irlanda", "Islandia", "Islas Marshall", "Islas Salomón", "Israel", "Italia",
+        "Jamaica", "Japón", "Jordania", "Kazajistán", "Kenia", "Kirguistán",
+        "Kiribati", "Kuwait", "Laos", "Lesoto", "Letonia", "Líbano",
+        "Liberia", "Libia", "Liechtenstein", "Lituania", "Luxemburgo", "Macedonia del Norte",
+        "Madagascar", "Malasia", "Malaui", "Maldivas", "Malí", "Malta",
+        "Marruecos", "Mauricio", "Mauritania", "México", "Micronesia", "Moldavia",
+        "Mónaco", "Mongolia", "Montenegro", "Mozambique", "Myanmar", "Namibia",
+        "Nauru", "Nepal", "Nicaragua", "Níger", "Nigeria", "Noruega",
+        "Nueva Zelanda", "Omán", "Países Bajos", "Pakistán", "Palaos", "Palestina",
+        "Panamá", "Papúa Nueva Guinea", "Paraguay", "Perú", "Polonia", "Portugal",
+        "Reino Unido", "República Centroafricana", "República Checa", "República del Congo",
+        "República Democrática del Congo", "República Dominicana", "Ruanda", "Rumania",
+        "Rusia", "Samoa", "San Cristóbal y Nieves", "San Marino", "San Vicente y las Granadinas",
+        "Santa Lucía", "Santo Tomé y Príncipe", "Senegal", "Serbia", "Seychelles",
+        "Sierra Leona", "Singapur", "Siria", "Somalia", "Sri Lanka", "Suazilandia",
+        "Sudáfrica", "Sudán", "Sudán del Sur", "Suecia", "Suiza", "Surinam",
+        "Tailandia", "Tanzania", "Tayikistán", "Timor Oriental", "Togo", "Tonga",
+        "Trinidad y Tobago", "Túnez", "Turkmenistán", "Turquía", "Tuvalu",
+        "Ucrania", "Uganda", "Uruguay", "Uzbekistán", "Vanuatu", "Venezuela",
+        "Vietnam", "Yemen", "Yibuti", "Zambia", "Zimbabue"
+    ];
+
     const handleEditSystem = async () => {
         if (!editingSystem) return;
 
@@ -345,7 +382,8 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                 actividad: editingSystem.actividad,
                 holding: editingSystem.holding,
                 puerto_web: editingSystem.puerto_web,
-                ejecutivo_responsable: editingSystem.ejecutivo_responsable
+                ejecutivo_responsable: editingSystem.ejecutivo_responsable,
+                pais: editingSystem.pais
             });
 
             if (result.success) {
@@ -1291,6 +1329,29 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                                     {/* Divider Dot */}
                                     <div style={{ width: "4px", height: "4px", borderRadius: "50%", backgroundColor: "var(--border-color)" }} />
 
+                                    {/* País - pais */}
+                                    {system.pais && (
+                                        <>
+                                            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                                                <Image
+                                                    src="/Icons/pais.svg"
+                                                    alt="País"
+                                                    width={20}
+                                                    height={20}
+                                                    style={{ opacity: 0.8 }}
+                                                />
+                                                <div style={{ display: "flex", flexDirection: "column", lineHeight: "1.2" }}>
+                                                    <span style={{ fontSize: "0.65rem" }}>País</span>
+                                                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "400" }}>
+                                                        {system.pais}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            {/* Divider Dot */}
+                                            <div style={{ width: "4px", height: "4px", borderRadius: "50%", backgroundColor: "var(--border-color)" }} />
+                                        </>
+                                    )}
+
                                     {/* Contratados - usuarios_contratados */}
                                     <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
                                         <Image
@@ -1999,7 +2060,7 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                                     </div>
                                 </div>
 
-                                {/* Row: Ejecutivo Responsable */}
+                                {/* Row: Ejecutivo Responsable + País */}
                                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
                                     <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
                                         <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "500" }}>Ejecutivo Responsable (Unabase)</label>
@@ -2010,6 +2071,31 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                                             onChange={(e) => setEditingSystem({ ...editingSystem, ejecutivo_responsable: e.target.value })}
                                             style={{ padding: "0.625rem", borderRadius: "6px", border: "1px solid var(--border-color)", backgroundColor: "var(--border-color)", color: "var(--text-main)", outline: "none", width: "100%" }}
                                         />
+                                    </div>
+                                    <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                                        <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "500", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                                            <Image src="/Icons/pais.svg" alt="País" width={14} height={14} style={{ opacity: 0.7 }} />
+                                            País
+                                        </label>
+                                        <select
+                                            value={editingSystem.pais || ""}
+                                            onChange={(e) => setEditingSystem({ ...editingSystem, pais: e.target.value })}
+                                            style={{
+                                                padding: "0.625rem",
+                                                borderRadius: "6px",
+                                                border: "1px solid var(--border-color)",
+                                                backgroundColor: "var(--border-color)",
+                                                color: "var(--text-main)",
+                                                outline: "none",
+                                                width: "100%",
+                                                cursor: "pointer"
+                                            }}
+                                        >
+                                            <option value="">Seleccionar país...</option>
+                                            {WORLD_COUNTRIES.map(country => (
+                                                <option key={country} value={country}>{country}</option>
+                                            ))}
+                                        </select>
                                     </div>
                                 </div>
 

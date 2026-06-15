@@ -36,6 +36,7 @@ export async function exportSystemsToExcel() {
                 "Nombre Empresa": system.nombre_empresa || "",
                 "URL Sitio": system.url_sitio || "",
                 "Holding": system.holding || "",
+                "País": system.pais || "",
                 "Giro": system.giro || "",
             };
 
@@ -93,7 +94,7 @@ export async function exportSystemsToExcel() {
         });
 
         const headers = [
-            "Nombre Empresa", "URL Sitio", "Holding", "Giro"
+            "Nombre Empresa", "URL Sitio", "Holding", "País", "Giro"
         ];
         for (let i = 1; i <= maxActividades; i++) {
             headers.push(`Actividad ${i}`);
@@ -128,6 +129,7 @@ export async function exportSystemsToExcel() {
             { wch: 30 }, // Nombre Empresa
             { wch: 35 }, // URL Sitio
             { wch: 20 }, // Holding
+            { wch: 20 }, // País
             { wch: 25 }, // Giro
         ];
         for (let i = 0; i < maxActividades; i++) {

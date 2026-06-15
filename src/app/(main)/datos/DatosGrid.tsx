@@ -119,6 +119,7 @@ export default function DatosGrid({ initialSystems, initialServers }: DatosGridP
             { header: "Empresa", accessor: "nombre_empresa", searchable: true },
             { header: "URL Sitio", accessor: "url_sitio", searchable: true },
             { header: "Holding", accessor: "holding", filterable: true, searchable: true },
+            { header: "País", accessor: "pais", filterable: true },
             { header: "Giro", accessor: "giro", filterable: true },
         ];
 
