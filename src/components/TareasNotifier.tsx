@@ -131,6 +131,9 @@ export default function TareasNotifier() {
                             t.assignedToName ? ` · resuelto por ${t.assignedToName}` : ""
                         }`;
                         notify("✅ Tu reporte fue resuelto", body, `tarea-done-${t.id}`);
+                        
+                        const audio = new Audio('/sounds/super.mp3');
+                        audio.play().catch((err) => console.warn("No se pudo reproducir el sonido:", err));
                     }
                     // 2b) Dev: aviso al equipo de desarrollo cuando alguien cierra un reporte
                     if (session.isDev) {
@@ -143,6 +146,12 @@ export default function TareasNotifier() {
                             `${t.title}\n${desc}`,
                             `tarea-done-dev-${t.id}`
                         );
+
+                        // Si fuimos nosotros mismos, no reproducir de nuevo si ya sonó
+                        if (t.assignedToId !== session.email) {
+                            const audio = new Audio('/sounds/super.mp3');
+                            audio.play().catch((err) => console.warn("No se pudo reproducir el sonido:", err));
+                        }
                     }
                 }
             }

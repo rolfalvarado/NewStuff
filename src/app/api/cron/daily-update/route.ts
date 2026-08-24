@@ -6,6 +6,8 @@ import { promisify } from "util";
 import fs from "fs";
 import path from "path";
 import { logUserIncrease } from "@/app/actions/log-growth";
+import { extractVersionFromHtml } from "@/app/actions/update-system-versions";
+import { isSafePublicUrl } from "@/lib/security";
 
 const execPromise = promisify(exec);
 
@@ -15,8 +17,10 @@ const CRON_SECRET = process.env.CRON_SECRET || "daily-update-secret-key-2026";
 interface SystemItem {
     url_sitio: string;
     nombre_empresa?: string;
+    nombre_servidor?: string;
     usuarios_totales?: number;
     ultimo_backup?: string;
+    version_sistema?: string;
     [key: string]: any;
 }
 
@@ -74,7 +78,104 @@ async function updateLogos(systems: SystemItem[]) {
 }
 
 // ============================================================
-// PHASE 2: UPDATE USER COUNTS
+// PHASE 2: UPDATE SYSTEM & SERVER VERSIONS
+// ============================================================
+async function updateVersions(systems: SystemItem[]) {
+    console.log(`[Daily Update] Phase 2: Updating versions for ${systems.length} systems...`);
+    let updated = 0;
+
+    const BATCH_SIZE = 10;
+    for (let i = 0; i < systems.length; i += BATCH_SIZE) {
+        const batch = systems.slice(i, i + BATCH_SIZE);
+
+        await Promise.all(batch.map(async (sys) => {
+            try {
+                if (!sys.url_sitio || sys.url_sitio === "dynamodb_local_backup") return;
+
+                let targetUrl = sys.url_sitio.trim();
+                if (!targetUrl.startsWith("http://") && !targetUrl.startsWith("https://")) {
+                    targetUrl = `https://${targetUrl}`;
+                }
+
+                if (!isSafePublicUrl(targetUrl)) return;
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+                try {
+                    const response = await fetch(targetUrl, {
+                        signal: controller.signal,
+                        cache: 'no-store',
+                        headers: {
+                            "User-Agent": "SiteMonitor/1.0 (Version Checker)",
+                            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+                        }
+                    });
+                    clearTimeout(timeoutId);
+
+                    if (response.ok) {
+                        const html = await response.text();
+                        const version = extractVersionFromHtml(html);
+
+                        if (version) {
+                            let currentVersion = sys.version_sistema || "";
+                            let versionHistory: { version: string; fecha: string; servidor?: string }[] = Array.isArray(sys.historial_versiones) ? [...sys.historial_versiones] : [];
+
+                            if (versionHistory.length === 0 && currentVersion) {
+                                versionHistory.push({
+                                    version: currentVersion,
+                                    fecha: sys.ultima_conexion || new Date().toISOString(),
+                                    servidor: sys.nombre_servidor || ""
+                                });
+                            }
+
+                            if (!currentVersion || currentVersion !== version || versionHistory.length === 0) {
+                                versionHistory.unshift({
+                                    version: version,
+                                    fecha: new Date().toISOString(),
+                                    servidor: sys.nombre_servidor || ""
+                                });
+                            }
+
+                            // Update Systems table
+                            await db.send(new UpdateCommand({
+                                TableName: TABLE_NAMES.SYSTEMS,
+                                Key: { url_sitio: sys.url_sitio },
+                                UpdateExpression: "set version_sistema = :v, historial_versiones = :hv",
+                                ExpressionAttributeValues: {
+                                    ":v": version,
+                                    ":hv": versionHistory
+                                }
+                            }));
+
+                            // Update Servers table if server is assigned
+                            if (sys.nombre_servidor && String(sys.nombre_servidor).trim() !== "") {
+                                try {
+                                    await db.send(new UpdateCommand({
+                                        TableName: TABLE_NAMES.SERVERS,
+                                        Key: { nombre_servidor: String(sys.nombre_servidor).trim() },
+                                        UpdateExpression: "set version_sistema = :v",
+                                        ExpressionAttributeValues: { ":v": version }
+                                    }));
+                                } catch { /* ignore server update error */ }
+                            }
+
+                            updated++;
+                        }
+                    }
+                } catch {
+                    clearTimeout(timeoutId);
+                }
+            } catch { /* skip errors */ }
+        }));
+    }
+
+    console.log(`[Daily Update] Versions updated: ${updated}`);
+    return updated;
+}
+
+// ============================================================
+// PHASE 3: UPDATE USER COUNTS
 // ============================================================
 async function updateUserCounts(systems: SystemItem[]) {
     console.log(`[Daily Update] Phase 2: Updating user counts for ${systems.length} systems...`);
@@ -378,10 +479,13 @@ export async function GET(request: NextRequest) {
         // Phase 1: Logos
         const logosUpdated = await updateLogos(systems);
 
-        // Phase 2: User Counts
+        // Phase 2: Versions
+        const versionsUpdated = await updateVersions(systems);
+
+        // Phase 3: User Counts
         const usersUpdated = await updateUserCounts(systems);
 
-        // Phase 3: FTP Backups
+        // Phase 4: FTP Backups
         const ftpResult = await updateFTPBackups(systems);
 
         const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
@@ -391,6 +495,7 @@ export async function GET(request: NextRequest) {
             success: true,
             elapsed: `${elapsed}s`,
             logosUpdated,
+            versionsUpdated,
             usersUpdated,
             ftpBackupsUpdated: ftpResult.updatedSystems,
             globalBackupDate: ftpResult.globalBackupDate,

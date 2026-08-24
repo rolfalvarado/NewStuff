@@ -65,7 +65,7 @@ export async function exportSystemsToExcel() {
                 return dateStr;
             })();
             row["Último Backup"] = system.ultimo_backup || "";
-            row["Versión Sistema"] = serverInfo?.version_sistema || system.version_sistema || "";
+            row["Versión Sistema"] = system.version_sistema || serverInfo?.version_sistema || "";
             row["Memoria Sistema"] = system.memoria_sistema || "";
             row["Tipo Instancia"] = serverInfo?.tipo_instancia || system.tipo_instancia || "";
             row["Fecha Renovación"] = system.fecha_renovacion || "";

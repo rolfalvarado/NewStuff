@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import ClientReportsModal from "@/components/ClientReportsModal";
 import { getAllSystems, System } from "@/app/actions/get-systems";
 import { getServers, ServerPublic } from "@/app/actions/get-servers";
-import { updateSystemText, updateSystemFields } from "@/app/actions/update-system";
+import { updateSystemText, updateSystemFields, updateSystemUrl } from "@/app/actions/update-system";
 import { deleteSystem } from "@/app/actions/delete-system";
 import { createSystem } from "@/app/actions/create-system";
 import { renameHolding, deleteHolding } from "@/app/actions/manage-holdings";
@@ -72,6 +72,25 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
     const [uploadingFile, setUploadingFile] = useState(false);
 
     const [servers, setServers] = useState<ServerPublic[]>([]);
+    const [hoveredHistory, setHoveredHistory] = useState<{ type: 'server' | 'version'; url: string } | null>(null);
+
+    const formatHistoryDate = (isoOrDateStr?: string) => {
+        if (!isoOrDateStr) return "-";
+        try {
+            const d = new Date(isoOrDateStr);
+            if (!isNaN(d.getTime())) {
+                const day = String(d.getDate()).padStart(2, '0');
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const year = d.getFullYear();
+                const hours = String(d.getHours()).padStart(2, '0');
+                const minutes = String(d.getMinutes()).padStart(2, '0');
+                return `${day}/${month}/${year} ${hours}:${minutes}`;
+            }
+            return isoOrDateStr;
+        } catch {
+            return isoOrDateStr;
+        }
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -198,6 +217,7 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
     // Edit Modal State
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingSystem, setEditingSystem] = useState<System | null>(null);
+    const [originalUrlSitio, setOriginalUrlSitio] = useState<string>("");
 
     // Progressive Rendering State
     const [visibleCount, setVisibleCount] = useState(50);
@@ -364,8 +384,7 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
         if (!editingSystem) return;
 
         try {
-            // Update all fields except url_sitio (which is the ID)
-            const result = await updateSystemFields(editingSystem.url_sitio, {
+            const updatedFields = {
                 nombre_empresa: editingSystem.nombre_empresa,
                 ip_sitio: editingSystem.ip_sitio,
                 nombre_servidor: editingSystem.nombre_servidor,
@@ -384,7 +403,18 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                 puerto_web: editingSystem.puerto_web,
                 ejecutivo_responsable: editingSystem.ejecutivo_responsable,
                 pais: editingSystem.pais
-            });
+            };
+
+            let result;
+            const urlChanged = editingSystem.url_sitio !== originalUrlSitio;
+
+            if (urlChanged) {
+                // URL changed — need to delete old item and create new one
+                result = await updateSystemUrl(originalUrlSitio, editingSystem.url_sitio, updatedFields);
+            } else {
+                // URL unchanged — standard field update
+                result = await updateSystemFields(editingSystem.url_sitio, updatedFields);
+            }
 
             if (result.success) {
                 // Refresh list from server
@@ -392,6 +422,7 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                 setSystems(updatedSystems);
                 setIsEditModalOpen(false);
                 setEditingSystem(null);
+                setOriginalUrlSitio("");
             } else {
                 alert("Error al actualizar el sistema: " + result.error);
             }
@@ -1002,6 +1033,7 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                                                         onClick={() => {
                                                             setMenuOpen(null);
                                                             setEditingSystem({ ...system });
+                                                            setOriginalUrlSitio(system.url_sitio);
                                                             setIsEditModalOpen(true);
                                                         }}
                                                         style={{
@@ -1160,8 +1192,12 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                                     {/* Divider Dot */}
                                     <div style={{ width: "4px", height: "4px", borderRadius: "50%", backgroundColor: "var(--border-color)" }} />
 
-                                    {/* Server Connection - nombre_servidor */}
-                                    <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                                    {/* Server Connection - nombre_servidor with History Popover */}
+                                    <div
+                                        style={{ display: "flex", alignItems: "center", gap: "0.4rem", position: "relative", cursor: "help" }}
+                                        onMouseEnter={() => !editingSystems[system.url_sitio] && setHoveredHistory({ type: 'server', url: system.url_sitio })}
+                                        onMouseLeave={() => setHoveredHistory(null)}
+                                    >
                                         <Image
                                             src="/Icons/server-connection.svg"
                                             alt="Server"
@@ -1196,16 +1232,106 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                                                     ))}
                                                 </select>
                                             ) : (
-                                                system.nombre_servidor || '-'
+                                                <span style={{ borderBottom: "1px dotted rgba(100, 116, 139, 0.6)", paddingBottom: "1px" }}>
+                                                    {system.nombre_servidor || '-'}
+                                                </span>
                                             )}
                                         </span>
+
+                                        {/* Floating History Popover for Server */}
+                                        {hoveredHistory?.type === 'server' && hoveredHistory.url === system.url_sitio && (
+                                            <div style={{
+                                                position: "absolute",
+                                                bottom: "calc(100% + 8px)",
+                                                left: "50%",
+                                                transform: "translateX(-50%)",
+                                                backgroundColor: "#0F172A",
+                                                border: "1px solid rgba(255, 255, 255, 0.15)",
+                                                borderRadius: "8px",
+                                                boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.5)",
+                                                padding: "0.75rem 1rem",
+                                                minWidth: "240px",
+                                                maxWidth: "320px",
+                                                zIndex: 9999,
+                                                color: "#F8FAFC",
+                                                pointerEvents: "none",
+                                                textAlign: "left"
+                                            }}>
+                                                {/* Header */}
+                                                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.6rem", paddingBottom: "0.4rem", borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
+                                                    <Image src="/Icons/server-connection.svg" alt="Servidor" width={16} height={16} style={{ filter: "brightness(0) invert(1)" }} />
+                                                    <span style={{ fontSize: "0.75rem", fontWeight: "600", color: "#F8FAFC" }}>Historial de Servidores</span>
+                                                </div>
+
+                                                {/* Timeline list */}
+                                                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", maxHeight: "180px", overflowY: "auto" }}>
+                                                    {system.historial_servidores && system.historial_servidores.length > 0 ? (
+                                                        system.historial_servidores.map((item, idx) => (
+                                                            <div key={idx} style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", fontSize: "0.75rem" }}>
+                                                                <span style={{
+                                                                    width: "7px",
+                                                                    height: "7px",
+                                                                    borderRadius: "50%",
+                                                                    backgroundColor: idx === 0 ? "#10B981" : "#64748B",
+                                                                    marginTop: "5px",
+                                                                    flexShrink: 0
+                                                                }} />
+                                                                <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+                                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                                        <span style={{ fontWeight: "600", color: idx === 0 ? "#F8FAFC" : "#CBD5E1" }}>
+                                                                            {item.servidor || "-"}
+                                                                        </span>
+                                                                        {idx === 0 && (
+                                                                            <span style={{ fontSize: "0.65rem", padding: "1px 6px", borderRadius: "4px", backgroundColor: "rgba(16, 185, 129, 0.2)", color: "#34D399", fontWeight: "600" }}>
+                                                                                Actual
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                    <span style={{ fontSize: "0.68rem", color: "#94A3B8", fontFamily: "monospace" }}>
+                                                                        {formatHistoryDate(item.fecha)}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        ))
+                                                    ) : (
+                                                        <div style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", fontSize: "0.75rem" }}>
+                                                            <span style={{ width: "7px", height: "7px", borderRadius: "50%", backgroundColor: "#10B981", marginTop: "5px", flexShrink: 0 }} />
+                                                            <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+                                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                                    <span style={{ fontWeight: "600", color: "#F8FAFC" }}>{system.nombre_servidor || "Sin servidor"}</span>
+                                                                    <span style={{ fontSize: "0.65rem", padding: "1px 6px", borderRadius: "4px", backgroundColor: "rgba(16, 185, 129, 0.2)", color: "#34D399", fontWeight: "600" }}>Actual</span>
+                                                                </div>
+                                                                <span style={{ fontSize: "0.68rem", color: "#94A3B8" }}>Sin cambios previos</span>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Tooltip Arrow */}
+                                                <div style={{
+                                                    position: "absolute",
+                                                    bottom: "-5px",
+                                                    left: "50%",
+                                                    transform: "translateX(-50%) rotate(45deg)",
+                                                    width: "10px",
+                                                    height: "10px",
+                                                    backgroundColor: "#0F172A",
+                                                    borderRight: "1px solid rgba(255, 255, 255, 0.15)",
+                                                    borderBottom: "1px solid rgba(255, 255, 255, 0.15)"
+                                                }} />
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Divider Dot */}
                                     <div style={{ width: "4px", height: "4px", borderRadius: "50%", backgroundColor: "var(--border-color)" }} />
 
-                                    {/* Version - version_sistema */}
-                                    <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                                    {/* Version - version_sistema with History Popover */}
+                                    <div
+                                        style={{ display: "flex", alignItems: "center", gap: "0.4rem", position: "relative", cursor: "help" }}
+                                        onMouseEnter={() => setHoveredHistory({ type: 'version', url: system.url_sitio })}
+                                        onMouseLeave={() => setHoveredHistory(null)}
+                                    >
                                         <Image
                                             src="/Icons/code.svg"
                                             alt="Version"
@@ -1213,13 +1339,106 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                                             height={20}
                                             style={{ opacity: 0.7 }}
                                         />
-                                        <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontFamily: "monospace" }}>
-                                            {getServerDetails(
+                                        <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontFamily: "monospace", borderBottom: "1px dotted rgba(100, 116, 139, 0.6)", paddingBottom: "1px" }}>
+                                            {system.version_sistema || getServerDetails(
                                                 editingSystems[system.url_sitio]
                                                     ? (editValues[system.url_sitio]?.nombre_servidor || system.nombre_servidor)
                                                     : system.nombre_servidor
                                             )?.version_sistema || '-'}
                                         </span>
+
+                                        {/* Floating History Popover for Version */}
+                                        {hoveredHistory?.type === 'version' && hoveredHistory.url === system.url_sitio && (
+                                            <div style={{
+                                                position: "absolute",
+                                                bottom: "calc(100% + 8px)",
+                                                left: "50%",
+                                                transform: "translateX(-50%)",
+                                                backgroundColor: "#0F172A",
+                                                border: "1px solid rgba(255, 255, 255, 0.15)",
+                                                borderRadius: "8px",
+                                                boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.5)",
+                                                padding: "0.75rem 1rem",
+                                                minWidth: "240px",
+                                                maxWidth: "320px",
+                                                zIndex: 9999,
+                                                color: "#F8FAFC",
+                                                pointerEvents: "none",
+                                                textAlign: "left"
+                                            }}>
+                                                {/* Header */}
+                                                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.6rem", paddingBottom: "0.4rem", borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
+                                                    <Image src="/Icons/code.svg" alt="Versión" width={16} height={16} style={{ filter: "brightness(0) invert(1)" }} />
+                                                    <span style={{ fontSize: "0.75rem", fontWeight: "600", color: "#F8FAFC" }}>Historial de Versiones</span>
+                                                </div>
+
+                                                {/* Timeline list */}
+                                                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", maxHeight: "180px", overflowY: "auto" }}>
+                                                    {system.historial_versiones && system.historial_versiones.length > 0 ? (
+                                                        system.historial_versiones.map((item, idx) => (
+                                                            <div key={idx} style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", fontSize: "0.75rem" }}>
+                                                                <span style={{
+                                                                    width: "7px",
+                                                                    height: "7px",
+                                                                    borderRadius: "50%",
+                                                                    backgroundColor: idx === 0 ? "#06D6A0" : "#64748B",
+                                                                    marginTop: "5px",
+                                                                    flexShrink: 0
+                                                                }} />
+                                                                <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+                                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                                        <span style={{ fontWeight: "600", fontFamily: "monospace", color: idx === 0 ? "#F8FAFC" : "#CBD5E1" }}>
+                                                                            {item.version.startsWith("v") ? item.version : `v${item.version}`}
+                                                                        </span>
+                                                                        {idx === 0 && (
+                                                                            <span style={{ fontSize: "0.65rem", padding: "1px 6px", borderRadius: "4px", backgroundColor: "rgba(6, 214, 160, 0.2)", color: "#06D6A0", fontWeight: "600" }}>
+                                                                                Actual
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.5rem" }}>
+                                                                        <span style={{ fontSize: "0.68rem", color: "#94A3B8", fontFamily: "monospace" }}>
+                                                                            {formatHistoryDate(item.fecha)}
+                                                                        </span>
+                                                                        {item.servidor && (
+                                                                            <span style={{ fontSize: "0.65rem", color: "#64748B", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100px" }} title={`Servidor: ${item.servidor}`}>
+                                                                                {item.servidor}
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))
+                                                    ) : (
+                                                        <div style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", fontSize: "0.75rem" }}>
+                                                            <span style={{ width: "7px", height: "7px", borderRadius: "50%", backgroundColor: "#06D6A0", marginTop: "5px", flexShrink: 0 }} />
+                                                            <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+                                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                                    <span style={{ fontWeight: "600", fontFamily: "monospace", color: "#F8FAFC" }}>
+                                                                        {system.version_sistema ? (system.version_sistema.startsWith("v") ? system.version_sistema : `v${system.version_sistema}`) : "-"}
+                                                                    </span>
+                                                                    <span style={{ fontSize: "0.65rem", padding: "1px 6px", borderRadius: "4px", backgroundColor: "rgba(6, 214, 160, 0.2)", color: "#06D6A0", fontWeight: "600" }}>Actual</span>
+                                                                </div>
+                                                                <span style={{ fontSize: "0.68rem", color: "#94A3B8" }}>Sin cambios previos</span>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Tooltip Arrow */}
+                                                <div style={{
+                                                    position: "absolute",
+                                                    bottom: "-5px",
+                                                    left: "50%",
+                                                    transform: "translateX(-50%) rotate(45deg)",
+                                                    width: "10px",
+                                                    height: "10px",
+                                                    backgroundColor: "#0F172A",
+                                                    borderRight: "1px solid rgba(255, 255, 255, 0.15)",
+                                                    borderBottom: "1px solid rgba(255, 255, 255, 0.15)"
+                                                }} />
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Divider Dot */}
@@ -2050,12 +2269,12 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                                         />
                                     </div>
                                     <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                                        <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "500" }}>URL Sitio (ID - No editable)</label>
+                                        <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "500" }}>URL Sitio</label>
                                         <input
                                             type="text"
                                             value={editingSystem.url_sitio || ""}
-                                            disabled
-                                            style={{ padding: "0.625rem", borderRadius: "6px", border: "1px solid #E5E7EB", backgroundColor: "#E5E7EB", outline: "none", width: "100%", cursor: "not-allowed", color: "#6B7280" }}
+                                            onChange={(e) => setEditingSystem({ ...editingSystem, url_sitio: e.target.value })}
+                                            style={{ padding: "0.625rem", borderRadius: "6px", border: "1px solid var(--border-color)", backgroundColor: "var(--border-color)", color: "var(--text-main)", outline: "none", width: "100%" }}
                                         />
                                     </div>
                                 </div>
@@ -2393,6 +2612,7 @@ export default function SystemsList({ initialSystems, userRole }: { initialSyste
                                     onClick={() => {
                                         setIsEditModalOpen(false);
                                         setEditingSystem(null);
+                                        setOriginalUrlSitio("");
                                     }}
                                     style={{
                                         width: "40px",

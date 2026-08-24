@@ -2046,6 +2046,7 @@ export default function TareasClient({ identity }: Props) {
                         kind: "success",
                     });
                     notifyBrowser("Tu reporte fue resuelto", body, `tarea-done-${t.id}`);
+
                 }
                 // 2b) Dev: aviso al equipo cuando alguien cierra un reporte
                 if (isDev) {
@@ -2063,6 +2064,8 @@ export default function TareasClient({ identity }: Props) {
                         `${t.title}\n${desc}`,
                         `tarea-done-dev-${t.id}`
                     );
+
+
                 }
             }
         }
@@ -2519,6 +2522,7 @@ export default function TareasClient({ identity }: Props) {
             const u = await TareasAPI.complete(t.id);
             setTasks((prev) => prev.map((x) => (x.id === u.id ? u : x)));
             pushToast({ title: "Tarea resuelta", msg: t.title, kind: "success" });
+
         } catch (e: any) {
             alert("Error al completar: " + (e.message || e));
         }

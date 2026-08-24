@@ -16,6 +16,8 @@ export interface System {
     consecutive_failures?: number;
     ultimo_backup: string;
     version_sistema?: string;
+    historial_versiones?: { version: string; fecha: string; servidor?: string }[];
+    historial_servidores?: { servidor: string; fecha: string }[];
     memoria_sistema?: string;
     tipo_instancia?: string;
     usuarios_contratados?: number;

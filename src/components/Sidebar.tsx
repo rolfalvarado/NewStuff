@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { getAllSystems, System } from "@/app/actions/get-systems";
 import { updateLogosBatch } from "@/app/actions/update-logos";
+import { updateVersionsBatch } from "@/app/actions/update-system-versions";
 import { updateUserCountsBatch } from "@/app/actions/update-user-counts";
 import { updateFTPBackupsAction, getGlobalBackupDateAction } from "@/app/actions/update-ftp-backups";
 import { getTopics } from "@/app/actions/chat";
@@ -72,7 +73,7 @@ export default function Sidebar() {
             const BATCH_SIZE = 10;
             let processedLogos = 0;
 
-            // --- PHASE 1: LOGOS (0% to 50%) ---
+            // --- PHASE 1: LOGOS (0% to 30%) ---
             for (let i = 0; i < total; i += BATCH_SIZE) {
                 const batch = systems.slice(i, i + BATCH_SIZE);
                 const batchForInfo = batch.map((s: System) => ({ url_sitio: s.url_sitio }));
@@ -80,13 +81,29 @@ export default function Sidebar() {
                 await updateLogosBatch(batchForInfo);
 
                 processedLogos += batch.length;
-                // Map 0-100% of logos to 0-50% of total
-                const percentage = Math.round((processedLogos / total) * 50);
+                const percentage = Math.round((processedLogos / total) * 30);
                 setProgress(percentage);
                 console.log(`Progreso Logos: ${percentage}%`);
             }
 
-            // --- PHASE 2: USERS (50% to 100%) ---
+            // --- PHASE 2: SYSTEM & SERVER VERSIONS (30% to 60%) ---
+            let processedVersions = 0;
+            for (let i = 0; i < total; i += BATCH_SIZE) {
+                const batch = systems.slice(i, i + BATCH_SIZE);
+                const batchForInfo = batch.map((s: System) => ({
+                    url_sitio: s.url_sitio,
+                    nombre_servidor: s.nombre_servidor
+                }));
+
+                await updateVersionsBatch(batchForInfo);
+
+                processedVersions += batch.length;
+                const percentage = 30 + Math.round((processedVersions / total) * 30);
+                setProgress(percentage);
+                console.log(`Progreso Versiones: ${percentage}%`);
+            }
+
+            // --- PHASE 3: USERS (60% to 90%) ---
             let processedUsers = 0;
             for (let i = 0; i < total; i += BATCH_SIZE) {
                 const batch = systems.slice(i, i + BATCH_SIZE);
@@ -95,8 +112,7 @@ export default function Sidebar() {
                 await updateUserCountsBatch(batchForInfo);
 
                 processedUsers += batch.length;
-                // Map 0-100% of users to 50-100% of total
-                const percentage = 50 + Math.round((processedUsers / total) * 50);
+                const percentage = 60 + Math.round((processedUsers / total) * 30);
                 setProgress(Math.min(90, percentage)); // Cap at 90 before FTP phase
                 console.log(`Progreso Usuarios: ${percentage}%`);
             }

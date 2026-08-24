@@ -46,6 +46,20 @@ module.exports = {
             },
             max_memory_restart: "256M",
             exp_backoff_restart_delay: 100
+        },
+        {
+            name: "guacamole-ws",
+            script: "scripts/guacamole-ws-server.js",
+            cwd: __dirname,
+            env: {
+                NODE_ENV: "production",
+                SERVER_ENCRYPTION_KEY: "1U91FpNfsxNHDC6eVKFfmAE0S779H/QEfHhviXA2K8s=",
+                GUACD_HOST: "127.0.0.1",
+                GUACD_PORT: "4822",
+                GUAC_WS_PORT: "8081"
+            },
+            max_memory_restart: "256M",
+            exp_backoff_restart_delay: 100
         }
     ]
 };

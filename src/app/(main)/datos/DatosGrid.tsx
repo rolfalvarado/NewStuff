@@ -65,7 +65,7 @@ export default function DatosGrid({ initialSystems, initialServers }: DatosGridP
             return linkedServer?.ip_servidor || '-';
         }
         if (accessor === 'version_sistema') {
-            return linkedServer?.version_sistema || '-';
+            return system.version_sistema || linkedServer?.version_sistema || '-';
         }
         if (accessor === 'memoria_sistema') {
             return linkedServer?.tipo_instancia || '-';
