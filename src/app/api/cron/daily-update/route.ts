@@ -6,7 +6,7 @@ import { promisify } from "util";
 import fs from "fs";
 import path from "path";
 import { logUserIncrease } from "@/app/actions/log-growth";
-import { extractVersionFromHtml } from "@/app/actions/update-system-versions";
+import { fetchSystemVersion } from "@/app/actions/update-system-versions";
 import { isSafePublicUrl } from "@/lib/security";
 
 const execPromise = promisify(exec);
@@ -92,79 +92,52 @@ async function updateVersions(systems: SystemItem[]) {
             try {
                 if (!sys.url_sitio || sys.url_sitio === "dynamodb_local_backup") return;
 
-                let targetUrl = sys.url_sitio.trim();
-                if (!targetUrl.startsWith("http://") && !targetUrl.startsWith("https://")) {
-                    targetUrl = `https://${targetUrl}`;
-                }
+                const version = await fetchSystemVersion(sys.url_sitio, 10000);
 
-                if (!isSafePublicUrl(targetUrl)) return;
+                if (version) {
+                    let currentVersion = sys.version_sistema || "";
+                    let versionHistory: { version: string; fecha: string; servidor?: string }[] = Array.isArray(sys.historial_versiones) ? [...sys.historial_versiones] : [];
 
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-                try {
-                    const response = await fetch(targetUrl, {
-                        signal: controller.signal,
-                        cache: 'no-store',
-                        headers: {
-                            "User-Agent": "SiteMonitor/1.0 (Version Checker)",
-                            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
-                        }
-                    });
-                    clearTimeout(timeoutId);
-
-                    if (response.ok) {
-                        const html = await response.text();
-                        const version = extractVersionFromHtml(html);
-
-                        if (version) {
-                            let currentVersion = sys.version_sistema || "";
-                            let versionHistory: { version: string; fecha: string; servidor?: string }[] = Array.isArray(sys.historial_versiones) ? [...sys.historial_versiones] : [];
-
-                            if (versionHistory.length === 0 && currentVersion) {
-                                versionHistory.push({
-                                    version: currentVersion,
-                                    fecha: sys.ultima_conexion || new Date().toISOString(),
-                                    servidor: sys.nombre_servidor || ""
-                                });
-                            }
-
-                            if (!currentVersion || currentVersion !== version || versionHistory.length === 0) {
-                                versionHistory.unshift({
-                                    version: version,
-                                    fecha: new Date().toISOString(),
-                                    servidor: sys.nombre_servidor || ""
-                                });
-                            }
-
-                            // Update Systems table
-                            await db.send(new UpdateCommand({
-                                TableName: TABLE_NAMES.SYSTEMS,
-                                Key: { url_sitio: sys.url_sitio },
-                                UpdateExpression: "set version_sistema = :v, historial_versiones = :hv",
-                                ExpressionAttributeValues: {
-                                    ":v": version,
-                                    ":hv": versionHistory
-                                }
-                            }));
-
-                            // Update Servers table if server is assigned
-                            if (sys.nombre_servidor && String(sys.nombre_servidor).trim() !== "") {
-                                try {
-                                    await db.send(new UpdateCommand({
-                                        TableName: TABLE_NAMES.SERVERS,
-                                        Key: { nombre_servidor: String(sys.nombre_servidor).trim() },
-                                        UpdateExpression: "set version_sistema = :v",
-                                        ExpressionAttributeValues: { ":v": version }
-                                    }));
-                                } catch { /* ignore server update error */ }
-                            }
-
-                            updated++;
-                        }
+                    if (versionHistory.length === 0 && currentVersion) {
+                        versionHistory.push({
+                            version: currentVersion,
+                            fecha: sys.ultima_conexion || new Date().toISOString(),
+                            servidor: sys.nombre_servidor || ""
+                        });
                     }
-                } catch {
-                    clearTimeout(timeoutId);
+
+                    if (!currentVersion || currentVersion !== version || versionHistory.length === 0) {
+                        versionHistory.unshift({
+                            version: version,
+                            fecha: new Date().toISOString(),
+                            servidor: sys.nombre_servidor || ""
+                        });
+                    }
+
+                    // Update Systems table
+                    await db.send(new UpdateCommand({
+                        TableName: TABLE_NAMES.SYSTEMS,
+                        Key: { url_sitio: sys.url_sitio },
+                        UpdateExpression: "set version_sistema = :v, historial_versiones = :hv",
+                        ExpressionAttributeValues: {
+                            ":v": version,
+                            ":hv": versionHistory
+                        }
+                    }));
+
+                    // Update Servers table if server is assigned
+                    if (sys.nombre_servidor && String(sys.nombre_servidor).trim() !== "") {
+                        try {
+                            await db.send(new UpdateCommand({
+                                TableName: TABLE_NAMES.SERVERS,
+                                Key: { nombre_servidor: String(sys.nombre_servidor).trim() },
+                                UpdateExpression: "set version_sistema = :v",
+                                ExpressionAttributeValues: { ":v": version }
+                            }));
+                        } catch { /* ignore server update error */ }
+                    }
+
+                    updated++;
                 }
             } catch { /* skip errors */ }
         }));
