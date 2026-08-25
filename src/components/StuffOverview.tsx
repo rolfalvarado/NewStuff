@@ -4,7 +4,6 @@ import { useState, useEffect, Fragment } from "react";
 import Image from "next/image";
 import { getServers, ServerPublic } from "@/app/actions/get-servers";
 import { getAllSystems, System } from "@/app/actions/get-systems";
-import RdpModal from "@/components/RdpModal";
 
 export default function StuffOverview() {
     const [servers, setServers] = useState<ServerPublic[]>([]);
@@ -12,7 +11,6 @@ export default function StuffOverview() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [isOfflineListOpen, setIsOfflineListOpen] = useState(false);
-    const [rdpTarget, setRdpTarget] = useState<{ name: string; ip: string } | null>(null);
 
     useEffect(() => {
         const loadData = async () => {
@@ -283,14 +281,12 @@ export default function StuffOverview() {
                                                                     e.preventDefault();
                                                                     e.stopPropagation();
                                                                     if (server.ip_servidor) {
-                                                                        setRdpTarget({
-                                                                            name: server.nombre_servidor,
-                                                                            ip: server.ip_servidor
-                                                                        });
+                                                                        // Abre mstsc.exe directamente via protocolo rdp://
+                                                                        window.location.assign(`rdp://${server.ip_servidor}`);
                                                                     }
                                                                 }}
                                                                 style={{ color: "inherit", cursor: "pointer" }}
-                                                                title="Conectar a Escritorio Remoto (en navegador)"
+                                                                title="Conectar a Escritorio Remoto"
                                                             >
                                                                 {server.nombre_servidor}
                                                             </span>
@@ -446,14 +442,7 @@ export default function StuffOverview() {
                 </div>
             )}
 
-            {/* RDP Modal (Guacamole) */}
-            {rdpTarget && (
-                <RdpModal
-                    serverName={rdpTarget.name}
-                    serverIp={rdpTarget.ip}
-                    onClose={() => setRdpTarget(null)}
-                />
-            )}
+
         </div>
     );
 }
