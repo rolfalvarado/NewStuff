@@ -8,7 +8,7 @@ import { revalidatePath } from "next/cache";
 const LOGIN_USER = "soporte";
 const LOGIN_PASS = "Beyo5_1**";
 
-export function extractVersionFromHtml(html: string): string | null {
+function extractVersionFromHtml(html: string): string | null {
     if (!html) return null;
 
     // 1. Look for elements with class "version" (e.g. <span class="version"...>Versión (3.14)</span>)
